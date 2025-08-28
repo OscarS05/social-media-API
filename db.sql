@@ -15,7 +15,7 @@ CREATE TABLE profiles (
   user_id VARCHAR(36) NOT NULL,
   username VARCHAR(50) NOT NULL,
   avatar_url TEXT NULL,
-  cover_photo_url TEXT NULL,
+  cover_photo_url TEXT NULL, //añador si es perfil publico o privado
   bio VARCHAR(255) NULL,
   website_url VARCHAR(255) NULL,
   deleted_at TIMESTAMP NULL DEFAULT NULL,
@@ -47,6 +47,21 @@ CREATE TABLE auth (
   INDEX (provider_user_id),
   INDEX (email),
   CONSTRAINT auth_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- REFRESH_TOKENS
+CREATE TABLE refresh_tokens (
+  id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  token_hashed VARCHAR(255) NOT NULL,
+  user_agent VARCHAR(255) NULL,
+  ip_address VARCHAR(45) NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  revoked BOOLEAN NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (id),
+  INDEX (user_id),
+  CONSTRAINT fk_refresh_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- FOLLOWS
