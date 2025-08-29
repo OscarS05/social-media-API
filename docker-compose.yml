@@ -1,0 +1,30 @@
+# version: '3.8'
+# MySQL and phpMyAdmin for database management in development environment
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: social_network
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: user
+      PMA_PASSWORD: userpassword
+    ports:
+      - '8080:80'
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
