@@ -10,13 +10,13 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { AuthProvider } from './providers.enum';
-import { User } from '../../../users/infrastructure/orm/user.orm-entity';
+import { AuthProvider } from '../../../../domain/entities/providers.enum';
+import { User } from '../../../../../users/infrastructure/orm/user.orm-entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'auth' })
 @Index(['providerUserId', 'provider'])
 @Index(['email'])
-@Unique('auth_email_unique', ['email', 'deletedAt'])
 @Unique('oauth_unique', ['provider', 'providerUserId', 'deletedAt'])
 export class Auth extends BaseEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
@@ -29,6 +29,7 @@ export class Auth extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   email?: string | null;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 255, nullable: true })
   password?: string | null;
 

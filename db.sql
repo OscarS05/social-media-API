@@ -42,7 +42,6 @@ CREATE TABLE auth (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY auth_email_unique (email, deleted_at),
   UNIQUE KEY oauth_unique (provider, provider_user_id, deleted_at),
   INDEX (provider_user_id, provider),
   INDEX (email),

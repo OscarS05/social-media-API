@@ -1,4 +1,5 @@
-import { User } from '../../../users/infrastructure/orm/user.orm-entity';
+import { Exclude } from 'class-transformer';
+import { User } from '../../../../../users/infrastructure/orm/user.orm-entity';
 import {
   BaseEntity,
   Column,
@@ -22,6 +23,7 @@ export class RefreshToken extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Exclude()
   @Column({ type: 'varchar', name: 'token_hashed', length: 255 })
   tokenHashed: string;
 
