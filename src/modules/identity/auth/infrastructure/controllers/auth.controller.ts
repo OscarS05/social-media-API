@@ -1,34 +1,26 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import type { Request } from 'express';
 import type { UserEntity } from '../../domain/entities/user.entity';
-import { LoginUseCase } from '../../application/use-cases/Login.usecase';
 import { RegisterUserUseCase } from '../../application/use-cases/Register-user.usecase';
 import { RegisterDto } from '../dtos/auth.dto';
+import { GenerateTokensUseCase } from '../../application/use-cases/generate-tokens.usecase';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private loginUseCase: LoginUseCase,
-    private registerUseCase: RegisterUserUseCase,
+    private readonly registerUseCase: RegisterUserUseCase,
+    private readonly generateTokens: GenerateTokensUseCase,
   ) {}
 
   @Post('login')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   @UseGuards(AuthGuard('local'))
   login(@Req() req: Request) {
     const user = req.user as UserEntity;
     return {
       ...user,
+      accessToken: this.generateTokens.execute(user),
     };
   }
 

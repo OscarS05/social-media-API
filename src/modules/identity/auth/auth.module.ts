@@ -12,18 +12,39 @@ import { BcryptPasswordHasher } from './infrastructure/services/security/bcrypt-
 import { CreateUserUseCase } from '../users/application/use-cases/create-user.usecase';
 import { UuidAdapter } from './infrastructure/services/security/uuid.service';
 import { UsersModule } from '../users/users.module';
+import { GenerateTokensUseCase } from './application/use-cases/generate-tokens.usecase';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Env } from 'src/shared/config/env.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Auth]), PassportModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Auth]),
+    PassportModule,
+    UsersModule,
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService<Env>) => {
+        return {
+          secret: configService.get('ACCESS_SECRET', { infer: true }),
+          signOptions: {
+            expiresIn: configService.get('ACCESS_EXPIRES_IN', { infer: true }),
+          },
+        };
+      },
+      inject: [ConfigService],
+    }),
+  ],
   controllers: [AuthController],
   providers: [
     { provide: 'IAuthRepository', useClass: AuthRepository },
     { provide: 'IHasherService', useClass: BcryptPasswordHasher },
     { provide: 'CreateUserPort', useClass: CreateUserUseCase },
     { provide: 'IUuidService', useClass: UuidAdapter },
+    { provide: 'JwtService', useClass: JwtService },
     LoginUseCase,
     RegisterUserUseCase,
     LocalStrategy,
+    GenerateTokensUseCase,
   ],
 })
 export class AuthModule {}

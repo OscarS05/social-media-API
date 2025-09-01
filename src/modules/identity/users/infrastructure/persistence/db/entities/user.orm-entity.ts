@@ -1,3 +1,4 @@
+import { Roles } from '../../../../domain/entities/roles.enum';
 import { Auth } from '../../../../../auth/infrastructure/persistence/db/entites/auth.orm-entity';
 import { RefreshToken } from '../../../../../auth/infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
 import {
@@ -17,6 +18,9 @@ export class User extends BaseEntity {
 
   @Column('varchar', { length: 255 })
   name: string;
+
+  @Column({ type: 'enum', enum: Roles, default: Roles.MEMBER })
+  role: Roles;
 
   @Column('timestamp', { name: 'deleted_at', nullable: true, precision: 0 })
   deletedAt?: Date | null;
