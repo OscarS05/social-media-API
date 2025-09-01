@@ -1,9 +1,19 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
+import type { Request } from 'express';
+import type { UserEntity } from '../../domain/entities/user.entity';
 import { LoginUseCase } from '../../application/use-cases/Login.usecase';
 import { RegisterUserUseCase } from '../../application/use-cases/Register-user.usecase';
-import { LoginDto, RegisterDto } from '../dtos/auth.dto';
+import { RegisterDto } from '../dtos/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,9 +23,13 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
   @UseGuards(AuthGuard('local'))
-  login(@Body() body: LoginDto) {
-    return this.loginUseCase.execute(body.email, body.password);
+  login(@Req() req: Request) {
+    const user = req.user as UserEntity;
+    return {
+      ...user,
+    };
   }
 
   @Post('register')
