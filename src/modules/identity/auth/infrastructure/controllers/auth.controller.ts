@@ -20,6 +20,6 @@ export class AuthController {
 
   @Post('register')
   register(@Body() body: RegisterDto) {
-    return this.registerUseCase.execute(body.username, body.email, body.password);
+    return this.registerUseCase.execute(body.name, body.email, body.password);
   }
 }

@@ -6,4 +6,5 @@ export const validationSchema = Joi.object({
   MYSQL_USER: Joi.string().required(),
   MYSQL_PASSWORD: Joi.string().required(),
   MYSQL_NAME: Joi.string().required(),
+  ROUNDS_HASH_PASSWORD: Joi.number().required(),
 });

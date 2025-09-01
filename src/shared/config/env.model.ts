@@ -4,4 +4,5 @@ export interface Env {
   MYSQL_NAME: string;
   MYSQL_USER: string;
   MYSQL_PASSWORD: string;
+  ROUNDS_HASH_PASSWORD: number;
 }

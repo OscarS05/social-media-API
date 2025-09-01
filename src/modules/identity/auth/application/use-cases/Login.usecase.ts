@@ -1,14 +1,14 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import type { IAuthRepository } from '../../domain/repositories/auth.repository';
-import type { PasswordHasher } from '../../domain/services/password-hasher.service';
+import type { IHasherService } from '../../domain/services/password-hasher.service';
 import { AuthEntity } from '../../domain/entities/auth.entity';
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     @Inject('IAuthRepository') private authRepository: IAuthRepository,
-    @Inject('PasswordHasher') private passwordHasher: PasswordHasher,
+    @Inject('IHasherService') private passwordHasher: IHasherService,
   ) {}
 
   async execute(email: string, password: string) {

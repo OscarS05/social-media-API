@@ -12,8 +12,9 @@ import { NodeUuidService } from './infrastructure/services/uuid.service';
   controllers: [UsersController],
   providers: [
     { provide: 'IUserRepository', useClass: UserRepository },
-    { provide: 'UuidService', useClass: NodeUuidService },
+    { provide: 'IUuidService', useClass: NodeUuidService },
     CreateUserUseCase,
   ],
+  exports: ['IUserRepository'],
 })
 export class UsersModule {}

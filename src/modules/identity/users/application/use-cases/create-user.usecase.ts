@@ -1,7 +1,7 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import type { IUserRepository } from '../../domain/repositories/user.repository';
-import type { UuidService } from '../../domain/services/uuid.service';
+import type { IUuidService } from '../../domain/services/uuid.service';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserIdVO } from '../../domain/value-objects/userId.vo';
 
@@ -9,7 +9,7 @@ import { UserIdVO } from '../../domain/value-objects/userId.vo';
 export class CreateUserUseCase {
   constructor(
     @Inject('IUserRepository') private usersRepository: IUserRepository,
-    @Inject('UuidService') private uuidService: UuidService,
+    @Inject('IUuidService') private uuidService: IUuidService,
   ) {}
 
   async execute(name: string) {
@@ -22,7 +22,7 @@ export class CreateUserUseCase {
     return user;
   }
 
-  createEntity(name: string): UserEntity {
+  private createEntity(name: string): UserEntity {
     const userId = new UserIdVO(this.uuidService).generateId();
     const now: Date = new Date();
     return new UserEntity(userId, name, now, now);

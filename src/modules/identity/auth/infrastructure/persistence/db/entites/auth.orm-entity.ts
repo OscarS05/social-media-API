@@ -22,9 +22,12 @@ export class Auth extends BaseEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   id: string;
 
-  @ManyToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @Column({ name: 'user_id', type: 'varchar' })
+  userId: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   email?: string | null;

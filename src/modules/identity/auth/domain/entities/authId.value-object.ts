@@ -1,6 +1,6 @@
-import type { IUuidService } from '../services/uuid.service';
+import { IUuidService } from '../services/uuid.service';
 
-export class UserIdVO {
+export class AuthIdVO {
   constructor(private readonly uuidService: IUuidService) {}
 
   generateId(): string {
