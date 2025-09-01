@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { User } from '../../../../../users/infrastructure/orm/user.orm-entity';
+import { User } from '../../../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import {
   BaseEntity,
   Column,

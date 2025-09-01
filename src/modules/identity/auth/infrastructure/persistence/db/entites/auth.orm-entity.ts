@@ -11,7 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { AuthProvider } from '../../../../domain/entities/providers.enum';
-import { User } from '../../../../../users/infrastructure/orm/user.orm-entity';
+import { User } from '../../../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'auth' })

@@ -1,5 +1,5 @@
-import { Auth } from '../../../auth/infrastructure/persistence/db/entites/auth.orm-entity';
-import { RefreshToken } from '../../../auth/infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
+import { Auth } from '../../../../../auth/infrastructure/persistence/db/entites/auth.orm-entity';
+import { RefreshToken } from '../../../../../auth/infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
 import {
   BaseEntity,
   Column,
