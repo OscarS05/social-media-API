@@ -1,3 +1,3 @@
 export interface IUuidService {
-  generateId(): string;
+  generateId(this: void): string;
 }

@@ -1,4 +1,8 @@
-import { ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { AuthProvider } from './providers.enum';
 
 export class AuthEntity {
@@ -14,23 +18,23 @@ export class AuthEntity {
     public providerUserId?: string | null,
     public resetToken?: string | null,
     public deletedAt?: Date | null,
-    public user?: object,
+    public user?: object | null,
   ) {}
 
-  ensureVerified() {
+  ensureVerified(): void {
     if (!this.isVerified) {
       throw new ForbiddenException('Account not verified. Please verify your email.');
     }
   }
 
-  ensureValidProvider() {
+  ensureValidProvider(): void {
     if (this.provider !== AuthProvider.LOCAL && this.password !== null) {
-      throw new Error('Non-local accounts cannot have a password.');
+      throw new BadRequestException('Non-local accounts cannot have a password.');
     }
   }
 
-  existsEmailToRegister(email: string | null, deletedAt: Date | null) {
-    if (email && !deletedAt) {
+  existsEmailToRegister(): void {
+    if (this.email && !this.deletedAt) {
       throw new ConflictException('Email already in use');
     }
   }

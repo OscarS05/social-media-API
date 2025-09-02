@@ -20,11 +20,19 @@ export class AuthMapper {
     );
   }
 
-  // static toOrm(domainEntity: AuthEntity): AuthOrmEntity {
-  //   const orm = new AuthOrmEntity();
-  //   orm.user = { id: domainEntity.userId };
-  //   orm.email = domainEntity.email;
-  //   orm.password = domainEntity.password;
-  //   return orm;
-  // }
+  static toOrm(domainEntity: AuthEntity): AuthOrmEntity {
+    const orm = new AuthOrmEntity();
+    orm.id = domainEntity.id;
+    orm.userId = domainEntity.userId;
+    orm.email = domainEntity.email ?? null;
+    orm.password = domainEntity.password ?? null;
+    orm.provider = domainEntity.provider;
+    orm.providerUserId = domainEntity.providerUserId ?? null;
+    orm.resetToken = domainEntity.resetToken ?? null;
+    orm.isVerified = domainEntity.isVerified;
+    orm.deletedAt = domainEntity.deletedAt ?? null;
+    orm.createdAt = domainEntity.createdAt;
+    orm.updatedAt = domainEntity.updatedAt;
+    return orm;
+  }
 }

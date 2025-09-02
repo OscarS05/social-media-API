@@ -1,11 +1,11 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
 import type { Request } from 'express';
+
 import type { UserEntity } from '../../domain/entities/user.entity';
 import { RegisterUserUseCase } from '../../application/use-cases/Register-user.usecase';
-import { RegisterDto } from '../dtos/auth.dto';
 import { GenerateTokensUseCase } from '../../application/use-cases/generate-tokens.usecase';
+import { RegisterDto } from '../dtos/auth.dto';
 
 @Controller('auth')
 export class AuthController {

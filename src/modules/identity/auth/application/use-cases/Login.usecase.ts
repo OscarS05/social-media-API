@@ -3,6 +3,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { IAuthRepository } from '../../domain/repositories/auth.repository';
 import type { IHasherService } from '../../domain/services/password-hasher.service';
 import { AuthEntity } from '../../domain/entities/auth.entity';
+import { UserEntity } from '../../domain/entities/user.entity';
 
 @Injectable()
 export class LoginUseCase {
@@ -11,7 +12,7 @@ export class LoginUseCase {
     @Inject('IHasherService') private passwordHasher: IHasherService,
   ) {}
 
-  async execute(email: string, password: string) {
+  public async execute(email: string, password: string): Promise<{ user: UserEntity }> {
     const authEntity: AuthEntity = await this.validEmail(email);
 
     authEntity.ensureValidProvider();
@@ -20,10 +21,12 @@ export class LoginUseCase {
 
     authEntity.ensureVerified();
 
-    return { user: { ...authEntity.user, email: authEntity.email } };
+    return {
+      user: { ...authEntity.user, email: authEntity.email as string } as UserEntity,
+    };
   }
 
-  async validEmail(email: string): Promise<AuthEntity> {
+  private async validEmail(email: string): Promise<AuthEntity> {
     const result: AuthEntity | null = await this.authRepository.findByEmail(email);
 
     if (result === null) {
@@ -33,7 +36,10 @@ export class LoginUseCase {
     return result;
   }
 
-  async validPassword(plainPassword: string, passwordHashed: string): Promise<boolean> {
+  private async validPassword(
+    plainPassword: string,
+    passwordHashed: string,
+  ): Promise<boolean> {
     const isValid: boolean = await this.passwordHasher.compare(
       plainPassword,
       passwordHashed,

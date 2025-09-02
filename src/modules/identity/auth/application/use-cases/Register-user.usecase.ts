@@ -18,7 +18,11 @@ export class RegisterUserUseCase {
     @Inject('IHasherService') private readonly passwordHasher: IHasherService,
   ) {}
 
-  async execute(name: string, email: string, password: string) {
+  async execute(
+    name: string,
+    email: string,
+    password: string,
+  ): Promise<{ user: UserEntity }> {
     await this.emailExists(email);
     const user: UserEntity = await this.createUser(name);
 
@@ -31,10 +35,7 @@ export class RegisterUserUseCase {
     const authRegister: AuthEntity | null = await this.authRepository.findByEmail(email);
     if (!authRegister) return true;
 
-    authRegister?.existsEmailToRegister(
-      authRegister.email ?? null,
-      authRegister.deletedAt ?? null,
-    );
+    authRegister?.existsEmailToRegister();
   }
 
   private async createUser(name: string): Promise<UserEntity> {
