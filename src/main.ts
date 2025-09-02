@@ -18,7 +18,6 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // eslint-disable-next-line prettier/prettier
   // const config = new DocumentBuilder().setTitle('Blog API').setDescription('Blog API description').setVersion('1.0').build();
 
   // const documentFactory = () => SwaggerModule.createDocument(app, config);

@@ -18,12 +18,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs -d ./src/shared/database/ormconfig.ts",
+    "typeorm": "typeorm-ts-node-commonjs -d ./src/shared/database/config/ormconfig.ts",
     "migrations:generate": "npm run typeorm migration:generate",
     "migrations:create": "typeorm-ts-node-commonjs migration:create",
     "migrations:show": "npm run typeorm migration:show",
     "migrations:run": "npm run typeorm migration:run",
-    "migrations:revert": "npm run typeorm migration:revert"
+    "migrations:revert": "npm run typeorm migration:revert",
+    "seeders:run": "npx typeorm-extension seed:run -d ./src/shared/database/config/ormconfig.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@faker-js/faker": "^10.0.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
@@ -72,6 +74,7 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "typeorm-extension": "^3.7.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
