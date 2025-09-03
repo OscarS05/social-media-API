@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 
@@ -16,6 +16,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(AuthGuard('local'))
+  @HttpCode(200)
   login(@Req() req: Request) {
     const user = req.user as UserEntity;
     return {
