@@ -1,16 +1,18 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { faker } from '@faker-js/faker';
+import * as bcrypt from 'bcrypt';
 
 import { Auth } from '../../../modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
 import { AuthProvider } from 'src/modules/identity/auth/domain/entities/providers.enum';
 
 const providers = [AuthProvider.FACEBOOK, AuthProvider.LOCAL];
+const rounds = parseInt(process.env.ROUNDS_HASH_PASSWORD ?? '10', 10);
 
 export default setSeederFactory(Auth, () => {
   const auth = new Auth();
   auth.id = faker.string.uuid();
   // auth.email = faker.internet.email();
-  auth.password = faker.internet.password();
+  auth.password = bcrypt.hashSync('password', rounds);
   auth.isVerified = faker.datatype.boolean();
   auth.provider = faker.helpers.arrayElement(providers);
   auth.providerUserId =

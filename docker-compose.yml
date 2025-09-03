@@ -3,7 +3,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql
+    container_name: mysql-dev
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: social_network
@@ -13,6 +13,17 @@ services:
       - '3307:3306'
     volumes:
       - mysql_data:/var/lib/mysql
+
+  mysql-e2e:
+    image: mysql:8.0
+    container_name: mysql-e2e
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: social_network_e2e
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - '3308:3306'
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

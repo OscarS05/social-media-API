@@ -2,7 +2,7 @@ import { DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
 import { SeederOptions } from 'typeorm-extension';
 
-config();
+config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' });
 
 export const typeOrmConfig: DataSourceOptions & SeederOptions = {
   type: 'mysql',
