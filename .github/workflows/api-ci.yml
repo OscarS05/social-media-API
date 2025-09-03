@@ -68,12 +68,10 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
-    container:
-      image: node:20
     env:
       # DB configuration
-      MYSQL_HOST: mysql-e2e
-      MYSQL_PORT: 3308
+      MYSQL_HOST: localhost
+      MYSQL_PORT: 3306
       MYSQL_USER: user
       MYSQL_PASSWORD: userpassword
       MYSQL_NAME: social_network_e2e
@@ -88,7 +86,7 @@ jobs:
       mysql-e2e:
         image: mysql:8.0
         ports:
-          - 3308:3306
+          - 3306:3306
         env:
           MYSQL_NAME: social_network_e2e
           MYSQL_USER: user
@@ -103,15 +101,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: install dependencies
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
         run: npm ci
+
       - name: Wait for MySQL
         run: |
           while ! mysqladmin ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
             echo "Waiting for MySQL..."
             sleep 2
           done
-      - name: init db
+
+      - name: Init database
         run: npm run migrations:run:test
-      - name: run e2e
+
+      - name: Run E2E tests
         run: npm run test:e2e
