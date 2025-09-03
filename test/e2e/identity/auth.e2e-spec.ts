@@ -3,10 +3,12 @@
 import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import request from 'supertest';
+import bcrypt from 'bcrypt';
 
 import { createTestApp } from '../app.e2e';
 import MainSeeder from '../../../src/shared/database/seeders/app.seeder';
-// import { Auth } from '../../../src/modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
+import { JwtService } from '@nestjs/jwt';
+import { Auth } from '../../../src/modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
 // import { User } from '../../../src/modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 
 describe('Auth e2e - identity/auth', () => {
@@ -38,8 +40,14 @@ describe('Auth e2e - identity/auth', () => {
         .send({ email, password: 'password' })
         .expect(200);
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const token = res.body.accessToken;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = new JwtService().decode(token);
       expect(res.body).toHaveProperty('accessToken');
-      expect(typeof res.body.accessToken).toBe('string');
+      expect(typeof token).toBe('string');
+      expect(decoded).toHaveProperty('sub');
+      expect(decoded).toHaveProperty('role');
     });
 
     it('400 with wrong password', async () => {
@@ -70,8 +78,16 @@ describe('Auth e2e - identity/auth', () => {
         .send({ name: 'test', email, password: 'password' })
         .expect(201);
 
+      const authRepo = dataSource.getRepository(Auth);
+      const auth = await authRepo.findOne({ where: { email } });
+
       expect(res.body.user).toHaveProperty('email');
       expect(res.body.user).toHaveProperty('name');
+
+      expect(auth).toBeTruthy();
+      expect(auth!.password).not.toBe('password');
+      const isValid = await bcrypt.compare('password', auth!.password!);
+      expect(isValid).toBe(true);
     });
 
     it('400 with wrong name', async () => {
