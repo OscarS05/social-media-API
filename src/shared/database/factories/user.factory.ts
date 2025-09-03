@@ -1,9 +1,10 @@
 import { setSeederFactory } from 'typeorm-extension';
-import { User } from '../../../modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 import { faker } from '@faker-js/faker';
+
+import { User } from '../../../modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 import { Roles } from '../../../modules/identity/users/domain/entities/roles.enum';
 
-export default setSeederFactory(User, () => {
+export const userFactoryData = () => {
   const user = new User();
   user.id = faker.string.uuid();
   user.name = faker.person.fullName();
@@ -16,4 +17,8 @@ export default setSeederFactory(User, () => {
       : faker.date.between({ from: user.createdAt, to: new Date() });
 
   return user;
+};
+
+export const userFactory = setSeederFactory(User, () => {
+  return userFactoryData();
 });

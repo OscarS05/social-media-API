@@ -24,6 +24,7 @@
     "migrations:show": "npm run typeorm migration:show",
     "migrations:run": "npm run typeorm migration:run",
     "migrations:revert": "npm run typeorm migration:revert",
+    "migrations:run:test": "cross-env NODE_ENV=test npm run typeorm migration:run",
     "seeders:run": "npx typeorm-extension seed:run -d ./src/shared/database/config/ormconfig.ts"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cross-env": "^10.0.0",
     "dotenv": "^17.2.1",
     "joi": "^18.0.1",
     "mysql2": "^3.14.3",

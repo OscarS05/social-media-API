@@ -1,8 +1,9 @@
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { User } from '../../../modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 import { Roles } from '../../../modules/identity/users/domain/entities/roles.enum';
+import { userFactoryData } from '../factories/user.factory';
 
 type UserSeederResult = { adminUser: User; usersSaved: User[] };
 
@@ -21,7 +22,31 @@ export default class UserSeeder implements Seeder {
     const userRepository = dataSource.getRepository(User);
     const userFactory = factoryManager.get(User);
 
-    const adminUser = userRepository.create({
+    const adminUser = this.createAdmin(userRepository);
+    await userRepository.save(adminUser);
+
+    const usersSaved = await userFactory.saveMany(this.howMuchUsers);
+
+    return { adminUser, usersSaved };
+  }
+
+  async runTestSeeders(dataSource: DataSource): Promise<UserSeederResult> {
+    const userRepository = dataSource.getRepository(User);
+
+    const adminUser = this.createAdmin(userRepository);
+    await userRepository.save(adminUser);
+
+    const usersSaved: User[] = [];
+    for (let i = 0; i < this.howMuchUsers; i++) {
+      usersSaved.push(userRepository.create(userFactoryData()));
+    }
+    await Promise.all(usersSaved.map((user) => userRepository.save(user)));
+
+    return { adminUser, usersSaved };
+  }
+
+  private createAdmin(userRepository: Repository<User>) {
+    return userRepository.create({
       id: this.id,
       name: this.name,
       role: this.role,
@@ -29,10 +54,5 @@ export default class UserSeeder implements Seeder {
       updatedAt: new Date(),
       deletedAt: null,
     });
-    await userRepository.save(adminUser);
-
-    const usersSaved = await userFactory.saveMany(this.howMuchUsers);
-
-    return { adminUser, usersSaved };
   }
 }

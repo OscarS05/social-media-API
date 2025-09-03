@@ -3,15 +3,16 @@ import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
 import { Auth } from '../../../modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
-import { AuthProvider } from 'src/modules/identity/auth/domain/entities/providers.enum';
+import { AuthProvider } from '../../../modules/identity/auth/domain/entities/providers.enum';
 
 const providers = [AuthProvider.FACEBOOK, AuthProvider.LOCAL];
 const rounds = parseInt(process.env.ROUNDS_HASH_PASSWORD ?? '10', 10);
 
-export default setSeederFactory(Auth, () => {
+export const authFactoryData = (userId?: string | null) => {
   const auth = new Auth();
   auth.id = faker.string.uuid();
-  // auth.email = faker.internet.email();
+  auth.userId = userId || faker.string.uuid();
+  auth.email = faker.internet.email();
   auth.password = bcrypt.hashSync('password', rounds);
   auth.isVerified = faker.datatype.boolean();
   auth.provider = faker.helpers.arrayElement(providers);
@@ -27,4 +28,8 @@ export default setSeederFactory(Auth, () => {
       : faker.date.between({ from: auth.createdAt, to: new Date() });
 
   return auth;
+};
+
+export const authFactory = setSeederFactory(Auth, () => {
+  return authFactoryData();
 });

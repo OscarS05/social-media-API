@@ -20,5 +20,6 @@ export async function createTestApp(): Promise<INestApplication> {
   );
 
   await app.init();
+
   return app;
 }

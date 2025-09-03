@@ -1,11 +1,14 @@
 import { INestApplication } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 import { createTestApp } from '../app.e2e';
-import UserFactory from '../../../src/shared/database/factories/user.factory';
+import MainSeeder from '../../../src/shared/database/seeders/app.seeder';
+import { Auth } from '../../../src/modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
+import { User } from '../../../src/modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 
 describe('Auth e2e - identity/auth', () => {
   let app: INestApplication;
-  let userAdmin;
+  let userData: { adminUser: User; authAdmin: Auth };
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -15,9 +18,15 @@ describe('Auth e2e - identity/auth', () => {
     await app.close();
   });
 
-  // beforeEach(async () => {
-  //   userAdmin = await UserFactory.;
-  // });
+  beforeAll(async () => {
+    const dataSource = app.get(DataSource);
+    userData = await new MainSeeder().runTestSeeders(dataSource);
+  });
+
+  it('test db', () => {
+    console.log(userData);
+    expect(userData.adminUser).toEqual(expect.objectContaining({ name: 'admin-test' }));
+  });
 
   // it('POST /auth/login -> returns access token with correct credentials', async () => {
   //   const res = await request(app.getHttpServer())
