@@ -10,21 +10,30 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
+  @ApiProperty({ description: 'The id of the user', example: '1319-4c9a-1319-' })
   @PrimaryColumn('varchar', { length: 36 })
   id: string;
 
+  @ApiProperty({ description: 'The user name' })
   @Column('varchar', { length: 255 })
   name: string;
 
+  @ApiProperty({ description: 'The user role', example: Roles.MEMBER })
   @Column({ type: 'enum', enum: Roles, default: Roles.MEMBER })
   role: Roles;
 
+  @ApiProperty({
+    description: 'The date the user authentication method was deleted',
+    example: null,
+  })
   @Column('timestamp', { name: 'deleted_at', nullable: true, precision: 0 })
   deletedAt?: Date | null;
 
+  @ApiProperty({ description: 'The date the user authentication method was created' })
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
@@ -33,6 +42,7 @@ export class User extends BaseEntity {
   })
   createdAt: Date;
 
+  @ApiProperty({ description: 'The date the user authentication method was updated' })
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
