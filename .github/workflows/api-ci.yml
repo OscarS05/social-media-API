@@ -70,17 +70,17 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # DB configuration
-      MYSQL_HOST: localhost
-      MYSQL_PORT: 3306
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
-      MYSQL_NAME: social_network_e2e
+      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       # App configuration
       ROUNDS_HASH_PASSWORD: 10
-      ACCESS_SECRET: access-test
-      ACCESS_EXPIRES_IN: 1h
-      REFRESH_SECRET: refresh-test
-      REFRESH_EXPIRES_IN: 1d
+      ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
+      ACCESS_EXPIRES_IN: ${{ secrets.ACCESS_EXPIRES_IN }}
+      REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
+      REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }}
 
     services:
       mysql-e2e:
@@ -88,12 +88,12 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_NAME: social_network_e2e
-          MYSQL_USER: user
-          MYSQL_PASSWORD: userpassword
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           MYSQL_ROOT_PASSWORD: rootpassword
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -uroot -p${{ secrets.MYSQL_ROOT_PASSWORD }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
@@ -112,12 +112,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for MySQL
+      - name: Install MySQL client (needed for mysqladmin/mysql CLI)
         run: |
-          while ! mysqladmin ping -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" --silent; do
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
+          sudo apt-get update
+          sudo apt-get install -y default-mysql-client
 
       - name: Init database
         run: npm run migrations:run:test
