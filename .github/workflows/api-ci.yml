@@ -120,7 +120,7 @@ jobs:
           sudo apt-get install -y default-mysql-client
 
       - name: Init database
-        run: npm run migrations:run:test
+        run: MYSQL_HOST=mysql-e2e npm run migrations:run:test
 
       - name: Run E2E tests
         run: npm run test:e2e
