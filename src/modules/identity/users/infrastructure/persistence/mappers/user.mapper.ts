@@ -6,6 +6,7 @@ export class UserMapper {
     return new UserEntity(
       ormEntity.id,
       ormEntity.name,
+      ormEntity.role,
       ormEntity.createdAt,
       ormEntity.updatedAt,
       ormEntity.deletedAt,

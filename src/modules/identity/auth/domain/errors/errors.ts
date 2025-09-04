@@ -25,3 +25,10 @@ export class EmailAlreadyInUseError extends DomainError {
     this.name = 'EmailAlreadyInUseError';
   }
 }
+
+export class InvalidEmailError extends DomainError {
+  constructor() {
+    super('Invalid email.');
+    this.name = 'InvalidEmailError';
+  }
+}
