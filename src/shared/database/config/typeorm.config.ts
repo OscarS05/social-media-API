@@ -6,7 +6,7 @@ config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' });
 
 export const typeOrmConfig: DataSourceOptions & SeederOptions = {
   type: 'mysql',
-  host: process.env.MYSQL_HOST,
+  host: process.env.CI ? 'mysql-e2e' : process.env.MYSQL_HOST,
   port: parseInt(process.env.MYSQL_PORT || '3306', 10),
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,

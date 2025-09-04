@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # DB configuration
-      MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+      MYSQL_HOST: mysql-e2e
       MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
@@ -119,7 +119,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y default-mysql-client
 
-      - name: Init database
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in $(seq 1 30); do
+            mysqladmin ping -h mysql-e2e -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} && break
+            echo "Waiting for mysql..."
+            sleep 2
+          done
+
+      - name: Run migrations
         run: MYSQL_HOST=mysql-e2e npm run migrations:run:test
 
       - name: Run E2E tests
