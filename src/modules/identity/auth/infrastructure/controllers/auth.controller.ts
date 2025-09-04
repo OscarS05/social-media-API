@@ -9,6 +9,7 @@ import { LoginDto, RegisterDto } from '../dtos/auth.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../persistence/db/entites/auth.orm-entity';
 import { User } from '../../../users/infrastructure/persistence/db/entities/user.orm-entity';
+import { mapDomainErrorToHttp } from '../mappers/error.mapper';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +43,11 @@ export class AuthController {
     type: User,
   })
   @Post('register')
-  register(@Body() body: RegisterDto) {
-    return this.registerUseCase.execute(body.name, body.email, body.password);
+  async register(@Body() body: RegisterDto) {
+    try {
+      return await this.registerUseCase.execute(body.name, body.email, body.password);
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
   }
 }

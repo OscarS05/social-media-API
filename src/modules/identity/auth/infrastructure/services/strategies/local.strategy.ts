@@ -5,6 +5,7 @@ import { LoginUseCase } from '../../../application/use-cases/Login.usecase';
 import { plainToInstance } from 'class-transformer';
 import { LoginDto } from '../../dtos/auth.dto';
 import { validate, ValidationError } from 'class-validator';
+import { mapDomainErrorToHttp } from '../../mappers/error.mapper';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
@@ -16,10 +17,14 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   }
 
   async validate(email: string, password: string) {
-    await this.validateData(email, password);
+    try {
+      await this.validateData(email, password);
 
-    const { user } = await this.loginUseCase.execute(email, password);
-    return user;
+      const { user } = await this.loginUseCase.execute(email, password);
+      return user;
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
   }
 
   async validateData(email: string, password: string) {

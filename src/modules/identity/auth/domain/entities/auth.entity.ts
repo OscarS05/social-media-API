@@ -1,9 +1,9 @@
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-} from '@nestjs/common';
 import { AuthProvider } from './providers.enum';
+import {
+  AccountNotVerifiedError,
+  EmailAlreadyInUseError,
+  InvalidProviderError,
+} from '../errors/errors';
 
 export class AuthEntity {
   constructor(
@@ -22,20 +22,18 @@ export class AuthEntity {
   ) {}
 
   ensureVerified(): void {
-    if (!this.isVerified) {
-      throw new ForbiddenException('Account not verified. Please verify your email.');
-    }
+    if (!this.isVerified) throw new AccountNotVerifiedError();
   }
 
   ensureValidProvider(): void {
     if (this.provider !== AuthProvider.LOCAL && this.password !== null) {
-      throw new BadRequestException('Non-local accounts cannot have a password.');
+      throw new InvalidProviderError();
     }
   }
 
   existsEmailToRegister(): void {
     if (this.email && !this.deletedAt) {
-      throw new ConflictException('Email already in use');
+      throw new EmailAlreadyInUseError();
     }
   }
 }

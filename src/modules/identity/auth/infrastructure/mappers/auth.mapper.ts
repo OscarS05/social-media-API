@@ -1,5 +1,5 @@
-import { AuthEntity } from '../../../domain/entities/auth.entity';
-import { Auth as AuthOrmEntity } from '../db/entites/auth.orm-entity';
+import { AuthEntity } from '../../domain/entities/auth.entity';
+import { Auth as AuthOrmEntity } from '../persistence/db/entites/auth.orm-entity';
 
 export class AuthMapper {
   static toDomain(ormEntity: AuthOrmEntity): AuthEntity {

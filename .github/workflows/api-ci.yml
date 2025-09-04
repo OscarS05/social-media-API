@@ -70,8 +70,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # DB configuration
-      MYSQL_HOST: mysql-e2e
-      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: 3306
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
@@ -88,8 +88,8 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MYSQL_HOST: mysql-e2e
-          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: 3306
           MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
@@ -122,13 +122,13 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           for i in $(seq 1 30); do
-            mysqladmin ping -h mysql-e2e -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} && break
-            echo "Waiting for mysql..."
+            mysqladmin ping -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} && break
+            echo "Waiting for mysql on 127.0.0.1:3306"
             sleep 2
           done
 
       - name: Run migrations
-        run: MYSQL_HOST=mysql-e2e npm run migrations:run:test
+        run: npm run migrations:run:test
 
       - name: Run E2E tests
         run: npm run test:e2e
