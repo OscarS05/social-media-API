@@ -88,6 +88,8 @@ jobs:
         ports:
           - 3306:3306
         env:
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
           MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
