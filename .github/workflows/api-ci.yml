@@ -75,6 +75,7 @@ jobs:
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
       # App configuration
       ROUNDS_HASH_PASSWORD: 10
       ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
@@ -91,6 +92,7 @@ jobs:
           MYSQL_HOST: 127.0.0.1
           MYSQL_PORT: 3306
           MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
           MYSQL_USER: ${{ secrets.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
@@ -126,6 +128,14 @@ jobs:
             echo "Waiting for mysql on 127.0.0.1:3306"
             sleep 2
           done
+
+      - name: Ensure database exists and grant privileges
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
+            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`; \
+            CREATE USER IF NOT EXISTS '${{ secrets.MYSQL_USER }}'@'%' IDENTIFIED BY '${{ secrets.MYSQL_PASSWORD }}'; \
+            GRANT ALL PRIVILEGES ON \`${{ secrets.MYSQL_NAME }}\`.* TO '${{ secrets.MYSQL_USER }}'@'%'; \
+            FLUSH PRIVILEGES;"
 
       - name: Run migrations
         run: npm run migrations:run:test

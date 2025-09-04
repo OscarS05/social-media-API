@@ -1,10 +1,10 @@
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-} from '@nestjs/common';
 import { AuthEntity } from '../../../../../../src/modules/identity/auth/domain/entities/auth.entity';
 import { AuthProvider } from '../../../../../../src/modules/identity/auth/domain/entities/providers.enum';
+import {
+  AccountNotVerifiedError,
+  EmailAlreadyInUseError,
+  InvalidProviderError,
+} from '../../../../../../src/modules/identity/auth/domain/errors/errors';
 
 describe('Auth Entity', () => {
   const now: Date = new Date();
@@ -41,7 +41,7 @@ describe('Auth Entity', () => {
   });
 
   it('should throw an error if the user account is not yet verified', () => {
-    expect(() => auth.ensureVerified()).toThrow(ForbiddenException);
+    expect(() => auth.ensureVerified()).toThrow(AccountNotVerifiedError);
   });
 
   it('should not throw an error if the user account is already verified', () => {
@@ -53,7 +53,7 @@ describe('Auth Entity', () => {
   it('should throw an error if the user provider is not local', () => {
     auth.provider = AuthProvider.GOOGLE;
 
-    expect(() => auth.ensureValidProvider()).toThrow(BadRequestException);
+    expect(() => auth.ensureValidProvider()).toThrow(InvalidProviderError);
   });
 
   it('should not throw an error if the user provider is local', () => {
@@ -61,7 +61,7 @@ describe('Auth Entity', () => {
   });
 
   it('should throw an error if the email to register already exists', () => {
-    expect(() => auth.existsEmailToRegister()).toThrow(ConflictException);
+    expect(() => auth.existsEmailToRegister()).toThrow(EmailAlreadyInUseError);
   });
 
   it('should not throw an error if the email to register does not exists by soft delete', () => {
