@@ -3,14 +3,15 @@ import { CreateUserUseCase } from '../../../../../../src/modules/identity/users/
 import { UserRepositoryMock } from '../../infrastructure/adapters/db/user.repository';
 import { UuidServiceMock } from '../../infrastructure/adapters/services/uuid.service';
 import { userModule as module } from '../../user.module';
+import { InvalidNameError } from '../../../../../../src/modules/identity/users/domain/errors/errors';
 
 describe('CreateUserUseCase', () => {
   let usecase: CreateUserUseCase;
   let userRepository: UserRepositoryMock;
   let uuidServiceMock: UuidServiceMock;
 
-  const userId = '123';
-  const name = 'test';
+  const userId = '616ecf71-eec3-4436-9821-078cb141d0ac';
+  let name = 'test admin';
   const role = 'member';
   const now = expect.any(Date) as Date;
 
@@ -47,5 +48,11 @@ describe('CreateUserUseCase', () => {
     userRepository.createUser.mockResolvedValue(null);
 
     await expect(usecase.execute(name)).rejects.toThrow(InternalServerErrorException);
+  });
+
+  it('should throw an error because the name is invalid', async () => {
+    name = 'SELECT * FROM auth;';
+
+    await expect(usecase.execute(name)).rejects.toThrow(InvalidNameError);
   });
 });
