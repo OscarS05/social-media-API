@@ -18,7 +18,10 @@ export class AuthController {
     private readonly generateTokens: GenerateTokensUseCase,
   ) {}
 
-  @ApiOperation({ summary: 'Login with local strategy' })
+  @ApiOperation({
+    summary: 'Login with local strategy',
+    description: 'Login with local strategy',
+  })
   @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
@@ -36,7 +39,10 @@ export class AuthController {
     };
   }
 
-  @ApiOperation({ summary: 'Register with local strategy' })
+  @ApiOperation({
+    summary: 'Register with local strategy',
+    description: 'User registration creates the user and his/her authentication',
+  })
   @ApiResponse({
     status: 201,
     description: 'Information about the saved user',

@@ -6,6 +6,6 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6)
   @MaxLength(30)
-  @ApiProperty({ description: 'user email' })
+  @ApiProperty({ description: 'user name' })
   name: string;
 }
