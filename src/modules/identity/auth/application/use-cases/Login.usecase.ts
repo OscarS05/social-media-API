@@ -17,12 +17,12 @@ export class LoginUseCase {
 
     authEntity.ensureValidProvider();
 
-    await this.validPassword(password, authEntity.password ?? '');
+    await this.validPassword(password, authEntity.getPassword ?? '');
 
     authEntity.ensureVerified();
 
     return {
-      user: { ...authEntity.user, email: authEntity.email as string } as UserEntity,
+      user: { ...authEntity.user, email: authEntity.getEmail as string } as UserEntity,
     };
   }
 

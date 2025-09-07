@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 
 import { Auth } from '../../../modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
-import { AuthProvider } from '../../../modules/identity/auth/domain/entities/providers.enum';
+import { AuthProvider } from '../../../modules/identity/auth/domain/enums/providers.enum';
 
 const providers = [AuthProvider.FACEBOOK, AuthProvider.LOCAL];
 const rounds = parseInt(process.env.ROUNDS_HASH_PASSWORD ?? '10', 10);

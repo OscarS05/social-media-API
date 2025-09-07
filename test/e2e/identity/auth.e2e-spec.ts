@@ -15,6 +15,8 @@ describe('Auth e2e - identity/auth', () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let email: string;
+  let name: string;
+  let password: string;
 
   beforeAll(async () => {
     app = await createTestApp();
@@ -32,12 +34,13 @@ describe('Auth e2e - identity/auth', () => {
   describe('POST /auth/login', () => {
     beforeEach(() => {
       email = 'admin@test.com';
+      password = 'password';
     });
 
     it('returns access token with correct credentials', async () => {
       const res = await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email, password: 'password' })
+        .send({ email, password })
         .expect(200);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -70,12 +73,14 @@ describe('Auth e2e - identity/auth', () => {
   describe('POST /auth/register', () => {
     beforeEach(() => {
       email = 'admin2@test.com';
+      name = 'test admin';
+      password = 'Password@1';
     });
 
     it('returns a new user with 201', async () => {
       const res = await request(app.getHttpServer())
         .post('/auth/register')
-        .send({ name: 'test', email, password: 'password' })
+        .send({ name, email, password })
         .expect(201);
 
       const authRepo = dataSource.getRepository(Auth);
@@ -85,8 +90,8 @@ describe('Auth e2e - identity/auth', () => {
       expect(res.body.user).toHaveProperty('name');
 
       expect(auth).toBeTruthy();
-      expect(auth!.password).not.toBe('password');
-      const isValid = await bcrypt.compare('password', auth!.password!);
+      expect(auth!.password).not.toBe(password);
+      const isValid = await bcrypt.compare(password, auth!.password!);
       expect(isValid).toBe(true);
     });
 

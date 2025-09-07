@@ -1,16 +1,15 @@
 import { InvalidIdError } from '../errors/errors';
 
-export class UserIdVO {
+export class AuthIdVO {
   constructor(private readonly value: string) {
     this.value = value.trim();
-
     if (!this.isValid()) {
       throw new InvalidIdError();
     }
   }
 
   public get(): string {
-    return this.value.trim();
+    return this.value;
   }
 
   private isValid(): boolean {

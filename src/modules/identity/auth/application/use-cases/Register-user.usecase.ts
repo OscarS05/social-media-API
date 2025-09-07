@@ -5,9 +5,9 @@ import type { createUserPort } from '../../domain/ports/createUser.port';
 import type { IUuidService } from '../../domain/services/uuid.service';
 import type { IHasherService } from '../../domain/services/password-hasher.service';
 import { AuthEntity } from '../../domain/entities/auth.entity';
-import { AuthIdVO } from '../../domain/entities/authId.value-object';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { AuthProvider } from '../../domain/entities/providers.enum';
+import { AuthProvider } from '../../domain/enums/providers.enum';
+import { PasswordVO } from '../../domain/value-objects/password.vo';
 
 @Injectable()
 export class RegisterUserUseCase {
@@ -27,8 +27,7 @@ export class RegisterUserUseCase {
     const user: UserEntity = await this.createUser(name);
 
     const auth: AuthEntity = await this.createAuth(user.id, email, password);
-
-    return { user: { ...user, email: auth.email as string } };
+    return { user: { ...user, email: auth.getEmail as string } };
   }
 
   private async emailExists(email: string): Promise<void | true> {
@@ -59,7 +58,6 @@ export class RegisterUserUseCase {
     if (!createdAuth) {
       throw new InternalServerErrorException('Something went wrong');
     }
-
     return createdAuth;
   }
 
@@ -68,9 +66,13 @@ export class RegisterUserUseCase {
     email: string,
     password: string,
   ): Promise<AuthEntity> {
-    const authId: string = new AuthIdVO(this.uuidService).generateId();
+    const authId: string = this.uuidService.generateId();
+    const plainPassValidated = new PasswordVO(password).isValidPlainPass();
     const roundsToHash = Number(process.env.ROUNDS_HASH_PASSWORD) || 10;
-    const passwordHashed: string = await this.passwordHasher.hash(password, roundsToHash);
+    const passwordHashed: string = await this.passwordHasher.hash(
+      plainPassValidated,
+      roundsToHash,
+    );
     const now = new Date();
 
     return new AuthEntity(

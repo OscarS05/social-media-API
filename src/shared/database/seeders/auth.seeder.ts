@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 
 import { User } from '../../../modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
 import { Auth } from '../../../modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
-import { AuthProvider } from '../../../modules/identity/auth/domain/entities/providers.enum';
+import { AuthProvider } from '../../../modules/identity/auth/domain/enums/providers.enum';
 import { authFactoryData } from '../factories/auth.factory';
 
 const rounds = parseInt(process.env.ROUNDS_HASH_PASSWORD ?? '10', 10);
@@ -14,7 +14,7 @@ export default class AuthSeeder implements Seeder {
     private adminUser: User,
     private usersSaved: User[] = [],
     private howMuchAuthxUser: number = 1,
-    private id: string = 'test-auth-admin-id',
+    private id: string = 'd883878e-16cf-47f4-87b3-670566abe41e',
     private email: string = 'admin@test.com',
     private plainPassword: string = 'password',
   ) {}

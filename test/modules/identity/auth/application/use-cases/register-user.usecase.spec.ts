@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { RegisterUserUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/Register-user.usecase';
-import { IAuthRepositoryMock } from '../../domain/repositories/auth.repository';
-import { CreateUserPortMock } from '../../domain/ports/createUser.port';
-import { IUuidServiceMock } from '../../domain/services/uuid.service';
-import { IHasherServiceMock } from '../../domain/services/hasher.service';
+import { IAuthRepositoryMock } from '../../infrastructure/adapters/repositories/auth.repository';
+import { CreateUserPortMock } from '../../infrastructure/adapters/services/createUser.port';
+import { IUuidServiceMock } from '../../infrastructure/adapters/services/uuid.service';
+import { IHasherServiceMock } from '../../infrastructure/adapters/services/hasher.service';
 import { InternalServerErrorException } from '@nestjs/common';
+import { authModule } from '../../auth.module-mock';
 
 describe('RegisterUserUseCase', () => {
   let usecase: RegisterUserUseCase;
@@ -13,23 +13,15 @@ describe('RegisterUserUseCase', () => {
   let uuidServiceMock: IUuidServiceMock;
   let hasherServiceMock: IHasherServiceMock;
 
-  const name = 'test';
+  const name = 'test admin';
   const email = 'test@email.com';
-  const password = 'password';
-  const passHashed = 'pass-hashed';
-  const authId = 'uuid-123';
-  const userId = '123';
+  const password = 'Password@123';
+  const passHashed = '$2b$10$HlQ2Y8102RDYvJQvINaJ6e.VfFgl4MhRTFcoIGC5vHTjx1r8sQm5S';
+  const authId = 'd883878e-16cf-47f4-87b3-670566abe41e';
+  const userId = 'd883878e-16cf-47f4-87b3-670566abe41e';
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        { provide: 'IAuthRepository', useClass: IAuthRepositoryMock },
-        { provide: 'CreateUserPort', useClass: CreateUserPortMock },
-        { provide: 'IUuidService', useClass: IUuidServiceMock },
-        { provide: 'IHasherService', useClass: IHasherServiceMock },
-        RegisterUserUseCase,
-      ],
-    }).compile();
+    const module = await authModule;
 
     usecase = module.get<RegisterUserUseCase>(RegisterUserUseCase);
     authRepository = module.get('IAuthRepository');
@@ -42,8 +34,11 @@ describe('RegisterUserUseCase', () => {
       deletedAt: 'date',
       existsEmailToRegister: jest.fn().mockReturnValue(true),
     });
-    authRepository.createAuth.mockResolvedValue({ email });
-    createUserPortMock.execute.mockResolvedValue({ id: userId, name: 'test' });
+    authRepository.createAuth.mockResolvedValue({
+      email,
+      getEmail: email,
+    });
+    createUserPortMock.execute.mockResolvedValue({ id: userId, name });
     uuidServiceMock.generateId.mockReturnValue(authId);
     hasherServiceMock.hash.mockResolvedValue(passHashed);
   });

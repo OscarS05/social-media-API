@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { LoginUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/Login.usecase';
-import { IAuthRepositoryMock } from '../../domain/repositories/auth.repository';
-import { IHasherServiceMock } from '../../domain/services/hasher.service';
+import { IAuthRepositoryMock } from '../../infrastructure/adapters/repositories/auth.repository';
+import { IHasherServiceMock } from '../../infrastructure/adapters/services/hasher.service';
 import { UnauthorizedException } from '@nestjs/common';
+import { authModule } from '../../auth.module-mock';
 
 describe('LoginUseCase', () => {
   let usecase: LoginUseCase;
@@ -18,16 +18,9 @@ describe('LoginUseCase', () => {
   const authId = 'uuid-123';
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        { provide: 'IAuthRepository', useClass: IAuthRepositoryMock },
-        { provide: 'IHasherService', useClass: IHasherServiceMock },
-        LoginUseCase,
-      ],
-    }).compile();
+    const module = await authModule;
 
     usecase = module.get<LoginUseCase>(LoginUseCase);
-
     authRepository = module.get('IAuthRepository');
     hasherServiceMock = module.get('IHasherService');
   });
@@ -43,6 +36,8 @@ describe('LoginUseCase', () => {
       ensureValidProvider: () => true,
       ensureVerified: () => true,
       user: { id: userId, name, role },
+      getPassword: passHashed,
+      getEmail: email,
     });
     hasherServiceMock.compare.mockResolvedValue(true);
   });

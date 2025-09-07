@@ -10,7 +10,7 @@ import {
   Unique,
   UpdateDateColumn,
 } from 'typeorm';
-import { AuthProvider } from '../../../../domain/entities/providers.enum';
+import { AuthProvider } from '../../../../domain/enums/providers.enum';
 import { User } from '../../../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';

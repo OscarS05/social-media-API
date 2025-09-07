@@ -32,3 +32,17 @@ export class InvalidEmailError extends DomainError {
     this.name = 'InvalidEmailError';
   }
 }
+
+export class InvalidIdError extends DomainError {
+  constructor() {
+    super('Invalid id');
+    this.name = 'InvalidIdError';
+  }
+}
+
+export class InvalidPasswordError extends DomainError {
+  constructor() {
+    super('Invalid password');
+    this.name = 'InvalidPasswordError';
+  }
+}

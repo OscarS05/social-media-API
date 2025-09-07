@@ -10,7 +10,7 @@ type UserSeederResult = { adminUser: User; usersSaved: User[] };
 export default class UserSeeder implements Seeder {
   constructor(
     private howMuchUsers: number = 10,
-    private id: string = 'test-user-id',
+    private id: string = '70a35f48-3335-454a-833f-4b359e3c658a',
     private name: string = 'admin-test',
     private role: Roles = Roles.ADMIN,
   ) {}

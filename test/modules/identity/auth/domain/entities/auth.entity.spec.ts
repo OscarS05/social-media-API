@@ -1,46 +1,59 @@
 import { AuthEntity } from '../../../../../../src/modules/identity/auth/domain/entities/auth.entity';
-import { AuthProvider } from '../../../../../../src/modules/identity/auth/domain/entities/providers.enum';
+import { AuthProvider } from '../../../../../../src/modules/identity/auth/domain/enums/providers.enum';
 import {
   AccountNotVerifiedError,
   EmailAlreadyInUseError,
+  InvalidEmailError,
+  InvalidIdError,
+  InvalidPasswordError,
   InvalidProviderError,
 } from '../../../../../../src/modules/identity/auth/domain/errors/errors';
 
 describe('Auth Entity', () => {
   const now: Date = new Date();
   let auth: AuthEntity;
+  const authId: string = '10346550-dfaa-4b2f-add6-21743b37db10';
+  const userId: string = 'd883878e-16cf-47f4-87b3-670566abe41e';
+  const provider = AuthProvider.LOCAL;
+  const isVerified: boolean = true;
+  const createdAt: Date = now;
+  const updatedAt: Date = now;
+  const email: string = 'email@test.com';
+  const password: string = '$2b$10$NhWYk4wG.q2//UkuKEvqE.74C5fw/2Z9Xs0MOzmpCKv/P5d3UpYNu';
 
   beforeEach(() => {
     auth = new AuthEntity(
-      'id123',
-      'userId123',
-      AuthProvider.LOCAL,
-      false,
-      now,
-      now,
-      'oscar@test.com',
-      'passwordHashed',
+      authId,
+      userId,
+      provider,
+      isVerified,
+      createdAt,
+      updatedAt,
+      email,
+      password,
       null,
       null,
       null,
     );
   });
 
-  it('should create a user with valid data', () => {
-    expect(auth.id).toBe('id123');
-    expect(auth.userId).toBe('userId123');
-    expect(auth.provider).toBe('local');
-    expect(auth.isVerified).toBe(false);
+  it('should contain the user data successfully', () => {
+    auth.deletedAt = now;
+    expect(auth.getId).toBe(authId);
+    expect(auth.getUserId).toBe(userId);
+    expect(auth.provider).toBe(provider);
+    expect(auth.isVerified).toBe(isVerified);
     expect(auth.createdAt).toBe(now);
     expect(auth.updatedAt).toBe(now);
-    expect(auth.email).toBe('oscar@test.com');
-    expect(auth.password).toBe('passwordHashed');
-    expect(auth.deletedAt).toBe(null);
+    expect(auth.getEmail).toBe(email);
+    expect(auth.getPassword).toBe(password);
+    expect(auth.deletedAt).toBe(now);
     expect(auth.providerUserId).toBe(null);
     expect(auth.resetToken).toBe(null);
   });
 
   it('should throw an error if the user account is not yet verified', () => {
+    auth.isVerified = false;
     expect(() => auth.ensureVerified()).toThrow(AccountNotVerifiedError);
   });
 
@@ -69,8 +82,19 @@ describe('Auth Entity', () => {
     expect(() => auth.existsEmailToRegister()).not.toThrow();
   });
 
-  it('should not throw an error if the email to register does not exists', () => {
-    auth.email = null;
-    expect(() => auth.existsEmailToRegister()).not.toThrow();
+  it('should throw an error if the authId is invalid', () => {
+    expect(() => (auth.setId = 'test-uuid-123')).toThrow(InvalidIdError);
+  });
+
+  it('should throw an error if the userId is invalid', () => {
+    expect(() => (auth.setUserId = 'test-uuid-123')).toThrow(InvalidIdError);
+  });
+
+  it('should throw an error if the email is invalid', () => {
+    expect(() => (auth.setEmail = 'email@test')).toThrow(InvalidEmailError);
+  });
+
+  it('should throw an error if the password is invalid', () => {
+    expect(() => (auth.setPlainPass = 'password')).toThrow(InvalidPasswordError);
   });
 });

@@ -3,10 +3,9 @@ import { Auth as AuthOrmEntity } from '../persistence/db/entites/auth.orm-entity
 
 export class AuthMapper {
   static toDomain(ormEntity: AuthOrmEntity): AuthEntity {
-    // console.log(ormEntity);
     return new AuthEntity(
       ormEntity.id,
-      ormEntity.user?.id ?? '',
+      ormEntity.user?.id ?? ormEntity.userId ?? '',
       ormEntity.provider,
       ormEntity.isVerified,
       ormEntity.createdAt,
@@ -22,10 +21,10 @@ export class AuthMapper {
 
   static toOrm(domainEntity: AuthEntity): AuthOrmEntity {
     const orm = new AuthOrmEntity();
-    orm.id = domainEntity.id;
-    orm.userId = domainEntity.userId;
-    orm.email = domainEntity.email ?? null;
-    orm.password = domainEntity.password ?? null;
+    orm.id = domainEntity.getId;
+    orm.userId = domainEntity.getUserId;
+    orm.email = domainEntity.getEmail ?? null;
+    orm.password = domainEntity.getPassword ?? null;
     orm.provider = domainEntity.provider;
     orm.providerUserId = domainEntity.providerUserId ?? null;
     orm.resetToken = domainEntity.resetToken ?? null;
