@@ -67,12 +67,16 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request) {
-    const { user } = await this.registerUserWithGoogle.execute(
-      req.user as GoogleProvider,
-    );
-    return {
-      message: 'Google login success',
-      user,
-    };
+    try {
+      const { user } = await this.registerUserWithGoogle.execute(
+        req.user as GoogleProvider,
+      );
+      return {
+        message: 'Google login success',
+        user,
+      };
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
   }
 }

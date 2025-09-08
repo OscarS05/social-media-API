@@ -39,7 +39,7 @@ describe('RegisterUserWithGoogleUseCase', () => {
     });
     createUserPortMock.execute.mockResolvedValue({ id: userId, email, name, role });
     uuidServiceMock.generateId.mockReturnValue(authId);
-    googleProfile = { id: provider_user_id, email, name };
+    googleProfile = { providerId: provider_user_id, email, name };
   });
 
   afterEach(() => {

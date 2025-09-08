@@ -102,4 +102,26 @@ describe('Auth e2e - identity/auth', () => {
         .expect(400);
     });
   });
+
+  describe('Google strategy', () => {
+    beforeEach(() => {
+      email = 'admin@test.com';
+      name = 'test admin';
+      password = 'Password@1';
+    });
+
+    it('(GET) /auth/google should redirect (302)', async () => {
+      return request(app.getHttpServer()).get('/auth/google').expect(302);
+    });
+
+    it('(GET) /auth/google/callback should login', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/google/callback')
+        .expect(200);
+
+      expect(response.body.message).toBe('Google login success');
+      expect(response.body.user.email).toBe(email);
+      expect(response.body.user.name).toBe(name);
+    });
+  });
 });
