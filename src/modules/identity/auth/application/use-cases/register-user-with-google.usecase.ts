@@ -22,7 +22,6 @@ export class RegisterUserWithGoogleUseCase {
 
     const newUser: UserEntity = await this.createUser(googleProfile);
     const newAuth: AuthEntity = await this.createAuth(googleProfile, newUser.id);
-
     return {
       user: { ...newUser, email: newAuth.getEmail ?? '' },
     };
@@ -33,7 +32,7 @@ export class RegisterUserWithGoogleUseCase {
   ): Promise<{ user: UserEntity } | null> {
     const userAuth: AuthEntity | null = await this.authRepository.findByProviderId(
       AuthProvider.GOOGLE,
-      googleProfile.id,
+      googleProfile.providerId,
     );
 
     if (userAuth) {
@@ -73,12 +72,12 @@ export class RegisterUserWithGoogleUseCase {
       authId,
       userId,
       AuthProvider.GOOGLE,
-      true,
+      googleProfile.verified ?? true,
       now,
       now,
       googleProfile.email,
       null,
-      googleProfile.id,
+      googleProfile.providerId,
       null,
       null,
     );

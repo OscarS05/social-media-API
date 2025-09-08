@@ -1,6 +1,7 @@
 export type GoogleProvider = {
-  id: string;
+  providerId: string;
   name: string;
   email?: string;
+  verified?: boolean;
   avatar?: string;
 };

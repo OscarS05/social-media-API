@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { Auth } from './infrastructure/persistence/db/entites/auth.orm-entity';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { LocalStrategy } from './infrastructure/services/strategies/local.strategy';
+import { GoogleStrategy } from './infrastructure/services/strategies/google.strategy';
 import { LoginUseCase } from './application/use-cases/Login.usecase';
 import { RegisterUserUseCase } from './application/use-cases/Register-user.usecase';
 import { AuthRepository } from './infrastructure/persistence/db/auth.repository';
@@ -17,7 +18,6 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/shared/config/env.model';
 import { RegisterUserWithGoogleUseCase } from './application/use-cases/register-user-with-google.usecase';
-import { RegisterUserWithGoogleService } from './application/use-cases/register-user-with-google.service';
 
 @Module({
   imports: [
@@ -46,9 +46,9 @@ import { RegisterUserWithGoogleService } from './application/use-cases/register-
     LoginUseCase,
     RegisterUserUseCase,
     LocalStrategy,
+    GoogleStrategy,
     GenerateTokensUseCase,
     RegisterUserWithGoogleUseCase,
-    RegisterUserWithGoogleService,
   ],
 })
 export class AuthModule {}

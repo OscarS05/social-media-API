@@ -1,6 +1,9 @@
 import * as Joi from 'joi';
 
 export const validationSchema = Joi.object({
+  // App
+  PORT: Joi.number().required(),
+
   // DB
   MYSQL_HOST: Joi.string().required(),
   MYSQL_PORT: Joi.number().default(3306),
@@ -16,4 +19,8 @@ export const validationSchema = Joi.object({
   ACCESS_EXPIRES_IN: Joi.string().required(),
   REFRESH_SECRET: Joi.string().required(),
   REFRESH_EXPIRES_IN: Joi.string().required(),
+
+  // Google OAuth2.0
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
 });
