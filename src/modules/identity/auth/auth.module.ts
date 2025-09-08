@@ -18,6 +18,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/shared/config/env.model';
 import { RegisterUserWithGoogleUseCase } from './application/use-cases/register-user-with-google.usecase';
+import { RegisterUserWithFacebookUseCase } from './application/use-cases/register-user-with-facebook.usecase';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { RegisterUserWithGoogleUseCase } from './application/use-cases/register-
     GoogleStrategy,
     GenerateTokensUseCase,
     RegisterUserWithGoogleUseCase,
+    RegisterUserWithFacebookUseCase,
   ],
 })
 export class AuthModule {}

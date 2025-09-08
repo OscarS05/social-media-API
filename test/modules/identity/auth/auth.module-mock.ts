@@ -6,6 +6,7 @@ import { IHasherServiceMock } from './infrastructure/adapters/services/hasher.se
 import { CreateUserPortMock } from './infrastructure/adapters/services/createUser.port';
 import { LoginUseCase } from '../../../../src/modules/identity/auth/application/use-cases/Login.usecase';
 import { RegisterUserWithGoogleUseCase } from '../../../../src/modules/identity/auth/application/use-cases/register-user-with-google.usecase';
+import { RegisterUserWithFacebookUseCase } from '../../../../src/modules/identity/auth/application/use-cases/register-user-with-facebook.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   providers: [
@@ -16,5 +17,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     RegisterUserUseCase,
     LoginUseCase,
     RegisterUserWithGoogleUseCase,
+    RegisterUserWithFacebookUseCase,
   ],
 }).compile();
