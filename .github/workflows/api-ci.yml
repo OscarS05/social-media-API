@@ -82,6 +82,9 @@ jobs:
       ACCESS_EXPIRES_IN: ${{ secrets.ACCESS_EXPIRES_IN }}
       REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
       REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }}
+      # Google config
+      GOOGLE_CLIENT_ID: fake-value
+      GOOGLE_CLIENT_SECRET: fake-value
 
     services:
       mysql-e2e:
