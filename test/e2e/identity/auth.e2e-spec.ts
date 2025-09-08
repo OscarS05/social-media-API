@@ -124,4 +124,26 @@ describe('Auth e2e - identity/auth', () => {
       expect(response.body.user.name).toBe(name);
     });
   });
+
+  describe('Facebook strategy', () => {
+    beforeEach(() => {
+      email = 'admin@test.com';
+      name = 'test admin';
+      password = 'Password@1';
+    });
+
+    it('(GET) /auth/facebook should redirect (302)', async () => {
+      return request(app.getHttpServer()).get('/auth/facebook').expect(302);
+    });
+
+    it('(GET) /auth/facebook/callback should login', async () => {
+      const response = await request(app.getHttpServer())
+        .get('/auth/facebook/callback')
+        .expect(200);
+
+      expect(response.body.message).toBe('Facebook login successful');
+      expect(response.body.user.email).toBe(email);
+      expect(response.body.user.name).toBe(name);
+    });
+  });
 });

@@ -11,7 +11,9 @@ import { User } from '../../../users/infrastructure/persistence/db/entities/user
 import { mapDomainErrorToHttp } from '../mappers/error.mapper';
 import { RegisterUserWithGoogleUseCase } from '../../application/use-cases/register-user-with-google.usecase';
 import { GoogleProvider } from '../../domain/services/googleProvider.service';
-import { UserWrapperResponseDto } from 'src/modules/identity/users/infrastructure/dtos/user.dto';
+import { RegisterUserWithFacebookUseCase } from '../../application/use-cases/register-user-with-facebook.usecase';
+import { FacebookProvider } from '../../domain/services/facebookProvider.service';
+import { UserWrapperResponseDto } from '../../../users/infrastructure/dtos/user.dto';
 
 @Controller('auth')
 @ApiExtraModels(User)
@@ -20,6 +22,7 @@ export class AuthController {
     private readonly registerUseCase: RegisterUserUseCase,
     private readonly generateTokens: GenerateTokensUseCase,
     private readonly registerUserWithGoogle: RegisterUserWithGoogleUseCase,
+    private readonly registerUserWithFacebook: RegisterUserWithFacebookUseCase,
   ) {}
 
   @ApiOperation({
@@ -97,5 +100,40 @@ export class AuthController {
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }
+  }
+
+  @ApiOperation({
+    summary: 'Register/Login the user with Facebook strategy',
+    description: 'Redirect to Facebook authentication screen',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'User was redirected to Facebook authentication screen',
+  })
+  @Get('facebook')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuth() {}
+
+  @ApiOperation({
+    summary:
+      'Register/Login in to the app after the user has authenticated with Facebook',
+    description:
+      'Once the user has authenticated, the application validates the data returned by Facebook for login or register.',
+  })
+  @ApiResponse({
+    description: 'User was created or logged',
+    status: 200,
+    type: UserWrapperResponseDto,
+  })
+  @Get('facebook/callback')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookLoginCallback(@Req() req: Request) {
+    const { user } = await this.registerUserWithFacebook.execute(
+      req.user as FacebookProvider,
+    );
+    return {
+      message: 'Facebook login successful',
+      user,
+    };
   }
 }

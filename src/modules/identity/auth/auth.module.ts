@@ -19,6 +19,7 @@ import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/shared/config/env.model';
 import { RegisterUserWithGoogleUseCase } from './application/use-cases/register-user-with-google.usecase';
 import { RegisterUserWithFacebookUseCase } from './application/use-cases/register-user-with-facebook.usecase';
+import { FacebookStrategy } from './infrastructure/services/strategies/facebook.strategy';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { RegisterUserWithFacebookUseCase } from './application/use-cases/registe
     RegisterUserUseCase,
     LocalStrategy,
     GoogleStrategy,
+    FacebookStrategy,
     GenerateTokensUseCase,
     RegisterUserWithGoogleUseCase,
     RegisterUserWithFacebookUseCase,

@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 export const validationSchema = Joi.object({
   // App
   PORT: Joi.number().required(),
+  URL_CLIENT: Joi.string().required(),
 
   // DB
   MYSQL_HOST: Joi.string().required(),
@@ -23,4 +24,8 @@ export const validationSchema = Joi.object({
   // Google OAuth2.0
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
+
+  // Facebook OAuth2.0
+  FACEBOOK_CLIENT_ID: Joi.string().required(),
+  FACEBOOK_CLIENT_SECRET: Joi.string().required(),
 });

@@ -1,6 +1,7 @@
 export interface Env {
   // App
   PORT: number;
+  URL_CLIENT: string;
 
   // DB
   MYSQL_HOST: string;
@@ -21,4 +22,8 @@ export interface Env {
   // Google OAuth2.0
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+
+  // Facebook OAuth2.0
+  FACEBOOK_CLIENT_ID: string;
+  FACEBOOK_CLIENT_SECRET: string;
 }
