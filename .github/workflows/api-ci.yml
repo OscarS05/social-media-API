@@ -77,6 +77,7 @@ jobs:
       MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
       MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
       # App configuration
+      PORT: ${{ secrets.PORT }}
       ROUNDS_HASH_PASSWORD: 10
       ACCESS_SECRET: ${{ secrets.ACCESS_SECRET }}
       ACCESS_EXPIRES_IN: ${{ secrets.ACCESS_EXPIRES_IN }}

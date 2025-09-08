@@ -1,6 +1,6 @@
 export interface Env {
   // App
-  PORT: string;
+  PORT: number;
 
   // DB
   MYSQL_HOST: string;
