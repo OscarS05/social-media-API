@@ -6,14 +6,15 @@ import { UserEntity } from '../../domain/entities/user.entity';
 import { RegisterUserUseCase } from '../../application/use-cases/Register-user.usecase';
 import { GenerateTokensUseCase } from '../../application/use-cases/generate-tokens.usecase';
 import { LoginDto, RegisterDto } from '../dtos/auth.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Auth } from '../persistence/db/entites/auth.orm-entity';
+import { ApiBody, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { User } from '../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import { mapDomainErrorToHttp } from '../mappers/error.mapper';
 import { RegisterUserWithGoogleUseCase } from '../../application/use-cases/register-user-with-google.usecase';
 import { GoogleProvider } from '../../domain/services/googleProvider.service';
+import { UserWrapperResponseDto } from 'src/modules/identity/users/infrastructure/dtos/user.dto';
 
 @Controller('auth')
+@ApiExtraModels(User)
 export class AuthController {
   constructor(
     private readonly registerUseCase: RegisterUserUseCase,
@@ -29,7 +30,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Information about the logged user',
-    type: Auth,
+    type: UserWrapperResponseDto,
   })
   @Post('login')
   @UseGuards(AuthGuard('local'))
@@ -49,7 +50,7 @@ export class AuthController {
   @ApiResponse({
     status: 201,
     description: 'Information about the saved user',
-    type: User,
+    type: UserWrapperResponseDto,
   })
   @Post('register')
   async register(@Body() body: RegisterDto) {
@@ -60,10 +61,28 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Register/Login the user with Google strategy',
+    description: 'Redirect to Google authentication screen',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'User was redirected to Google authentication screen',
+  })
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
 
+  @ApiOperation({
+    summary: 'Register/Login in to the app after the user has authenticated with Google',
+    description:
+      'Once the user has authenticated, the application validates the data returned by Google for login or register.',
+  })
+  @ApiResponse({
+    description: 'User was created or logged',
+    status: 200,
+    type: UserWrapperResponseDto,
+  })
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(@Req() req: Request) {
