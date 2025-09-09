@@ -1,4 +1,6 @@
 import { AuthIdVO } from '../value-objects/authId.vo';
+import { TokenHashedVO } from '../value-objects/tokenHashed.vo';
+import { UserAgentVO } from '../value-objects/userAgent.vo';
 
 export class RegreshTokenEntity {
   constructor(
@@ -14,5 +16,7 @@ export class RegreshTokenEntity {
   ) {
     this.id = new AuthIdVO(id).get();
     this.userId = new AuthIdVO(userId).get();
+    this.tokenHashed = new TokenHashedVO(tokenHashed).get();
+    this.userAgent = new UserAgentVO(userAgent).get();
   }
 }
