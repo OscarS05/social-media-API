@@ -19,9 +19,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
-    .setTitle('Blog API')
-    .setDescription('Blog API description')
+    .setTitle('Social-media API')
+    .setDescription(
+      'API RESTful y GraphQL para una red social. Implementa autenticación segura con OAuth2.0 y JWT, soporte para múltiples dispositivos, gestión de usuarios, perfiles, publicaciones, seguidores/seguidos, comentarios, likes, blocks, chat en tiempo real con WebSockets y notificaciones. Construida con NestJS, TypeScript y arquitectura hexagonal siguiendo principios de DDD.',
+    )
     .setVersion('1.0')
+    .setExternalDoc('GitHub - Repository', 'https://github.com/OscarS05/social-media-API')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
