@@ -3,7 +3,7 @@ import {
   AccountNotVerifiedError,
   EmailAlreadyInUseError,
   InvalidProviderError,
-} from '../errors/errors';
+} from '../errors/auth.errors';
 import { AuthIdVO } from '../value-objects/authId.vo';
 import { EmailVO } from '../value-objects/email.vo';
 import { PasswordVO } from '../value-objects/password.vo';

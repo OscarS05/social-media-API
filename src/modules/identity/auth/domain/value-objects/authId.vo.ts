@@ -1,4 +1,4 @@
-import { InvalidIdError } from '../errors/errors';
+import { InvalidIdError } from '../errors/auth.errors';
 
 export class AuthIdVO {
   constructor(private readonly value: string) {

@@ -1,4 +1,4 @@
-import { InvalidEmailError } from '../errors/errors';
+import { InvalidEmailError } from '../errors/auth.errors';
 
 export class EmailVO {
   constructor(private readonly value: string) {

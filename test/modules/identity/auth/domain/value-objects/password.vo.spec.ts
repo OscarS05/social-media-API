@@ -1,4 +1,4 @@
-import { InvalidPasswordError } from '../../../../../../src/modules/identity/auth/domain/errors/errors';
+import { InvalidPasswordError } from '../../../../../../src/modules/identity/auth/domain/errors/auth.errors';
 import { PasswordVO } from '../../../../../../src/modules/identity/auth/domain/value-objects/password.vo';
 
 describe('PasswordVO', () => {

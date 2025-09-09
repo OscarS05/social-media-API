@@ -1,4 +1,4 @@
-import { InvalidEmailError } from '../../../../../../src/modules/identity/auth/domain/errors/errors';
+import { InvalidEmailError } from '../../../../../../src/modules/identity/auth/domain/errors/auth.errors';
 import { EmailVO } from '../../../../../../src/modules/identity/auth/domain/value-objects/email.vo';
 
 describe('EmailVO', () => {

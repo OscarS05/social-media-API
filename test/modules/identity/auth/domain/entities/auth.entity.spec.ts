@@ -7,7 +7,7 @@ import {
   InvalidIdError,
   InvalidPasswordError,
   InvalidProviderError,
-} from '../../../../../../src/modules/identity/auth/domain/errors/errors';
+} from '../../../../../../src/modules/identity/auth/domain/errors/auth.errors';
 
 describe('Auth Entity', () => {
   const now: Date = new Date();

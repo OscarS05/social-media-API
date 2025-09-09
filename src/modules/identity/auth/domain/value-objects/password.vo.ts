@@ -1,4 +1,4 @@
-import { InvalidPasswordError } from '../errors/errors';
+import { InvalidPasswordError } from '../errors/auth.errors';
 
 export class PasswordVO {
   constructor(private readonly value: string) {

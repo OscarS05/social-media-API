@@ -1,4 +1,4 @@
-import { InvalidIdError } from '../../../../../../src/modules/identity/auth/domain/errors/errors';
+import { InvalidIdError } from '../../../../../../src/modules/identity/auth/domain/errors/auth.errors';
 import { AuthIdVO } from '../../../../../../src/modules/identity/auth/domain/value-objects/authId.vo';
 
 describe('AuthIdVO', () => {

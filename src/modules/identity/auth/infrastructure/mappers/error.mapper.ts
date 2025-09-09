@@ -11,7 +11,7 @@ import {
   InvalidEmailError,
   InvalidIdError,
   InvalidPasswordError,
-} from '../../domain/errors/errors';
+} from '../../domain/errors/auth.errors';
 
 export function mapDomainErrorToHttp(err: Error): any {
   if (err instanceof AccountNotVerifiedError) return new ForbiddenException(err.message);
