@@ -16,7 +16,7 @@ export class RefreshTokenEntity {
     private readonly userAgent: string,
     private readonly ipAddress: string,
     private revoked: boolean,
-    private readonly expiresAt: Date,
+    private expiresAt: Date,
     private readonly createdAt: Date,
     private updatedAt: Date,
   ) {
@@ -50,8 +50,23 @@ export class RefreshTokenEntity {
     }
   }
 
+  rotateToken(newTokenHashed: string, newExpiresAt: Date) {
+    this.tokenHashed = new TokenHashedVO(newTokenHashed).get();
+    this.expiresAt = new ExpiresAtVO(newExpiresAt).get();
+
+    if (this.revoked) this.revoked = false;
+  }
+
   get getRevoked(): boolean {
     return this.revoked;
+  }
+
+  get getTokenHashed(): string {
+    return this.tokenHashed;
+  }
+
+  get getExpiredAt(): Date {
+    return this.expiresAt;
   }
 
   get getUpdatedAt(): Date {

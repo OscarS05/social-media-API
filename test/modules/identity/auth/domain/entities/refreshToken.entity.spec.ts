@@ -136,4 +136,28 @@ describe('RefreshToken entity', () => {
       expect(() => refreshTokenEntityExpired.revoke()).not.toBe(true);
     });
   });
+
+  describe('rotateToken()', () => {
+    const newTokenHashed = '$2b$10$0GWTPtVry5FkAUv1giWosOZrYx9cIFArerYJ.2eTM5Nax54AO78ZW';
+    const date = new Date();
+    const newExpiration = date.setDate(now.getDate() + 30);
+
+    it('should return new data because the token was rotated successfully', () => {
+      refreshTokenEntity.rotateToken(newTokenHashed, new Date(newExpiration));
+
+      expect(refreshTokenEntity.getTokenHashed).toBe(newTokenHashed);
+      expect(refreshTokenEntity.getExpiredAt).toStrictEqual(new Date(newExpiration));
+    });
+
+    it('should reactivate token when rotating a revoked token', () => {
+      refreshTokenEntity.revoke();
+      expect(refreshTokenEntity.getRevoked).toBeTruthy();
+
+      refreshTokenEntity.rotateToken(newTokenHashed, new Date(newExpiration));
+
+      expect(refreshTokenEntity.getTokenHashed).toBe(newTokenHashed);
+      expect(refreshTokenEntity.getExpiredAt).toStrictEqual(new Date(newExpiration));
+      expect(refreshTokenEntity.getRevoked).toBeFalsy();
+    });
+  });
 });
