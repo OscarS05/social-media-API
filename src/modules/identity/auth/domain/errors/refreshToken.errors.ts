@@ -13,3 +13,10 @@ export class InvalidUserAgentError extends DomainError {
     this.name = 'InvalidUserAgentError';
   }
 }
+
+export class InvalidIPAddressError extends DomainError {
+  constructor(message: string) {
+    super(message ?? 'Invalid ip address');
+    this.name = 'InvalidIPAddressError';
+  }
+}

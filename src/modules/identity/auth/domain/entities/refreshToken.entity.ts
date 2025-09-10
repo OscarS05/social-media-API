@@ -1,4 +1,5 @@
 import { AuthIdVO } from '../value-objects/authId.vo';
+import { IPAddressVO } from '../value-objects/ipAddress.vo';
 import { TokenHashedVO } from '../value-objects/tokenHashed.vo';
 import { UserAgentVO } from '../value-objects/userAgent.vo';
 
@@ -18,5 +19,6 @@ export class RegreshTokenEntity {
     this.userId = new AuthIdVO(userId).get();
     this.tokenHashed = new TokenHashedVO(tokenHashed).get();
     this.userAgent = new UserAgentVO(userAgent).get();
+    this.ipAddress = new IPAddressVO(ipAddress).get();
   }
 }
