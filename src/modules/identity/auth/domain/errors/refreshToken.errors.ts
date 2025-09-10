@@ -27,3 +27,17 @@ export class InvalidExpiresAtError extends DomainError {
     this.name = 'InvalidExpiresAtError';
   }
 }
+
+export class RefreshTokenExpiredError extends DomainError {
+  constructor() {
+    super('Refresh token has expired');
+    this.name = 'RefreshTokenExpiredError';
+  }
+}
+
+export class RefreshTokenRevokedError extends DomainError {
+  constructor() {
+    super('Refresh token is revoked');
+    this.name = 'RefreshTokenRevokedError';
+  }
+}
