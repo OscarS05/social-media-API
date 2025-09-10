@@ -20,3 +20,10 @@ export class InvalidIPAddressError extends DomainError {
     this.name = 'InvalidIPAddressError';
   }
 }
+
+export class InvalidExpiresAtError extends DomainError {
+  constructor(message: string) {
+    super(message ?? 'Invalid ip address');
+    this.name = 'InvalidExpiresAtError';
+  }
+}
