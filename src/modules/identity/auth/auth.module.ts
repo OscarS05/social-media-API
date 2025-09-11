@@ -4,7 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-import { Auth } from './infrastructure/persistence/db/entites/auth.orm-entity';
+import { Auth as AuthOrm } from './infrastructure/persistence/db/entites/auth.orm-entity';
 import { AuthController } from './infrastructure/controllers/auth.controller';
 import { LocalStrategy } from './infrastructure/services/strategies/local.strategy';
 import { GoogleStrategy } from './infrastructure/services/strategies/google.strategy';
@@ -16,7 +16,7 @@ import { CreateUserUseCase } from '../users/application/use-cases/create-user.us
 import { UuidAdapter } from './infrastructure/services/security/uuid.service';
 import { UsersModule } from '../users/users.module';
 import { GenerateTokensUseCase } from './application/use-cases/auth/generate-tokens.usecase';
-import { Env } from 'src/shared/config/env.model';
+import { Env } from '../../../shared/config/env.model';
 import { RegisterUserWithGoogleUseCase } from './application/use-cases/auth/register-user-with-google.usecase';
 import { RegisterUserWithFacebookUseCase } from './application/use-cases/auth/register-user-with-facebook.usecase';
 import { FacebookStrategy } from './infrastructure/services/strategies/facebook.strategy';
@@ -24,10 +24,11 @@ import { CreateRefreshTokenUseCase } from './application/use-cases/refresh-token
 import { NetIpService } from './infrastructure/services/security/ipAddress.service';
 import { LibUserAgentService } from './infrastructure/services/security/userAgent.service';
 import { RefreshTokenRepository } from './infrastructure/persistence/db/repositories/refresh-token.repository';
+import { RefreshToken as RefreshTokenOrm } from './infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Auth]),
+    TypeOrmModule.forFeature([AuthOrm, RefreshTokenOrm]),
     PassportModule,
     UsersModule,
     JwtModule.registerAsync({

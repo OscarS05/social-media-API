@@ -21,7 +21,10 @@ export class RefreshToken extends BaseEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
   id: string;
 
-  @ManyToOne(() => User, (user) => user.refreshTokens, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.refreshTokens, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
