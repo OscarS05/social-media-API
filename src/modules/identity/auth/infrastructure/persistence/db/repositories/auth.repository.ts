@@ -1,10 +1,10 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { IAuthRepository } from '../../../domain/repositories/auth.repository';
-import { Auth, Auth as AuthOrm } from './entites/auth.orm-entity';
+import { IAuthRepository } from '../../../../domain/repositories/auth.repository';
+import { Auth, Auth as AuthOrm } from '../entites/auth.orm-entity';
 import { Repository } from 'typeorm';
-import { AuthEntity } from '../../../domain/entities/auth.entity';
-import { AuthMapper } from '../../mappers/auth.mapper';
-import { AuthProvider } from '../../../domain/enums/providers.enum';
+import { AuthEntity } from '../../../../domain/entities/auth.entity';
+import { AuthMapper } from '../../../mappers/auth.mapper';
+import { AuthProvider } from '../../../../domain/enums/providers.enum';
 
 export class AuthRepository implements IAuthRepository {
   constructor(
