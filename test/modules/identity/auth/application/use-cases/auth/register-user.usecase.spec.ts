@@ -1,10 +1,10 @@
-import { RegisterUserUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/Register-user.usecase';
-import { IAuthRepositoryMock } from '../../infrastructure/adapters/repositories/auth.repository';
-import { CreateUserPortMock } from '../../infrastructure/adapters/services/createUser.port';
-import { IUuidServiceMock } from '../../infrastructure/adapters/services/uuid.service';
-import { IHasherServiceMock } from '../../infrastructure/adapters/services/hasher.service';
+import { RegisterUserUseCase } from '../../../../../../../src/modules/identity/auth/application/use-cases/auth/Register-user.usecase';
+import { IAuthRepositoryMock } from '../../../infrastructure/adapters/repositories/auth.repository';
+import { CreateUserPortMock } from '../../../infrastructure/adapters/services/createUser.port';
+import { IUuidServiceMock } from '../../../infrastructure/adapters/services/uuid.service';
+import { IHasherServiceMock } from '../../../infrastructure/adapters/services/hasher.service';
 import { InternalServerErrorException } from '@nestjs/common';
-import { authModule } from '../../auth.module-mock';
+import { authModule } from '../../../auth.module-mock';
 
 describe('RegisterUserUseCase', () => {
   let usecase: RegisterUserUseCase;

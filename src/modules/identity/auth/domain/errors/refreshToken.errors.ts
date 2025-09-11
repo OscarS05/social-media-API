@@ -15,7 +15,7 @@ export class InvalidUserAgentError extends DomainError {
 }
 
 export class InvalidIPAddressError extends DomainError {
-  constructor(message: string) {
+  constructor(message?: string) {
     super(message ?? 'Invalid ip address');
     this.name = 'InvalidIPAddressError';
   }

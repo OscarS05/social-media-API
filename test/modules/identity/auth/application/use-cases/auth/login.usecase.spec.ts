@@ -1,8 +1,8 @@
-import { LoginUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/Login.usecase';
-import { IAuthRepositoryMock } from '../../infrastructure/adapters/repositories/auth.repository';
-import { IHasherServiceMock } from '../../infrastructure/adapters/services/hasher.service';
+import { LoginUseCase } from '../../../../../../../src/modules/identity/auth/application/use-cases/auth/Login.usecase';
+import { IAuthRepositoryMock } from '../../../infrastructure/adapters/repositories/auth.repository';
+import { IHasherServiceMock } from '../../../infrastructure/adapters/services/hasher.service';
 import { UnauthorizedException } from '@nestjs/common';
-import { authModule } from '../../auth.module-mock';
+import { authModule } from '../../../auth.module-mock';
 
 describe('LoginUseCase', () => {
   let usecase: LoginUseCase;

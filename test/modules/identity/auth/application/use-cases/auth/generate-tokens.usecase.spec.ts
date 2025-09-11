@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GenerateTokensUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/generate-tokens.usecase';
-import { Roles } from '../../../../../../src/modules/identity/auth/domain/enums/roles.enum';
+import { GenerateTokensUseCase } from '../../../../../../../src/modules/identity/auth/application/use-cases/auth/generate-tokens.usecase';
+import { Roles } from '../../../../../../../src/modules/identity/auth/domain/enums/roles.enum';
 
 describe('GenerateTokensUseCase', () => {
   let usecase: GenerateTokensUseCase;

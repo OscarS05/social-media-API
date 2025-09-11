@@ -1,12 +1,12 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import type { IAuthRepository } from '../../domain/repositories/auth.repository';
-import type { createUserPort } from '../../domain/ports/createUser.port';
-import type { IUuidService } from '../../domain/services/uuid.service';
-import { FacebookProvider } from '../../domain/services/facebookProvider.service';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { AuthEntity } from '../../domain/entities/auth.entity';
-import { AuthProvider } from '../../domain/enums/providers.enum';
+import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
+import type { createUserPort } from '../../../domain/ports/createUser.port';
+import type { IUuidService } from '../../../domain/services/uuid.service';
+import { FacebookProvider } from '../../../domain/services/facebookProvider.service';
+import { UserEntity } from '../../../domain/entities/user.entity';
+import { AuthEntity } from '../../../domain/entities/auth.entity';
+import { AuthProvider } from '../../../domain/enums/providers.enum';
 
 @Injectable()
 export class RegisterUserWithFacebookUseCase {

@@ -1,13 +1,13 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import type { IAuthRepository } from '../../domain/repositories/auth.repository';
-import type { createUserPort } from '../../domain/ports/createUser.port';
-import type { IUuidService } from '../../domain/services/uuid.service';
-import type { IHasherService } from '../../domain/services/password-hasher.service';
-import { AuthEntity } from '../../domain/entities/auth.entity';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { AuthProvider } from '../../domain/enums/providers.enum';
-import { PasswordVO } from '../../domain/value-objects/password.vo';
+import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
+import type { createUserPort } from '../../../domain/ports/createUser.port';
+import type { IUuidService } from '../../../domain/services/uuid.service';
+import type { IHasherService } from '../../../domain/services/password-hasher.service';
+import { AuthEntity } from '../../../domain/entities/auth.entity';
+import { UserEntity } from '../../../domain/entities/user.entity';
+import { AuthProvider } from '../../../domain/enums/providers.enum';
+import { PasswordVO } from '../../../domain/value-objects/password.vo';
 
 @Injectable()
 export class RegisterUserUseCase {

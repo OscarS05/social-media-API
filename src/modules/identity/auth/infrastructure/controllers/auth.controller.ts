@@ -3,15 +3,15 @@ import { AuthGuard } from '@nestjs/passport';
 import type { Request } from 'express';
 
 import { UserEntity } from '../../domain/entities/user.entity';
-import { RegisterUserUseCase } from '../../application/use-cases/Register-user.usecase';
-import { GenerateTokensUseCase } from '../../application/use-cases/generate-tokens.usecase';
+import { RegisterUserUseCase } from '../../application/use-cases/auth/Register-user.usecase';
+import { GenerateTokensUseCase } from '../../application/use-cases/auth/generate-tokens.usecase';
 import { LoginDto, RegisterDto } from '../dtos/auth.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { User } from '../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import { mapDomainErrorToHttp } from '../mappers/error.mapper';
-import { RegisterUserWithGoogleUseCase } from '../../application/use-cases/register-user-with-google.usecase';
+import { RegisterUserWithGoogleUseCase } from '../../application/use-cases/auth/register-user-with-google.usecase';
 import { GoogleProvider } from '../../domain/services/googleProvider.service';
-import { RegisterUserWithFacebookUseCase } from '../../application/use-cases/register-user-with-facebook.usecase';
+import { RegisterUserWithFacebookUseCase } from '../../application/use-cases/auth/register-user-with-facebook.usecase';
 import { FacebookProvider } from '../../domain/services/facebookProvider.service';
 import { UserWrapperResponseDto } from '../../../users/infrastructure/dtos/user.dto';
 

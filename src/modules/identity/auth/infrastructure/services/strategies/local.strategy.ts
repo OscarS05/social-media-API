@@ -1,7 +1,7 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LoginUseCase } from '../../../application/use-cases/Login.usecase';
+import { LoginUseCase } from '../../../application/use-cases/auth/Login.usecase';
 import { plainToInstance } from 'class-transformer';
 import { LoginDto } from '../../dtos/auth.dto';
 import { validate, ValidationError } from 'class-validator';

@@ -1,16 +1,16 @@
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { RegisterUserWithGoogleUseCase } from '../../../../../../src/modules/identity/auth/application/use-cases/register-user-with-google.usecase';
-import { IAuthRepositoryMock } from '../../infrastructure/adapters/repositories/auth.repository';
-import { CreateUserPortMock } from '../../infrastructure/adapters/services/createUser.port';
-import { IUuidServiceMock } from '../../infrastructure/adapters/services/uuid.service';
-import { authModule } from '../../auth.module-mock';
-import { AuthProvider } from '../../../../../../src/modules/identity/auth/domain/enums/providers.enum';
-import { InvalidNameError } from '../../../../../../src/modules/identity/users/domain/errors/errors';
-import { GoogleProvider } from '../../../../../../src/modules/identity/auth/domain/services/googleProvider.service';
+import { IAuthRepositoryMock } from '../../../infrastructure/adapters/repositories/auth.repository';
+import { CreateUserPortMock } from '../../../infrastructure/adapters/services/createUser.port';
+import { IUuidServiceMock } from '../../../infrastructure/adapters/services/uuid.service';
+import { authModule } from '../../../auth.module-mock';
+import { AuthProvider } from '../../../../../../../src/modules/identity/auth/domain/enums/providers.enum';
+import { InvalidNameError } from '../../../../../../../src/modules/identity/users/domain/errors/errors';
+import { FacebookProvider } from '../../../../../../../src/modules/identity/auth/domain/services/facebookProvider.service';
+import { RegisterUserWithFacebookUseCase } from '../../../../../../../src/modules/identity/auth/application/use-cases/auth/register-user-with-facebook.usecase';
 
-describe('RegisterUserWithGoogleUseCase', () => {
-  let usecase: RegisterUserWithGoogleUseCase;
+describe('RegisterUserWithFacebookUseCase', () => {
+  let usecase: RegisterUserWithFacebookUseCase;
   let authRepository: IAuthRepositoryMock;
   let createUserPortMock: CreateUserPortMock;
   let uuidServiceMock: IUuidServiceMock;
@@ -21,12 +21,14 @@ describe('RegisterUserWithGoogleUseCase', () => {
   const authId = 'd883878e-16cf-47f4-1234-670566abe41e';
   const provider_user_id = 'd883878e-16cf-47f4-5678-670566abe41e';
   const userId = 'd883878e-16cf-47f4-87b3-670566abe41e';
-  let googleProfile: GoogleProvider;
+  let facebookProfile: FacebookProvider;
 
   beforeEach(async () => {
     const module = await authModule;
 
-    usecase = module.get<RegisterUserWithGoogleUseCase>(RegisterUserWithGoogleUseCase);
+    usecase = module.get<RegisterUserWithFacebookUseCase>(
+      RegisterUserWithFacebookUseCase,
+    );
     authRepository = module.get('IAuthRepository');
     createUserPortMock = module.get('CreateUserPort');
     uuidServiceMock = module.get('IUuidService');
@@ -34,12 +36,12 @@ describe('RegisterUserWithGoogleUseCase', () => {
     authRepository.createAuth.mockResolvedValue({
       email,
       getEmail: email,
-      provider: AuthProvider.GOOGLE,
+      provider: AuthProvider.FACEBOOK,
       provider_user_id,
     });
     createUserPortMock.execute.mockResolvedValue({ id: userId, email, name, role });
     uuidServiceMock.generateId.mockReturnValue(authId);
-    googleProfile = { providerId: provider_user_id, email, name };
+    facebookProfile = { providerId: provider_user_id, email, name };
   });
 
   afterEach(() => {
@@ -51,14 +53,14 @@ describe('RegisterUserWithGoogleUseCase', () => {
       email,
       getEmail: email,
       user: { id: userId, name, role },
-      provider: AuthProvider.GOOGLE,
+      provider: AuthProvider.FACEBOOK,
       id: provider_user_id,
     });
 
-    const result = await usecase.execute(googleProfile);
+    const result = await usecase.execute(facebookProfile);
 
     expect(authRepository.findByProviderId).toHaveBeenCalledWith(
-      AuthProvider.GOOGLE,
+      AuthProvider.FACEBOOK,
       provider_user_id,
     );
     expect(createUserPortMock.execute).not.toHaveBeenCalledTimes(1);
@@ -74,10 +76,10 @@ describe('RegisterUserWithGoogleUseCase', () => {
 
     const now = expect.any(Date) as Date;
 
-    const result = await usecase.execute(googleProfile);
+    const result = await usecase.execute(facebookProfile);
 
     expect(authRepository.findByProviderId).toHaveBeenCalledWith(
-      AuthProvider.GOOGLE,
+      AuthProvider.FACEBOOK,
       provider_user_id,
     );
     expect(createUserPortMock.execute).toHaveBeenCalledTimes(1);
@@ -88,7 +90,7 @@ describe('RegisterUserWithGoogleUseCase', () => {
       expect.objectContaining({
         id: authId,
         userId,
-        provider: 'google',
+        provider: 'facebook',
         providerUserId: provider_user_id,
         isVerified: true,
         createdAt: now,
@@ -103,9 +105,9 @@ describe('RegisterUserWithGoogleUseCase', () => {
     const name = 'SELECT * FROM users;';
     authRepository.createAuth.mockResolvedValue(null);
     createUserPortMock.execute.mockRejectedValue(new InvalidNameError());
-    googleProfile.name = name;
+    facebookProfile.name = name;
 
-    await expect(usecase.execute(googleProfile)).rejects.toThrow(InvalidNameError);
+    await expect(usecase.execute(facebookProfile)).rejects.toThrow(InvalidNameError);
     expect(authRepository.findByProviderId).toHaveBeenCalledTimes(1);
     expect(authRepository.createAuth).toHaveBeenCalledTimes(0);
     expect(createUserPortMock.execute).toHaveBeenCalledTimes(1);
@@ -116,7 +118,7 @@ describe('RegisterUserWithGoogleUseCase', () => {
   it('should throw an error because the creation of auth return a null', async () => {
     authRepository.createAuth.mockResolvedValue(null);
 
-    await expect(usecase.execute(googleProfile)).rejects.toThrow(
+    await expect(usecase.execute(facebookProfile)).rejects.toThrow(
       InternalServerErrorException,
     );
   });

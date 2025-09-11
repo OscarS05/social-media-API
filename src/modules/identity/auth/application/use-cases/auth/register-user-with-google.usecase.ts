@@ -1,12 +1,12 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import type { IAuthRepository } from '../../domain/repositories/auth.repository';
-import type { IUuidService } from '../../domain/services/uuid.service';
-import type { createUserPort } from '../../domain/ports/createUser.port';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { AuthEntity } from '../../domain/entities/auth.entity';
-import { AuthProvider } from '../../domain/enums/providers.enum';
-import { GoogleProvider } from '../../domain/services/googleProvider.service';
+import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
+import type { IUuidService } from '../../../domain/services/uuid.service';
+import type { createUserPort } from '../../../domain/ports/createUser.port';
+import { UserEntity } from '../../../domain/entities/user.entity';
+import { AuthEntity } from '../../../domain/entities/auth.entity';
+import { AuthProvider } from '../../../domain/enums/providers.enum';
+import { GoogleProvider } from '../../../domain/services/googleProvider.service';
 
 @Injectable()
 export class RegisterUserWithGoogleUseCase {
