@@ -3,6 +3,7 @@ import {
   RefreshTokenRevokedError,
 } from '../../../../../../src/modules/identity/auth/domain/errors/refreshToken.errors';
 import { RefreshTokenEntity } from '../../../../../../src/modules/identity/auth/domain/entities/refreshToken.entity';
+import { UserAgentParsed } from 'src/modules/identity/auth/domain/services/userAgent.service';
 
 describe('RefreshToken entity', () => {
   const date = new Date();
@@ -12,8 +13,11 @@ describe('RefreshToken entity', () => {
   const userId: string = '68c07572-ff80-8326-8aff-3d109fbd5bcb';
   const tokenHashed: string =
     '$2b$10$.dPEexCNqjgbMdE.etF6sO91fIcAH0oGQ3meuMeX0zkHEow/y3Blm';
-  const userAgent: string = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
-(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36`;
+  const userAgentParsed: UserAgentParsed = {
+    browser: { name: 'IEMobile' },
+    os: { name: 'Windows' },
+    device: { type: 'mobile', vendor: 'nokia', model: 'Lumia 635' },
+  };
   const ipAddress: string = '127.0.0.1';
   const expiresAt: Date = new Date(expiration);
   const createdAt: Date = now;
@@ -25,7 +29,7 @@ describe('RefreshToken entity', () => {
       id,
       userId,
       tokenHashed,
-      userAgent,
+      userAgentParsed,
       ipAddress,
       false,
       expiresAt,
@@ -47,7 +51,7 @@ describe('RefreshToken entity', () => {
         id,
         userId,
         tokenHashed,
-        userAgent,
+        userAgentParsed,
         ipAddress,
         true,
         new Date(expiresTomorrow),
@@ -76,7 +80,7 @@ describe('RefreshToken entity', () => {
         id,
         userId,
         tokenHashed,
-        userAgent,
+        userAgentParsed,
         ipAddress,
         true,
         expiresAt,
@@ -99,7 +103,7 @@ describe('RefreshToken entity', () => {
         id,
         userId,
         tokenHashed,
-        userAgent,
+        userAgentParsed,
         ipAddress,
         true,
         expiresAt,
@@ -125,7 +129,7 @@ describe('RefreshToken entity', () => {
         id,
         userId,
         tokenHashed,
-        userAgent,
+        userAgentParsed,
         ipAddress,
         true,
         expiresAt,
