@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { User } from '../../../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import {
   BaseEntity,
   Column,
@@ -12,6 +11,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { User } from '../../../../../users/infrastructure/persistence/db/entities/user.orm-entity';
+import type { UserAgentParsed } from '../../../../domain/services/userAgent.service';
+
 @Entity({ name: 'refresh_tokens' })
 @Index(['user'])
 @Index(['tokenHashed'])
@@ -23,15 +25,18 @@ export class RefreshToken extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column({ name: 'user_id', type: 'varchar' })
+  userId: string;
+
   @Exclude()
   @Column({ type: 'varchar', name: 'token_hashed', length: 255 })
   tokenHashed: string;
 
-  @Column({ type: 'varchar', name: 'user_agent', length: 255, nullable: true })
-  userAgent?: string | null;
+  @Column({ type: 'json', name: 'user_agent', nullable: false })
+  userAgent: UserAgentParsed;
 
-  @Column({ type: 'varchar', name: 'ip_address', length: 255, nullable: true })
-  ipAddress?: string | null;
+  @Column({ type: 'varchar', name: 'ip_address', length: 255, nullable: false })
+  ipAddress: string;
 
   @Column({ name: 'revoked', type: 'boolean', default: false })
   revoked: boolean;

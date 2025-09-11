@@ -10,7 +10,7 @@ import { LocalStrategy } from './infrastructure/services/strategies/local.strate
 import { GoogleStrategy } from './infrastructure/services/strategies/google.strategy';
 import { LoginUseCase } from './application/use-cases/auth/Login.usecase';
 import { RegisterUserUseCase } from './application/use-cases/auth/Register-user.usecase';
-import { AuthRepository } from './infrastructure/persistence/db/auth.repository';
+import { AuthRepository } from './infrastructure/persistence/db/repositories/auth.repository';
 import { BcryptPasswordHasher } from './infrastructure/services/security/bcrypt-hasher.service';
 import { CreateUserUseCase } from '../users/application/use-cases/create-user.usecase';
 import { UuidAdapter } from './infrastructure/services/security/uuid.service';
@@ -21,6 +21,9 @@ import { RegisterUserWithGoogleUseCase } from './application/use-cases/auth/regi
 import { RegisterUserWithFacebookUseCase } from './application/use-cases/auth/register-user-with-facebook.usecase';
 import { FacebookStrategy } from './infrastructure/services/strategies/facebook.strategy';
 import { CreateRefreshTokenUseCase } from './application/use-cases/refresh-token/create-refresh-token.usecase';
+import { NetIpService } from './infrastructure/services/security/ipAddress.service';
+import { LibUserAgentService } from './infrastructure/services/security/userAgent.service';
+import { RefreshTokenRepository } from './infrastructure/persistence/db/repositories/refresh-token.repository';
 
 @Module({
   imports: [
@@ -42,13 +45,13 @@ import { CreateRefreshTokenUseCase } from './application/use-cases/refresh-token
   controllers: [AuthController],
   providers: [
     { provide: 'IAuthRepository', useClass: AuthRepository },
-    // { provide: 'IRefreshTokenRepository', useClass:  },
+    { provide: 'IRefreshTokenRepository', useClass: RefreshTokenRepository },
     { provide: 'IHasherService', useClass: BcryptPasswordHasher },
     { provide: 'CreateUserPort', useClass: CreateUserUseCase },
     { provide: 'IUuidService', useClass: UuidAdapter },
     { provide: 'JwtService', useClass: JwtService },
-    // { provide: 'UserAgentService', useClass:  },
-    // { provide: 'IpAddressService', useClass:  },
+    { provide: 'UserAgentService', useClass: LibUserAgentService },
+    { provide: 'IpAddressService', useClass: NetIpService },
     LoginUseCase,
     RegisterUserUseCase,
     LocalStrategy,

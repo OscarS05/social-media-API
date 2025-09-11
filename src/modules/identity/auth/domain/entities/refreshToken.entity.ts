@@ -17,8 +17,8 @@ export class RefreshTokenEntity {
     private readonly ipAddress: string,
     private revoked: boolean,
     private expiresAt: Date,
-    private readonly createdAt: Date,
-    private updatedAt: Date,
+    public readonly createdAt: Date,
+    public updatedAt: Date,
   ) {
     this.id = new AuthIdVO(id).get();
     this.userId = new AuthIdVO(userId).get();
@@ -70,5 +70,21 @@ export class RefreshTokenEntity {
 
   get getUpdatedAt(): Date {
     return this.updatedAt;
+  }
+
+  get getId(): string {
+    return this.id;
+  }
+
+  get getUserId(): string {
+    return this.userId;
+  }
+
+  get getUserAgent(): UserAgentParsed {
+    return this.userAgent;
+  }
+
+  get getIp(): string {
+    return this.ipAddress;
   }
 }
