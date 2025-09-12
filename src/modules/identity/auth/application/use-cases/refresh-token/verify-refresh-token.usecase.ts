@@ -20,6 +20,7 @@ import {
   InvalidUserAgentError,
 } from '../../../domain/errors/refreshToken.errors';
 import { UserAgentVO } from '../../../domain/value-objects/userAgent.vo';
+import { SessionDataVerified } from '../../../domain/dtos/verifiedSession.dto';
 
 @Injectable()
 export class VerifyRefreshTokenUseCase {
@@ -37,7 +38,7 @@ export class VerifyRefreshTokenUseCase {
     refreshToken: string,
     userAgent: string,
     ipAddress: string,
-  ): Promise<{ userId: string }> {
+  ): Promise<SessionDataVerified> {
     const payload: PayloadRefreshToken = this.jwtService.verify(refreshToken, {
       secret: this.configService.get('REFRESH_SECRET', { infer: true }),
     });
@@ -46,12 +47,19 @@ export class VerifyRefreshTokenUseCase {
       payload.jti,
       payload.sub,
     );
+    refreshTokenEntity.isActive();
 
     await this.compareTokens(refreshToken, refreshTokenEntity.getTokenHashed);
-    this.compareIps(ipAddress, refreshTokenEntity.getIp);
+    const parsedIp = this.compareIps(ipAddress, refreshTokenEntity.getIp);
     this.compareUserAgents(userAgent, refreshTokenEntity.getUserAgent);
 
-    return { userId: payload.sub };
+    return {
+      refreshTokenId: refreshTokenEntity.getId,
+      userId: payload.sub,
+      parsedIp,
+      parsedUserAgent: refreshTokenEntity.getUserAgent,
+      createdAt: refreshTokenEntity.createdAt,
+    };
   }
 
   private async findTokenInDb(
@@ -75,14 +83,14 @@ export class VerifyRefreshTokenUseCase {
     return true;
   }
 
-  private compareIps(ipInput: string, ipInDb: string): boolean {
+  private compareIps(ipInput: string, ipInDb: string): string {
     const isIpInputValid = this.ipService.isValid(ipInput);
     if (!isIpInputValid) throw new InvalidIPAddressError();
 
     const ipInputFormated = this.ipService.normalize(ipInput);
     if (ipInputFormated !== ipInDb) throw new InvalidIPAddressError();
 
-    return true;
+    return ipInputFormated;
   }
 
   private compareUserAgents(

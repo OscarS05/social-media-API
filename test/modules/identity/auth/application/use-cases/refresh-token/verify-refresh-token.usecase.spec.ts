@@ -4,6 +4,7 @@ import {
   InvalidIPAddressError,
   InvalidTokenError,
   InvalidUserAgentError,
+  RefreshTokenRevokedError,
 } from '../../../../../../../src/modules/identity/auth/domain/errors/refreshToken.errors';
 import { authModule } from '../../../auth.module-mock';
 import { IHasherServiceMock } from '../../../infrastructure/adapters/services/hasher.service';
@@ -51,9 +52,12 @@ describe('VerifyRefreshTokenUseCase', () => {
     userAgent: userAgentParsed,
     ipAddress,
     expiresAt: new Date(expiration),
+    createdAt: new Date(),
     getIp: ipAddress,
     getUserAgent: userAgentParsed,
     getTokenHashed: tokenHashed,
+    getId: refreshTokenId,
+    isActive: () => jest.fn(),
   };
 
   beforeAll(async () => {
@@ -81,6 +85,14 @@ describe('VerifyRefreshTokenUseCase', () => {
   });
 
   it('should return userId successfully', async () => {
+    const expectedResult = {
+      refreshTokenId,
+      userId,
+      parsedIp: ipAddress,
+      parsedUserAgent: userAgentParsed,
+      createdAt: expect.any(Date) as Date,
+    };
+
     const result = await usecase.execute(jwtInput, userAgent, ipAddress);
 
     expect(jwtService.verify).toHaveBeenCalledTimes(1);
@@ -95,7 +107,7 @@ describe('VerifyRefreshTokenUseCase', () => {
     expect(ipAddressService.isValid).toBeTruthy();
     expect(userAgentService.parse).toHaveBeenCalledTimes(1);
     expect(userAgentService.parse.mock.results[0].value).toStrictEqual(userAgentParsed);
-    expect(result.userId).toBe(userId);
+    expect(result).toMatchObject(expectedResult);
   });
 
   it('should throw an error because the refreshToken jwt is wrong', async () => {
@@ -186,5 +198,26 @@ describe('VerifyRefreshTokenUseCase', () => {
     expect(hasherService.compare).toHaveBeenCalledTimes(1);
     expect(ipAddressService.isValid).toHaveBeenCalledTimes(1);
     expect(userAgentService.parse).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw an error because the token is revoked', async () => {
+    const dbDataInvalidToken = {
+      ...DbData,
+      revoked: true,
+      isActive: () => {
+        throw new RefreshTokenRevokedError();
+      },
+    };
+    refreshTokenRepo.findByIdAndUserId.mockResolvedValue(dbDataInvalidToken);
+
+    await expect(() => usecase.execute(jwtInput, userAgent, ipAddress)).rejects.toThrow(
+      RefreshTokenRevokedError,
+    );
+
+    expect(jwtService.verify).toHaveBeenCalledTimes(1);
+    expect(refreshTokenRepo.findByIdAndUserId).toHaveBeenCalledTimes(1);
+    expect(hasherService.compare).toHaveBeenCalledTimes(0);
+    expect(ipAddressService.isValid).toHaveBeenCalledTimes(0);
+    expect(userAgentService.parse).toHaveBeenCalledTimes(0);
   });
 });

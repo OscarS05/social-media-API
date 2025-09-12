@@ -26,6 +26,7 @@ import { LibUserAgentService } from './infrastructure/services/security/userAgen
 import { RefreshTokenRepository } from './infrastructure/persistence/db/repositories/refresh-token.repository';
 import { RefreshToken as RefreshTokenOrm } from './infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
 import { VerifyRefreshTokenUseCase } from './application/use-cases/refresh-token/verify-refresh-token.usecase';
+import { UpdateRefreshTokenUseCase } from './application/use-cases/refresh-token/update-refresh-token.usecase';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { VerifyRefreshTokenUseCase } from './application/use-cases/refresh-token
     RegisterUserWithFacebookUseCase,
     CreateRefreshTokenUseCase,
     VerifyRefreshTokenUseCase,
+    UpdateRefreshTokenUseCase,
   ],
 })
 export class AuthModule {}
