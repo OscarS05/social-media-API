@@ -50,15 +50,12 @@ export class VerifyRefreshTokenUseCase {
     refreshTokenEntity.isActive();
 
     await this.compareTokens(refreshToken, refreshTokenEntity.getTokenHashed);
-    const parsedIp = this.compareIps(ipAddress, refreshTokenEntity.getIp);
+    this.compareIps(ipAddress, refreshTokenEntity.getIp);
     this.compareUserAgents(userAgent, refreshTokenEntity.getUserAgent);
 
     return {
       refreshTokenId: refreshTokenEntity.getId,
       userId: payload.sub,
-      parsedIp,
-      parsedUserAgent: refreshTokenEntity.getUserAgent,
-      createdAt: refreshTokenEntity.createdAt,
     };
   }
 

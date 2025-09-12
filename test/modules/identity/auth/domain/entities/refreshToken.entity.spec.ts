@@ -84,8 +84,8 @@ describe('RefreshToken entity', () => {
         ipAddress,
         true,
         expiresAt,
-        createdAt,
         updatedAt,
+        createdAt,
       );
       expect(() => refreshTokenEntityExpired.isRevoked()).toThrow(
         RefreshTokenRevokedError,

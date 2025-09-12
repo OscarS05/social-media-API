@@ -15,6 +15,7 @@ import { MockUserAgentService } from './infrastructure/adapters/services/userAge
 import { MockIpAddressService } from './infrastructure/adapters/services/ipAddressParser.service';
 import { MockRefreshTokenRepository } from './infrastructure/adapters/repositories/refreshToken.repository';
 import { VerifyRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/verify-refresh-token.usecase';
+import { UpdateRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/update-refresh-token.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.test' })],
@@ -33,5 +34,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     RegisterUserWithFacebookUseCase,
     CreateRefreshTokenUseCase,
     VerifyRefreshTokenUseCase,
+    UpdateRefreshTokenUseCase,
   ],
 }).compile();

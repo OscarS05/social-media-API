@@ -23,7 +23,7 @@ export class RefreshTokenEntity {
     this.id = new AuthIdVO(id).get();
     this.userId = new AuthIdVO(userId).get();
     this.tokenHashed = new TokenHashedVO(tokenHashed).get();
-    this.ipAddress = new IPAddressVO(ipAddress).get();
+    this.ipAddress = new IPAddressVO(ipAddress ?? '').get();
     this.expiresAt = new ExpiresAtVO(expiresAt).get();
   }
 
@@ -80,11 +80,11 @@ export class RefreshTokenEntity {
     return this.userId;
   }
 
-  get getUserAgent(): UserAgentParsed {
-    return this.userAgent;
+  get getUserAgent(): UserAgentParsed | null {
+    return this.userAgent ?? null;
   }
 
-  get getIp(): string {
-    return this.ipAddress;
+  get getIp(): string | null {
+    return this.ipAddress ?? null;
   }
 }

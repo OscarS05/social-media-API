@@ -88,9 +88,6 @@ describe('VerifyRefreshTokenUseCase', () => {
     const expectedResult = {
       refreshTokenId,
       userId,
-      parsedIp: ipAddress,
-      parsedUserAgent: userAgentParsed,
-      createdAt: expect.any(Date) as Date,
     };
 
     const result = await usecase.execute(jwtInput, userAgent, ipAddress);
@@ -107,7 +104,7 @@ describe('VerifyRefreshTokenUseCase', () => {
     expect(ipAddressService.isValid).toBeTruthy();
     expect(userAgentService.parse).toHaveBeenCalledTimes(1);
     expect(userAgentService.parse.mock.results[0].value).toStrictEqual(userAgentParsed);
-    expect(result).toMatchObject(expectedResult);
+    expect(result).toMatchObject(expect.objectContaining(expectedResult));
   });
 
   it('should throw an error because the refreshToken jwt is wrong', async () => {
