@@ -2,4 +2,5 @@ import { IRefreshTokenRepository } from '../../../../../../../src/modules/identi
 
 export class MockRefreshTokenRepository implements IRefreshTokenRepository {
   create = jest.fn();
+  findByIdAndUserId = jest.fn();
 }

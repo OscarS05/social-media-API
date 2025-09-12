@@ -25,6 +25,7 @@ import { NetIpService } from './infrastructure/services/security/ipAddress.servi
 import { LibUserAgentService } from './infrastructure/services/security/userAgent.service';
 import { RefreshTokenRepository } from './infrastructure/persistence/db/repositories/refresh-token.repository';
 import { RefreshToken as RefreshTokenOrm } from './infrastructure/persistence/db/entites/refresh-tokens.orm-entity';
+import { VerifyRefreshTokenUseCase } from './application/use-cases/refresh-token/verify-refresh-token.usecase';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { RefreshToken as RefreshTokenOrm } from './infrastructure/persistence/db
     RegisterUserWithGoogleUseCase,
     RegisterUserWithFacebookUseCase,
     CreateRefreshTokenUseCase,
+    VerifyRefreshTokenUseCase,
   ],
 })
 export class AuthModule {}

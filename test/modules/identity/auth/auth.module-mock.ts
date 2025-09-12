@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 
 import { RegisterUserUseCase } from '../../../../src/modules/identity/auth/application/use-cases/auth/Register-user.usecase';
 import { IAuthRepositoryMock } from './infrastructure/adapters/repositories/auth.repository';
@@ -13,7 +14,7 @@ import { MockJwtService } from './infrastructure/adapters/services/jwt.service';
 import { MockUserAgentService } from './infrastructure/adapters/services/userAgent.service';
 import { MockIpAddressService } from './infrastructure/adapters/services/ipAddressParser.service';
 import { MockRefreshTokenRepository } from './infrastructure/adapters/repositories/refreshToken.repository';
-import { ConfigModule } from '@nestjs/config';
+import { VerifyRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/verify-refresh-token.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.test' })],
@@ -31,5 +32,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     RegisterUserWithGoogleUseCase,
     RegisterUserWithFacebookUseCase,
     CreateRefreshTokenUseCase,
+    VerifyRefreshTokenUseCase,
   ],
 }).compile();

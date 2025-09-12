@@ -13,5 +13,5 @@ export interface IJwtService {
     payload: string | PayloadRefreshToken | PayloadAccessToken,
     options?: { secret?: string; expiresIn?: string },
   ): string;
-  verify(token: string, options?: { secret?: string }): string;
+  verify(token: string, options?: { secret?: string }): PayloadRefreshToken;
 }
