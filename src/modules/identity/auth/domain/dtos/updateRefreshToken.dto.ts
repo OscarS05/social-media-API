@@ -4,3 +4,7 @@ export type UpdateRefreshTokenDto = {
   updatedAt?: Date;
   revoked?: boolean;
 };
+
+export type DbResponseToUpdate = {
+  affected?: number;
+};

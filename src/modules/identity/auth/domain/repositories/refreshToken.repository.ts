@@ -1,4 +1,7 @@
-import { UpdateRefreshTokenDto } from '../dtos/updateRefreshToken.dto';
+import {
+  DbResponseToUpdate,
+  UpdateRefreshTokenDto,
+} from '../dtos/updateRefreshToken.dto';
 import { RefreshTokenEntity } from '../entities/refreshToken.entity';
 
 export interface IRefreshTokenRepository {
@@ -7,7 +10,7 @@ export interface IRefreshTokenRepository {
   update(
     refreshTokenId: string,
     changes: UpdateRefreshTokenDto,
-  ): Promise<RefreshTokenEntity | null>;
+  ): Promise<DbResponseToUpdate>;
 
   findByIdAndUserId(tokenId: string, userId: string): Promise<RefreshTokenEntity | null>;
 }

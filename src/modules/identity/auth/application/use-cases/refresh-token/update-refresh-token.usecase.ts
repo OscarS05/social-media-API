@@ -9,8 +9,10 @@ import type { IHasherService } from '../../../domain/services/password-hasher.se
 import type { IRefreshTokenRepository } from '../../../domain/repositories/refreshToken.repository';
 import { SessionDataVerified } from '../../../domain/dtos/verifiedSession.dto';
 import { Env } from '../../../../../../shared/config/env.model';
-import { RefreshTokenEntity } from '../../../domain/entities/refreshToken.entity';
-import { UpdateRefreshTokenDto } from '../../../domain/dtos/updateRefreshToken.dto';
+import {
+  DbResponseToUpdate,
+  UpdateRefreshTokenDto,
+} from '../../../domain/dtos/updateRefreshToken.dto';
 
 @Injectable()
 export class UpdateRefreshTokenUseCase {
@@ -70,14 +72,12 @@ export class UpdateRefreshTokenUseCase {
   private async updateInDb(
     refreshTokenId: string,
     updateRefreshTokenDto: UpdateRefreshTokenDto,
-  ): Promise<RefreshTokenEntity> {
-    const result: RefreshTokenEntity | null = await this.refreshTokenRepo.update(
+  ): Promise<void> {
+    const result: DbResponseToUpdate = await this.refreshTokenRepo.update(
       refreshTokenId,
       updateRefreshTokenDto,
     );
 
-    if (!result) throw new InternalServerErrorException();
-
-    return result;
+    if (result.affected === 0) throw new InternalServerErrorException();
   }
 }
