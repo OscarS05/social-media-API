@@ -139,7 +139,7 @@ describe('UpdateRefreshTokenUseCase', () => {
   });
 
   it('should throw an error because the refreshTokenRepo.update returned null', async () => {
-    refreshTokenRepo.update.mockResolvedValue(null);
+    refreshTokenRepo.update.mockResolvedValue({ affected: 0 });
 
     await expect(() => usecase.execute(sessionDataVerified)).rejects.toThrow(
       InternalServerErrorException,
