@@ -29,6 +29,7 @@ import { VerifyRefreshTokenUseCase } from './application/use-cases/refresh-token
 import { UpdateRefreshTokenUseCase } from './application/use-cases/refresh-token/update-refresh-token.usecase';
 import { RevokeRefreshTokenUseCase } from './application/use-cases/refresh-token/revoke-refresh-token.usecase';
 import { FindAllRefreshTokensUseCase } from './application/use-cases/refresh-token/find-all-refresh-tokens.usecase';
+import { RevokeAllRefreshTokensUseCase } from './application/use-cases/refresh-token/revoke-all-refresh-tokens.usecase';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { FindAllRefreshTokensUseCase } from './application/use-cases/refresh-tok
     UpdateRefreshTokenUseCase,
     RevokeRefreshTokenUseCase,
     FindAllRefreshTokensUseCase,
+    RevokeAllRefreshTokensUseCase,
   ],
 })
 export class AuthModule {}

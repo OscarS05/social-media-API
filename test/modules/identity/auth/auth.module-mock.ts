@@ -18,6 +18,7 @@ import { VerifyRefreshTokenUseCase } from '../../../../src/modules/identity/auth
 import { UpdateRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/update-refresh-token.usecase';
 import { RevokeRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/revoke-refresh-token.usecase';
 import { FindAllRefreshTokensUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/find-all-refresh-tokens.usecase';
+import { RevokeAllRefreshTokensUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/revoke-all-refresh-tokens.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.test' })],
@@ -39,5 +40,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     UpdateRefreshTokenUseCase,
     RevokeRefreshTokenUseCase,
     FindAllRefreshTokensUseCase,
+    RevokeAllRefreshTokensUseCase,
   ],
 }).compile();

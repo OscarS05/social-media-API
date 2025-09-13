@@ -52,11 +52,9 @@ describe('FindAllRefreshTokensUseCase', () => {
 
     expect(refreshTokenRepo.findAllByUserId).toHaveBeenCalledTimes(1);
     expect(refreshTokenRepo.findAllByUserId).toHaveBeenCalledWith(userId);
-    console.log(refreshTokenRepo.findAllByUserId.mock.results[0].value);
     await expect(refreshTokenRepo.findAllByUserId.mock.results[0].value).resolves.toEqual(
       [dbData, dbData, dbData],
     );
-    console.log('RESULT:', result);
     expect(result.refreshTokens).toEqual([data, data, data]);
   });
 

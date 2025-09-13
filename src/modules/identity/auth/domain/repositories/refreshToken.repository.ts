@@ -12,6 +12,11 @@ export interface IRefreshTokenRepository {
     changes: UpdateRefreshTokenDto,
   ): Promise<DbResponseToUpdate>;
 
+  updateByUserId(
+    userId: string,
+    changes: UpdateRefreshTokenDto,
+  ): Promise<DbResponseToUpdate>;
+
   findByIdAndUserId(tokenId: string, userId: string): Promise<RefreshTokenEntity | null>;
 
   findAllByUserId(userId: string): Promise<RefreshTokenEntity[] | []>;
