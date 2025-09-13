@@ -52,6 +52,8 @@ jobs:
       ACCESS_SECRET: test-secret
       ACCESS_EXPIRES_IN: 60m
       ROUNDS_HASH_PASSWORD: 10
+      REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
+      REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
