@@ -5,4 +5,5 @@ export class MockRefreshTokenRepository implements IRefreshTokenRepository {
   findByIdAndUserId = jest.fn();
   update = jest.fn();
   revoke = jest.fn();
+  findAllByUserId = jest.fn();
 }

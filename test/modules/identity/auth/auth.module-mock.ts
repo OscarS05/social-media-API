@@ -17,6 +17,7 @@ import { MockRefreshTokenRepository } from './infrastructure/adapters/repositori
 import { VerifyRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/verify-refresh-token.usecase';
 import { UpdateRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/update-refresh-token.usecase';
 import { RevokeRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/revoke-refresh-token.usecase';
+import { FindAllRefreshTokensUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/find-all-refresh-tokens.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.test' })],
@@ -37,5 +38,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     VerifyRefreshTokenUseCase,
     UpdateRefreshTokenUseCase,
     RevokeRefreshTokenUseCase,
+    FindAllRefreshTokensUseCase,
   ],
 }).compile();

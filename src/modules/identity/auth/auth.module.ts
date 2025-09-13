@@ -28,6 +28,7 @@ import { RefreshToken as RefreshTokenOrm } from './infrastructure/persistence/db
 import { VerifyRefreshTokenUseCase } from './application/use-cases/refresh-token/verify-refresh-token.usecase';
 import { UpdateRefreshTokenUseCase } from './application/use-cases/refresh-token/update-refresh-token.usecase';
 import { RevokeRefreshTokenUseCase } from './application/use-cases/refresh-token/revoke-refresh-token.usecase';
+import { FindAllRefreshTokensUseCase } from './application/use-cases/refresh-token/find-all-refresh-tokens.usecase';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { RevokeRefreshTokenUseCase } from './application/use-cases/refresh-token
     VerifyRefreshTokenUseCase,
     UpdateRefreshTokenUseCase,
     RevokeRefreshTokenUseCase,
+    FindAllRefreshTokensUseCase,
   ],
 })
 export class AuthModule {}

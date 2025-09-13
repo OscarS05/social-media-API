@@ -1,3 +1,4 @@
+import { GetRefreshToken } from '../dtos/GetRefreshToken.dto';
 import {
   RefreshTokenExpiredError,
   RefreshTokenRevokedError,
@@ -86,5 +87,18 @@ export class RefreshTokenEntity {
 
   get getIp(): string {
     return this.ipAddress;
+  }
+
+  toPublicObject(): GetRefreshToken {
+    return {
+      id: this.id,
+      userId: this.userId,
+      userAgent: this.userAgent,
+      ipAddress: this.ipAddress,
+      revoked: this.revoked,
+      expiresAt: this.expiresAt,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+    };
   }
 }
