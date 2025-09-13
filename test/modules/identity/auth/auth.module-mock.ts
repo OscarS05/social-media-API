@@ -16,6 +16,7 @@ import { MockIpAddressService } from './infrastructure/adapters/services/ipAddre
 import { MockRefreshTokenRepository } from './infrastructure/adapters/repositories/refreshToken.repository';
 import { VerifyRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/verify-refresh-token.usecase';
 import { UpdateRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/update-refresh-token.usecase';
+import { RevokeRefreshTokenUseCase } from '../../../../src/modules/identity/auth/application/use-cases/refresh-token/revoke-refresh-token.usecase';
 
 export const authModule: Promise<TestingModule> = Test.createTestingModule({
   imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.test' })],
@@ -35,5 +36,6 @@ export const authModule: Promise<TestingModule> = Test.createTestingModule({
     CreateRefreshTokenUseCase,
     VerifyRefreshTokenUseCase,
     UpdateRefreshTokenUseCase,
+    RevokeRefreshTokenUseCase,
   ],
 }).compile();

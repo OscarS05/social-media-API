@@ -80,11 +80,11 @@ export class RefreshTokenEntity {
     return this.userId;
   }
 
-  get getUserAgent(): UserAgentParsed | null {
-    return this.userAgent ?? null;
+  get getUserAgent(): UserAgentParsed {
+    return this.userAgent;
   }
 
-  get getIp(): string | null {
-    return this.ipAddress ?? null;
+  get getIp(): string {
+    return this.ipAddress;
   }
 }
