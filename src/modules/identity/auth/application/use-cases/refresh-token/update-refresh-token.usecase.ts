@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import type {
@@ -13,6 +13,7 @@ import {
   DbResponseToUpdate,
   UpdateRefreshTokenDto,
 } from '../../../domain/dtos/updateRefreshToken.dto';
+import { InvalidTokenError } from '../../../domain/errors/refreshToken.errors';
 
 @Injectable()
 export class UpdateRefreshTokenUseCase {
@@ -78,6 +79,6 @@ export class UpdateRefreshTokenUseCase {
       updateRefreshTokenDto,
     );
 
-    if (result.affected === 0) throw new InternalServerErrorException();
+    if (result.affected === 0) throw new InvalidTokenError('Token not found');
   }
 }

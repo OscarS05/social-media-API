@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import type { IpAddressService } from '../../../domain/services/ipAddress.service';
@@ -43,7 +43,7 @@ export class CreateRefreshTokenUseCase {
       userAgentParsed,
       ipParsed,
     );
-    await this.createTokenInDB(refreshTokenEntity);
+    await this.refreshTokenRepository.create(refreshTokenEntity);
 
     return { refreshToken: refreshTokenJwt };
   }
@@ -98,16 +98,5 @@ export class CreateRefreshTokenUseCase {
       refreshTokenEntity,
       refreshTokenJwt,
     };
-  }
-
-  private async createTokenInDB(
-    refreshTokenEntity: RefreshTokenEntity,
-  ): Promise<RefreshTokenEntity> {
-    const result: RefreshTokenEntity | null =
-      await this.refreshTokenRepository.create(refreshTokenEntity);
-
-    if (!result) throw new InternalServerErrorException();
-
-    return result;
   }
 }

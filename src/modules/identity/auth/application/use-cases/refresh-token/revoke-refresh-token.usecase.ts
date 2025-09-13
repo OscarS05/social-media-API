@@ -27,23 +27,12 @@ export class RevokeRefreshTokenUseCase {
       secret: this.configService.get('REFRESH_SECRET', { infer: true }),
     });
 
-    const refreshTokenInDb: RefreshTokenEntity = await this.findInDb(
-      payload.jti,
-      payload.sub,
-    );
+    const refreshTokenInDb: RefreshTokenEntity =
+      await this.refreshTokenRepo.findByIdAndUserId(payload.jti, payload.sub);
 
     await this.compareTokens(refreshTokenInDb.getTokenHashed, refreshToken);
     await this.revokeToken(refreshTokenInDb.getId, { revoked: true });
     return { revokeResult: true };
-  }
-
-  private async findInDb(id: string, userId: string): Promise<RefreshTokenEntity> {
-    const result: RefreshTokenEntity | null =
-      await this.refreshTokenRepo.findByIdAndUserId(id, userId);
-
-    if (!result) throw new InvalidTokenError();
-
-    return result;
   }
 
   private async compareTokens(

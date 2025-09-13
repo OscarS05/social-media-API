@@ -7,6 +7,7 @@ import { MockRefreshTokenRepository } from '../../../infrastructure/adapters/rep
 import { IHasherServiceMock } from '../../../infrastructure/adapters/services/hasher.service';
 import { MockJwtService } from '../../../infrastructure/adapters/services/jwt.service';
 import { SessionDataVerified } from '../../../../../../../src/modules/identity/auth/domain/dtos/verifiedSession.dto';
+import { InvalidTokenError } from '../../../../../../../src/modules/identity/auth/domain/errors/refreshToken.errors';
 
 describe('UpdateRefreshTokenUseCase', () => {
   let usecase: UpdateRefreshTokenUseCase;
@@ -138,11 +139,11 @@ describe('UpdateRefreshTokenUseCase', () => {
     expect(refreshTokenRepo.update).toHaveBeenCalledTimes(1);
   });
 
-  it('should throw an error because the refreshTokenRepo.update returned null', async () => {
+  it('should throw an error because the refreshTokenRepo.update affecter 0 rows', async () => {
     refreshTokenRepo.update.mockResolvedValue({ affected: 0 });
 
     await expect(() => usecase.execute(sessionDataVerified)).rejects.toThrow(
-      InternalServerErrorException,
+      InvalidTokenError,
     );
 
     expect(jwtService.sign).toHaveBeenCalledTimes(1);

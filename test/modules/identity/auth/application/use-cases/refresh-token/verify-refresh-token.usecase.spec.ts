@@ -123,7 +123,7 @@ describe('VerifyRefreshTokenUseCase', () => {
   });
 
   it('should throw an error because the refreshToken does not exist in db', async () => {
-    refreshTokenRepo.findByIdAndUserId.mockResolvedValue(null);
+    refreshTokenRepo.findByIdAndUserId.mockRejectedValue(new InvalidTokenError());
     await expect(() => usecase.execute(jwtInput, userAgent, ipAddress)).rejects.toThrow(
       InvalidTokenError,
     );

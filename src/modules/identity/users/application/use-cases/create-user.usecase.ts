@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type { IUserRepository } from '../../domain/repositories/user.repository';
 import type { IUuidService } from '../../domain/services/uuid.service';
@@ -14,11 +14,7 @@ export class CreateUserUseCase {
 
   async execute(name: string) {
     const newUser: UserEntity = this.createEntity(name);
-    const user: UserEntity | null = await this.usersRepository.createUser(newUser);
-    if (!user) {
-      throw new InternalServerErrorException('Something went wrong');
-    }
-
+    const user: UserEntity = await this.usersRepository.createUser(newUser);
     return user;
   }
 

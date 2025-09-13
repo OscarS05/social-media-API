@@ -21,5 +21,5 @@ export function mapDomainErrorToHttp(err: Error): any {
   if (err instanceof InvalidIdError) return new InternalServerErrorException(err.message);
   if (err instanceof InvalidPasswordError) return new BadRequestException(err.message);
 
-  return err;
+  return err.message;
 }

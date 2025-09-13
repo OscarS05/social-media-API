@@ -43,10 +43,8 @@ export class VerifyRefreshTokenUseCase {
       secret: this.configService.get('REFRESH_SECRET', { infer: true }),
     });
 
-    const refreshTokenEntity: RefreshTokenEntity = await this.findTokenInDb(
-      payload.jti,
-      payload.sub,
-    );
+    const refreshTokenEntity: RefreshTokenEntity =
+      await this.refreshTokenRepository.findByIdAndUserId(payload.jti, payload.sub);
     refreshTokenEntity.isActive();
 
     await this.compareTokens(refreshToken, refreshTokenEntity.getTokenHashed);
@@ -57,18 +55,6 @@ export class VerifyRefreshTokenUseCase {
       refreshTokenId: refreshTokenEntity.getId,
       userId: payload.sub,
     };
-  }
-
-  private async findTokenInDb(
-    refreshTokenId: string,
-    userId: string,
-  ): Promise<RefreshTokenEntity> {
-    const result: RefreshTokenEntity | null =
-      await this.refreshTokenRepository.findByIdAndUserId(refreshTokenId, userId);
-
-    if (!result) throw new InvalidTokenError('Token not found');
-
-    return result;
   }
 
   private async compareTokens(

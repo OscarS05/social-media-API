@@ -128,7 +128,7 @@ describe('CreateRefreshTokenUseCase', () => {
   });
 
   it('should throw an error because the authRepository failed', async () => {
-    refreshTokenService.create.mockResolvedValue(null);
+    refreshTokenService.create.mockRejectedValue(new InternalServerErrorException());
 
     await expect(() => usecase.execute(userId, userAgent, ipAddress)).rejects.toThrow(
       InternalServerErrorException,

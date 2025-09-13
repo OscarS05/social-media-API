@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
 import type { createUserPort } from '../../../domain/ports/createUser.port';
@@ -20,8 +20,12 @@ export class RegisterUserWithFacebookUseCase {
     const userExists = await this.userExists(facebookProfile);
     if (userExists) return userExists;
 
-    const newUser: UserEntity = await this.createUser(facebookProfile.name);
-    const newAuth: AuthEntity = await this.createAuth(facebookProfile, newUser.id);
+    const newUser: UserEntity = await this.createUserPort.execute(facebookProfile.name);
+    const authEntity: AuthEntity = this.prepareDataToCreateAuth(
+      facebookProfile,
+      newUser.id,
+    );
+    const newAuth: AuthEntity | null = await this.authRepository.createAuth(authEntity);
 
     return {
       user: { ...newUser, email: newAuth.getEmail ?? '' },
@@ -40,30 +44,6 @@ export class RegisterUserWithFacebookUseCase {
     return {
       user: { ...(userAuth.user as UserEntity), email: userAuth.getEmail ?? '' },
     };
-  }
-
-  private async createUser(name: string): Promise<UserEntity> {
-    const newUser: UserEntity | null = await this.createUserPort.execute(name);
-    if (!newUser) {
-      throw new InternalServerErrorException('Something went wrong creating the user');
-    }
-
-    return newUser;
-  }
-
-  private async createAuth(
-    facebookProfile: FacebookProvider,
-    userId: string,
-  ): Promise<AuthEntity> {
-    const authEntity: AuthEntity = this.prepareDataToCreateAuth(facebookProfile, userId);
-    const newAuth: AuthEntity | null = await this.authRepository.createAuth(authEntity);
-    if (!newAuth) {
-      throw new InternalServerErrorException(
-        'Something went wrong creating the user authentication',
-      );
-    }
-
-    return newAuth;
   }
 
   private prepareDataToCreateAuth(

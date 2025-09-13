@@ -19,8 +19,6 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
     const createdEntity = this.ormRepo.create(ormEntity);
     const savedEntity = await this.ormRepo.save(createdEntity);
 
-    if (!savedEntity) return null;
-
     return RefreshTokenMapper.toDomain(savedEntity);
   }
 }

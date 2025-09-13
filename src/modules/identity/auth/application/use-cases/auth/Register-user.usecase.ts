@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
 import type { createUserPort } from '../../../domain/ports/createUser.port';
@@ -24,10 +24,16 @@ export class RegisterUserUseCase {
     password: string,
   ): Promise<{ user: UserEntity }> {
     await this.emailExists(email);
-    const user: UserEntity = await this.createUser(name);
+    const user: UserEntity = await this.createUserUseCase.execute(name);
 
-    const auth: AuthEntity = await this.createAuth(user.id, email, password);
-    return { user: { ...user, email: auth.getEmail as string } };
+    const authEntity: AuthEntity = await this.prepareDataToCreateAuth(
+      user.id,
+      email,
+      password,
+    );
+    const newAuth = await this.authRepository.createAuth(authEntity);
+
+    return { user: { ...user, email: newAuth.getEmail as string } };
   }
 
   private async emailExists(email: string): Promise<void | true> {
@@ -35,30 +41,6 @@ export class RegisterUserUseCase {
     if (!authRegister) return true;
 
     authRegister?.existsEmailToRegister();
-  }
-
-  private async createUser(name: string): Promise<UserEntity> {
-    return this.createUserUseCase.execute(name);
-  }
-
-  private async createAuth(
-    userId: string,
-    email: string,
-    password: string,
-  ): Promise<AuthEntity> {
-    const createAuthEntity: AuthEntity = await this.prepareDataToCreateAuth(
-      userId,
-      email,
-      password,
-    );
-
-    const createdAuth: AuthEntity | null =
-      await this.authRepository.createAuth(createAuthEntity);
-
-    if (!createdAuth) {
-      throw new InternalServerErrorException('Something went wrong');
-    }
-    return createdAuth;
   }
 
   private async prepareDataToCreateAuth(

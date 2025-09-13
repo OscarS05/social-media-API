@@ -114,7 +114,7 @@ describe('RegisterUserWithGoogleUseCase', () => {
   });
 
   it('should throw an error because the creation of auth return a null', async () => {
-    authRepository.createAuth.mockResolvedValue(null);
+    authRepository.createAuth.mockRejectedValue(new InternalServerErrorException());
 
     await expect(usecase.execute(googleProfile)).rejects.toThrow(
       InternalServerErrorException,

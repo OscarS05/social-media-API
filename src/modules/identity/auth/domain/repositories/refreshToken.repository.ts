@@ -5,7 +5,7 @@ import {
 import { RefreshTokenEntity } from '../entities/refreshToken.entity';
 
 export interface IRefreshTokenRepository {
-  create(refreshTokenEntity: RefreshTokenEntity): Promise<RefreshTokenEntity | null>;
+  create(refreshTokenEntity: RefreshTokenEntity): Promise<RefreshTokenEntity>;
 
   update(
     refreshTokenId: string,
@@ -17,7 +17,7 @@ export interface IRefreshTokenRepository {
     changes: UpdateRefreshTokenDto,
   ): Promise<DbResponseToUpdate>;
 
-  findByIdAndUserId(tokenId: string, userId: string): Promise<RefreshTokenEntity | null>;
+  findByIdAndUserId(tokenId: string, userId: string): Promise<RefreshTokenEntity>;
 
   findAllByUserId(userId: string): Promise<RefreshTokenEntity[] | []>;
 }

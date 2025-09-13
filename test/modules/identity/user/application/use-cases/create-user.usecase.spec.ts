@@ -45,7 +45,7 @@ describe('CreateUserUseCase', () => {
   });
 
   it('should throw an error because the creation of user return a null', async () => {
-    userRepository.createUser.mockResolvedValue(null);
+    userRepository.createUser.mockRejectedValue(new InternalServerErrorException());
 
     await expect(usecase.execute(name)).rejects.toThrow(InternalServerErrorException);
   });

@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
 import type { IUuidService } from '../../../domain/services/uuid.service';
@@ -20,8 +20,13 @@ export class RegisterUserWithGoogleUseCase {
     const userExists = await this.userExists(googleProfile);
     if (userExists) return userExists;
 
-    const newUser: UserEntity = await this.createUser(googleProfile);
-    const newAuth: AuthEntity = await this.createAuth(googleProfile, newUser.id);
+    const newUser: UserEntity = await this.createUserUseCase.execute(googleProfile.name);
+    const authEntity: AuthEntity = this.prepareDataToCreateAuth(
+      googleProfile,
+      newUser.id,
+    );
+    const newAuth: AuthEntity = await this.authRepository.createAuth(authEntity);
+
     return {
       user: { ...newUser, email: newAuth.getEmail ?? '' },
     };
@@ -42,24 +47,6 @@ export class RegisterUserWithGoogleUseCase {
     }
 
     return null;
-  }
-
-  private async createUser(googleProfile: GoogleProvider): Promise<UserEntity> {
-    return this.createUserUseCase.execute(googleProfile.name);
-  }
-
-  private async createAuth(
-    googleProfile: GoogleProvider,
-    userId: string,
-  ): Promise<AuthEntity> {
-    const authEntity: AuthEntity = this.prepareDataToCreateAuth(googleProfile, userId);
-    const newAuth: AuthEntity | null = await this.authRepository.createAuth(authEntity);
-
-    if (!newAuth) {
-      throw new InternalServerErrorException('Something went wrong creating the user');
-    }
-
-    return newAuth;
   }
 
   private prepareDataToCreateAuth(
