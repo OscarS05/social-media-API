@@ -1,9 +1,13 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import type { IAuthRepository } from '../../../domain/repositories/auth.repository';
 import type { IHasherService } from '../../../domain/services/password-hasher.service';
 import { AuthEntity } from '../../../domain/entities/auth.entity';
 import { UserEntity } from '../../../domain/entities/user.entity';
+import {
+  InvalidEmailError,
+  InvalidPasswordError,
+} from '../../../domain/errors/auth.errors';
 
 @Injectable()
 export class LoginUseCase {
@@ -13,7 +17,7 @@ export class LoginUseCase {
   ) {}
 
   public async execute(email: string, password: string): Promise<{ user: UserEntity }> {
-    const authEntity: AuthEntity = await this.validEmail(email);
+    const authEntity: AuthEntity = await this.existsUser(email);
 
     authEntity.ensureValidProvider();
 
@@ -26,11 +30,11 @@ export class LoginUseCase {
     };
   }
 
-  private async validEmail(email: string): Promise<AuthEntity> {
+  private async existsUser(email: string): Promise<AuthEntity> {
     const result: AuthEntity | null = await this.authRepository.findByEmail(email);
 
     if (result === null) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new InvalidEmailError('Unauthorized');
     }
 
     return result;
@@ -46,7 +50,7 @@ export class LoginUseCase {
     );
 
     if (!isValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new InvalidPasswordError('Unauthorized');
     }
 
     return true;

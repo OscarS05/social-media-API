@@ -1,8 +1,11 @@
 import { LoginUseCase } from '../../../../../../../src/modules/identity/auth/application/use-cases/auth/Login.usecase';
 import { IAuthRepositoryMock } from '../../../infrastructure/adapters/repositories/auth.repository';
 import { IHasherServiceMock } from '../../../infrastructure/adapters/services/hasher.service';
-import { UnauthorizedException } from '@nestjs/common';
 import { authModule } from '../../../auth.module-mock';
+import {
+  InvalidEmailError,
+  InvalidPasswordError,
+} from '../../../../../../../src/modules/identity/auth/domain/errors/auth.errors';
 
 describe('LoginUseCase', () => {
   let usecase: LoginUseCase;
@@ -56,7 +59,7 @@ describe('LoginUseCase', () => {
     authRepository.findByEmail.mockResolvedValue(null);
 
     await expect(() => usecase.execute(email, password)).rejects.toThrow(
-      UnauthorizedException,
+      InvalidEmailError,
     );
   });
 
@@ -64,7 +67,7 @@ describe('LoginUseCase', () => {
     hasherServiceMock.compare.mockResolvedValue(false);
 
     await expect(() => usecase.execute(email, password)).rejects.toThrow(
-      UnauthorizedException,
+      InvalidPasswordError,
     );
   });
 });

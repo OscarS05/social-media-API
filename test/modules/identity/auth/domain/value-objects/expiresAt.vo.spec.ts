@@ -15,7 +15,9 @@ describe('ExpiresAtVO test', () => {
   });
 
   it('should return a date from a string', () => {
-    const value = '10/09/2025';
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
+    const value = futureDate.toISOString();
     expect(new ExpiresAtVO(value).get()).toBeInstanceOf(Date);
   });
 

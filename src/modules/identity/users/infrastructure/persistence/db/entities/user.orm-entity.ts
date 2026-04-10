@@ -16,15 +16,15 @@ import { ApiProperty } from '@nestjs/swagger';
 export class User extends BaseEntity {
   @ApiProperty({ description: 'The id of the user', example: '1319-4c9a-1319-' })
   @PrimaryColumn('varchar', { length: 36 })
-  id: string;
+  id!: string;
 
   @ApiProperty({ description: 'The user name' })
   @Column('varchar', { length: 255 })
-  name: string;
+  name!: string;
 
   @ApiProperty({ description: 'The user role', example: Roles.MEMBER })
   @Column({ type: 'enum', enum: Roles, default: Roles.MEMBER })
-  role: Roles;
+  role!: Roles;
 
   @ApiProperty({
     description: 'The date the user authentication method was deleted',
@@ -40,7 +40,7 @@ export class User extends BaseEntity {
     default: () => 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty({ description: 'The date the user authentication method was updated' })
   @UpdateDateColumn({
@@ -50,15 +50,15 @@ export class User extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   // Relations
   //   @OneToMany(() => Profile, (p) => p.user)
   //   profiles: Profile[];
 
   @OneToMany(() => Auth, (auth) => auth.user)
-  auth: Auth[];
+  auth!: Auth[];
 
   @OneToMany(() => RefreshToken, (RefreshToken) => RefreshToken.user)
-  refreshTokens: RefreshToken[];
+  refreshTokens!: RefreshToken[];
 }

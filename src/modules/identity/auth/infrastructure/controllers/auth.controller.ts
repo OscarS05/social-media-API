@@ -1,11 +1,20 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 import { UserEntity } from '../../domain/entities/user.entity';
 import { RegisterUserUseCase } from '../../application/use-cases/auth/Register-user.usecase';
 import { GenerateTokensUseCase } from '../../application/use-cases/auth/generate-tokens.usecase';
-import { LoginDto, RegisterDto } from '../dtos/auth.dto';
+import { LoginDto, RefreshTokenDto, RegisterDto } from '../dtos/auth.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { User } from '../../../users/infrastructure/persistence/db/entities/user.orm-entity';
 import { mapDomainErrorToHttp } from '../mappers/error.mapper';
@@ -14,6 +23,13 @@ import { GoogleProvider } from '../../domain/services/googleProvider.service';
 import { RegisterUserWithFacebookUseCase } from '../../application/use-cases/auth/register-user-with-facebook.usecase';
 import { FacebookProvider } from '../../domain/services/facebookProvider.service';
 import { UserWrapperResponseDto } from '../../../users/infrastructure/dtos/user.dto';
+import { RefreshToken } from '../../../../../shared/services/decorators/refreshToken.decorator';
+import { UserAgent } from '../../../../../shared/services/decorators/userAgent.decorators';
+import { IpAddress } from '../../../../../shared/services/decorators/ipAddress.decorator';
+import { VerifyRefreshTokenUseCase } from '../../application/use-cases/refresh-token/verify-refresh-token.usecase';
+import { InvalidTokenError } from '../../domain/errors/refreshToken.errors';
+import { RevokeRefreshTokenUseCase } from '../../application/use-cases/refresh-token/revoke-refresh-token.usecase';
+import { UpdateRefreshTokenUseCase } from '../../application/use-cases/refresh-token/update-refresh-token.usecase';
 
 @Controller('auth')
 @ApiExtraModels(User)
@@ -23,6 +39,9 @@ export class AuthController {
     private readonly generateTokens: GenerateTokensUseCase,
     private readonly registerUserWithGoogle: RegisterUserWithGoogleUseCase,
     private readonly registerUserWithFacebook: RegisterUserWithFacebookUseCase,
+    private readonly verifyRefreshTokenUseCase: VerifyRefreshTokenUseCase,
+    private readonly revokeRefreshTokenUseCase: RevokeRefreshTokenUseCase,
+    private readonly updateRefreshToken: UpdateRefreshTokenUseCase,
   ) {}
 
   @ApiOperation({
@@ -135,5 +154,52 @@ export class AuthController {
       message: 'Facebook login successful',
       user,
     };
+  }
+
+  @ApiOperation({
+    summary: 'Refresh the tokens',
+    description:
+      'Refresh the access token and the refresh token using the refresh token, user agent and ip address',
+  })
+  @ApiResponse({
+    description:
+      'AccessToken was refreshed, and refresh token was updated and sent in cookie',
+    status: 200,
+    type: RefreshTokenDto,
+  })
+  @Post('refresh')
+  async refreshTokens(
+    @RefreshToken() refreshToken: string,
+    @UserAgent() userAgent: string,
+    @IpAddress() ipAddress: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      const sessionDataVerified = await this.verifyRefreshTokenUseCase.execute(
+        refreshToken,
+        userAgent,
+        ipAddress,
+      );
+      const { refreshToken: newRefreshToken } =
+        await this.updateRefreshToken.execute(sessionDataVerified);
+      const accessToken = this.generateTokens.execute({
+        id: sessionDataVerified.userId,
+        role: sessionDataVerified.role,
+      } as UserEntity);
+
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
+      return { accessToken };
+    } catch (error) {
+      if (error instanceof InvalidTokenError) {
+        await this.revokeRefreshTokenUseCase.execute(refreshToken);
+      }
+      throw mapDomainErrorToHttp(error as Error);
+    }
   }
 }

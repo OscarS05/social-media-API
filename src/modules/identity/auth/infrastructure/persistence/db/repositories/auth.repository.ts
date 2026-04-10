@@ -33,12 +33,10 @@ export class AuthRepository implements IAuthRepository {
     return AuthMapper.toDomain(result);
   }
 
-  async createAuth(authData: AuthEntity): Promise<AuthEntity | null> {
+  async createAuth(authData: AuthEntity): Promise<AuthEntity> {
     const ormAuth: AuthOrm = AuthMapper.toOrm(authData);
-    const createAuth: AuthOrm | null = this.ormRepo.create(ormAuth);
-    const savedAuth: AuthOrm | null = await this.ormRepo.save(createAuth);
-
-    if (!savedAuth) return null;
+    const createAuth: AuthOrm = this.ormRepo.create(ormAuth);
+    const savedAuth: AuthOrm = await this.ormRepo.save(createAuth);
 
     return AuthMapper.toDomain(savedAuth);
   }

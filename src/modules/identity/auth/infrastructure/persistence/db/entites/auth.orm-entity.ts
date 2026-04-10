@@ -22,18 +22,18 @@ import { ApiProperty } from '@nestjs/swagger';
 export class Auth extends BaseEntity {
   @ApiProperty({ description: 'The id of the auth', example: '1319-4c9a-6c068' })
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  id: string;
+  id!: string;
 
   @ManyToOne(() => User, (user) => user.auth, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @ApiProperty({
     description: 'The userId to whom the auth belongs',
     example: '8ef7-6e71d206c068',
   })
   @Column({ name: 'user_id', type: 'varchar' })
-  userId: string;
+  userId!: string;
 
   @ApiProperty({
     description: 'The email of the user for auth',
@@ -55,7 +55,7 @@ export class Auth extends BaseEntity {
     example: AuthProvider.GOOGLE,
   })
   @Column({ type: 'enum', enum: AuthProvider, default: AuthProvider.LOCAL })
-  provider: AuthProvider;
+  provider!: AuthProvider;
 
   @ApiProperty({
     description:
@@ -79,7 +79,7 @@ export class Auth extends BaseEntity {
       'User verified by email or by third-party provider by signing in with Google or Facebook',
   })
   @Column({ name: 'is_verified', type: 'boolean', default: false })
-  isVerified: boolean;
+  isVerified!: boolean;
 
   @ApiProperty({
     description: 'The date the user authentication method was removed',
@@ -100,7 +100,7 @@ export class Auth extends BaseEntity {
     default: () => 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @ApiProperty({ description: 'The date the user authentication method was updated' })
   @UpdateDateColumn({
@@ -110,5 +110,5 @@ export class Auth extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

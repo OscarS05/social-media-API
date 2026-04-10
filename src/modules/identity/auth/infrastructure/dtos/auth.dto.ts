@@ -1,25 +1,30 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(30)
+  @Length(3, 30)
   @ApiProperty({ description: 'user name' })
-  name: string;
+  name!: string;
 
   @IsNotEmpty()
   @IsEmail()
   @ApiProperty({ description: 'user email' })
-  email: string;
+  email!: string;
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(8)
-  @MaxLength(36)
+  @Length(8, 36)
   @ApiProperty({ description: 'user password' })
-  password: string;
+  password!: string;
 }
 
 export class LoginDto extends OmitType(RegisterDto, ['name']) {}
+
+export class RefreshTokenDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ description: 'access token' })
+  accessToken!: string;
+}

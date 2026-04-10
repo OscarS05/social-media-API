@@ -19,33 +19,33 @@ import type { UserAgentParsed } from '../../../../domain/services/userAgent.serv
 @Index(['tokenHashed'])
 export class RefreshToken extends BaseEntity {
   @PrimaryColumn({ type: 'varchar', length: 36 })
-  id: string;
+  id!: string;
 
   @ManyToOne(() => User, (user) => user.refreshTokens, {
     onDelete: 'CASCADE',
     nullable: false,
   })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user!: User;
 
   @Column({ name: 'user_id', type: 'varchar' })
-  userId: string;
+  userId!: string;
 
   @Exclude()
   @Column({ type: 'varchar', name: 'token_hashed', length: 255 })
-  tokenHashed: string;
+  tokenHashed!: string;
 
   @Column({ type: 'json', name: 'user_agent', nullable: false })
-  userAgent: UserAgentParsed;
+  userAgent!: UserAgentParsed;
 
   @Column({ type: 'varchar', name: 'ip_address', length: 255, nullable: false })
-  ipAddress: string;
+  ipAddress!: string;
 
   @Column({ name: 'revoked', type: 'boolean', default: false })
-  revoked: boolean;
+  revoked!: boolean;
 
   @Column({ name: 'expires_at', type: 'timestamp', precision: 0 })
-  expiresAt: Date;
+  expiresAt!: Date;
 
   @CreateDateColumn({
     name: 'created_at',
@@ -53,7 +53,7 @@ export class RefreshToken extends BaseEntity {
     default: () => 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
@@ -62,5 +62,5 @@ export class RefreshToken extends BaseEntity {
     onUpdate: 'CURRENT_TIMESTAMP',
     precision: 0,
   })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

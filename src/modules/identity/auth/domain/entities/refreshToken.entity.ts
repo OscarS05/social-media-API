@@ -8,6 +8,7 @@ import { AuthIdVO } from '../value-objects/authId.vo';
 import { ExpiresAtVO } from '../value-objects/expiresAt.vo';
 import { IPAddressVO } from '../value-objects/ipAddress.vo';
 import { TokenHashedVO } from '../value-objects/tokenHashed.vo';
+import { UserEntity } from './user.entity';
 
 export class RefreshTokenEntity {
   constructor(
@@ -20,6 +21,7 @@ export class RefreshTokenEntity {
     private expiresAt: Date,
     public readonly createdAt: Date,
     public updatedAt: Date,
+    readonly user?: UserEntity,
   ) {
     this.id = new AuthIdVO(id).get();
     this.userId = new AuthIdVO(userId).get();

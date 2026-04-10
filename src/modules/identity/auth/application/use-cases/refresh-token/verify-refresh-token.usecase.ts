@@ -21,6 +21,7 @@ import {
 } from '../../../domain/errors/refreshToken.errors';
 import { UserAgentVO } from '../../../domain/value-objects/userAgent.vo';
 import { SessionDataVerified } from '../../../domain/dtos/verifiedSession.dto';
+import { Roles } from '../../../domain/enums/roles.enum';
 
 @Injectable()
 export class VerifyRefreshTokenUseCase {
@@ -54,6 +55,7 @@ export class VerifyRefreshTokenUseCase {
     return {
       refreshTokenId: refreshTokenEntity.getId,
       userId: payload.sub,
+      role: refreshTokenEntity.user?.role ?? Roles.MEMBER,
     };
   }
 

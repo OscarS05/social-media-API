@@ -9,11 +9,10 @@ import { UserMapper } from '../../mappers/user.mapper';
 export class UserRepository implements IUserRepository {
   constructor(@InjectRepository(User) private readonly ormRepo: Repository<User>) {}
 
-  async createUser(userData: UserEntity): Promise<UserEntity | null> {
+  async createUser(userData: UserEntity): Promise<UserEntity> {
     const ormUser: User = UserMapper.toOrm(userData);
     const newUser: User = this.ormRepo.create(ormUser);
-    const savedUser: User | null = await this.ormRepo.save(newUser);
-    if (!savedUser) return null;
+    const savedUser: User = await this.ormRepo.save(newUser);
 
     return UserMapper.toDomain(savedUser);
   }

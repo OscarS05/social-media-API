@@ -25,7 +25,7 @@ export class RegisterUserWithFacebookUseCase {
       facebookProfile,
       newUser.id,
     );
-    const newAuth: AuthEntity | null = await this.authRepository.createAuth(authEntity);
+    const newAuth: AuthEntity = await this.authRepository.createAuth(authEntity);
 
     return {
       user: { ...newUser, email: newAuth.getEmail ?? '' },

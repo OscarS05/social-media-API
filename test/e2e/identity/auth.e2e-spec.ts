@@ -54,18 +54,19 @@ describe('Auth e2e - identity/auth', () => {
     });
 
     it('400 with wrong password', async () => {
+      const wrongPassword = 'wrongpassword';
       await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email, password: 'b2' })
+        .send({ email, password: wrongPassword })
         .expect(400);
     });
 
     it('400 with wrong email', async () => {
-      email = 'admin@test@com';
+      const wrongEmail = 'admin@test@hola.com';
 
       await request(app.getHttpServer())
         .post('/auth/login')
-        .send({ email, password: 'password' })
+        .send({ email: wrongEmail, password })
         .expect(400);
     });
   });

@@ -27,8 +27,8 @@ export class EmailAlreadyInUseError extends DomainError {
 }
 
 export class InvalidEmailError extends DomainError {
-  constructor() {
-    super('Invalid email.');
+  constructor(message?: string | string[]) {
+    super(Array.isArray(message) ? message.join(', ') : message || 'Invalid email.');
     this.name = 'InvalidEmailError';
   }
 }
@@ -41,8 +41,8 @@ export class InvalidIdError extends DomainError {
 }
 
 export class InvalidPasswordError extends DomainError {
-  constructor() {
-    super('Invalid password');
+  constructor(message?: string) {
+    super(message || 'Invalid password');
     this.name = 'InvalidPasswordError';
   }
 }
