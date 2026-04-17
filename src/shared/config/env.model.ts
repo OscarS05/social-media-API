@@ -2,6 +2,7 @@ export interface Env {
   // App
   PORT: number;
   URL_CLIENT: string;
+  APP_URL: string;
 
   // DB
   MYSQL_HOST: string;
@@ -15,9 +16,9 @@ export interface Env {
 
   // JWT
   ACCESS_SECRET: string;
-  ACCESS_EXPIRES_IN: string;
+  ACCESS_EXPIRES_IN: number;
   REFRESH_SECRET: string;
-  REFRESH_EXPIRES_IN: string;
+  REFRESH_EXPIRES_IN: number;
 
   // Google OAuth2.0
   GOOGLE_CLIENT_ID: string;

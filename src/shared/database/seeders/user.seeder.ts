@@ -1,55 +1,53 @@
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DataSource, Repository } from 'typeorm';
 
-import { User } from '../../../modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
-import { Roles } from '../../../modules/identity/users/domain/entities/roles.enum';
-import { userFactoryData } from '../factories/user.factory';
-
-type UserSeederResult = { adminUser: User; usersSaved: User[] };
+import { User as UserORM } from '../../../modules/auth/infrastructure/persistence/db/entites/user.orm-entity';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factories/user.factory';
 
 export default class UserSeeder implements Seeder {
   constructor(
+    private readonly dataSource: DataSource,
+    private readonly factoryManager?: SeederFactoryManager,
     private howMuchUsers: number = 10,
-    private id: string = '70a35f48-3335-454a-833f-4b359e3c658a',
-    private name: string = 'admin-test',
-    private role: Roles = Roles.ADMIN,
   ) {}
 
-  async run(
-    dataSource: DataSource,
-    factoryManager: SeederFactoryManager,
-  ): Promise<UserSeederResult> {
-    const userRepository = dataSource.getRepository(User);
-    const userFactory = factoryManager.get(User);
+  // To local development — use faker with factoryManager
+  async run(): Promise<{ admin: UserORM; users: UserORM[] }> {
+    if (!this.factoryManager) throw new Error('FactoryManager is required to run seeders');
 
-    const adminUser = this.createAdmin(userRepository);
-    await userRepository.save(adminUser);
+    const userRepository = this.dataSource.getRepository(UserORM);
+    const userFactory = this.factoryManager.get(UserORM);
 
-    const usersSaved = await userFactory.saveMany(this.howMuchUsers);
-
-    return { adminUser, usersSaved };
+    return {
+      admin: await userRepository.save(this.buildFromConstants(userRepository, SEEDED_ADMIN)),
+      users: await userFactory.saveMany(this.howMuchUsers),
+    };
   }
 
-  async runTestSeeders(dataSource: DataSource): Promise<UserSeederResult> {
-    const userRepository = dataSource.getRepository(User);
+  // For tests e2e — datos fijos y predecibles, sin faker
+  async runTestSeeders(): Promise<UserORM[]> {
+    const userRepository = this.dataSource.getRepository(UserORM);
 
-    const adminUser = this.createAdmin(userRepository);
-    await userRepository.save(adminUser);
-
-    const usersSaved: User[] = [];
-    for (let i = 0; i < this.howMuchUsers; i++) {
-      usersSaved.push(userRepository.create(userFactoryData()));
-    }
-    await Promise.all(usersSaved.map((user) => userRepository.save(user)));
-
-    return { adminUser, usersSaved };
+    return userRepository.save([
+      this.buildFromConstants(userRepository, SEEDED_ADMIN),
+      this.buildFromConstants(userRepository, SEEDED_MEMBER),
+    ]);
   }
 
-  private createAdmin(userRepository: Repository<User>) {
+  private buildFromConstants(
+    userRepository: Repository<UserORM>,
+    data: typeof SEEDED_ADMIN | typeof SEEDED_MEMBER,
+  ): UserORM {
     return userRepository.create({
-      id: this.id,
-      name: this.name,
-      role: this.role,
+      id: data.id,
+      name: data.name,
+      role: data.role,
+      email: data.email,
+      password: data.passwordHashed,
+      provider: data.provider,
+      providerId: null,
+      resetToken: null,
+      isVerified: data.isVerified,
       createdAt: new Date(),
       updatedAt: new Date(),
       deletedAt: null,

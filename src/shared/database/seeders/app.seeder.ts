@@ -2,38 +2,28 @@ import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { DataSource } from 'typeorm';
 
 import UserSeeder from './user.seeder';
-import AuthSeeder from './auth.seeder';
-import { User } from '../../../../src/modules/identity/users/infrastructure/persistence/db/entities/user.orm-entity';
-import { Auth } from '../../../../src/modules/identity/auth/infrastructure/persistence/db/entites/auth.orm-entity';
+import SessionSeeder from './session.seeder';
+import { User as UserORM } from '../../../modules/auth/infrastructure/persistence/db/entites/user.orm-entity';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factories/user.factory';
 
 export default class MainSeeder implements Seeder {
+  constructor() {}
+
   public async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    const { adminUser, usersSaved } = await new UserSeeder().run(
-      dataSource,
-      factoryManager,
-    );
-
-    await new AuthSeeder(adminUser, usersSaved, 1).run(dataSource, factoryManager);
+    const { admin, users } = await new UserSeeder(dataSource, factoryManager).run();
+    await new SessionSeeder(admin, users, 3, dataSource, factoryManager).run();
   }
 
-  public async runTestSeeders(
-    dataSource: DataSource,
-    howMuchUsers: number = 1,
-    howMuchAuthxUser: number = 1,
-  ): Promise<{ adminUser: User; authAdmin: Auth }> {
-    const { adminUser, usersSaved } = await new UserSeeder(howMuchUsers).runTestSeeders(
+  public async runTestSeeders(dataSource: DataSource): Promise<void> {
+    await new UserSeeder(dataSource).runTestSeeders();
+    await new SessionSeeder(
+      SEEDED_ADMIN as unknown as UserORM,
+      [SEEDED_MEMBER as unknown as UserORM],
+      2,
       dataSource,
-    );
-
-    const authAdmin = await new AuthSeeder(
-      adminUser,
-      usersSaved,
-      howMuchAuthxUser,
-    ).runTestSeeders(dataSource);
-
-    return { adminUser, authAdmin };
+    ).runTestSeeders();
   }
 }

@@ -4,6 +4,7 @@ export const validationSchema = Joi.object({
   // App
   PORT: Joi.number().required(),
   URL_CLIENT: Joi.string().required(),
+  APP_URL: Joi.string().required(),
 
   // DB
   MYSQL_HOST: Joi.string().required(),
@@ -17,9 +18,9 @@ export const validationSchema = Joi.object({
 
   // JWT
   ACCESS_SECRET: Joi.string().required(),
-  ACCESS_EXPIRES_IN: Joi.string().required(),
+  ACCESS_EXPIRES_IN: Joi.number().required(),
   REFRESH_SECRET: Joi.string().required(),
-  REFRESH_EXPIRES_IN: Joi.string().required(),
+  REFRESH_EXPIRES_IN: Joi.number().required(),
 
   // Google OAuth2.0
   GOOGLE_CLIENT_ID: Joi.string().required(),

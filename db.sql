@@ -1,12 +1,44 @@
 -- USERS
 CREATE TABLE users (
   id VARCHAR(36) NOT NULL,
-  name VARCHAR(255) NOT NULL,
+  name VARCHAR(80) NOT NULL,
   role ENUM('member', 'admin') NOT NULL DEFAULT 'member',
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
+
+  -- Auth
+  email VARCHAR(80) NOT NULL,
+  password VARCHAR(255) NULL,
+  provider ENUM('local','google','facebook') NOT NULL DEFAULT 'local',
+  provider_id VARCHAR(255) NULL,
+  reset_token VARCHAR(255) NULL,
+  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
+  deleted_at TIMESTAMP NULL DEFAULT NULL,
+
+  PRIMARY KEY (id),
+  UNIQUE KEY users_email_unique (email, deleted_at),
+  UNIQUE KEY users_oauth_unique (provider, provider_id, deleted_at),
+  INDEX (email),
+  INDEX (provider_id, provider)
+);
+
+-- SESSIONS
+CREATE TABLE sessions (
+  id VARCHAR(36) NOT NULL,
+  user_id VARCHAR(36) NOT NULL,
+  token_hashed VARCHAR(255) NOT NULL,
+  version INT NOT NULL,
+  user_agent JSON NOT NULL,
+  ip_address VARCHAR(45) NULL,
+  revoked BOOLEAN NOT NULL DEFAULT FALSE,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX (user_id),
+  INDEX (id, revoked),
+  CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- PROFILES
@@ -29,57 +61,19 @@ CREATE TABLE profiles (
   CONSTRAINT profiles_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- AUTH
-CREATE TABLE auth (
-  id VARCHAR(36) NOT NULL,
-  user_id VARCHAR(36) NOT NULL,
-  email VARCHAR(255) NULL,
-  password VARCHAR(255) NULL,
-  provider ENUM('local','google','facebook') NOT NULL DEFAULT 'local',
-  provider_user_id VARCHAR(255) NULL,
-  reset_token VARCHAR(255) NULL,
-  is_verified BOOLEAN NOT NULL DEFAULT FALSE,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY oauth_unique (provider, provider_user_id, deleted_at),
-  INDEX (provider_user_id, provider),
-  INDEX (email),
-  CONSTRAINT auth_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
--- REFRESH_TOKENS
-CREATE TABLE refresh_tokens (
-  id VARCHAR(36) NOT NULL,
-  user_id VARCHAR(36) NOT NULL,
-  token_hashed VARCHAR(255) NOT NULL,
-  user_agent VARCHAR(255) NULL,
-  ip_address VARCHAR(45) NULL,
-  revoked BOOLEAN NOT NULL DEFAULT FALSE,
-  expires_at TIMESTAMP NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  INDEX (user_id),
-  INDEX (token_hashed),
-  CONSTRAINT fk_refresh_tokens_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
 -- FOLLOWS
 CREATE TABLE follows (
   id VARCHAR(36) NOT NULL,
   follower_id VARCHAR(36) NOT NULL,
   following_id VARCHAR(36) NOT NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
   PRIMARY KEY (id),
-  UNIQUE KEY follows_unique_active (follower_id, following_id, deleted_at),
-  CONSTRAINT follows_follower_fk FOREIGN KEY (follower_id) REFERENCES profiles(id) ON DELETE CASCADE,
-  CONSTRAINT follows_following_fk FOREIGN KEY (following_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  UNIQUE KEY follows_unique (follower_id, following_id),
   INDEX (following_id),
   INDEX (follower_id),
-  INDEX (created_at)
+  CONSTRAINT follows_follower_fk FOREIGN KEY (follower_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT follows_following_fk FOREIGN KEY (following_id) REFERENCES profiles(id) ON DELETE CASCADE
 );
 
 -- BLOCKS
@@ -111,52 +105,38 @@ CREATE TABLE posts (
   CONSTRAINT posts_profile_fk FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
 );
 
--- LIKES_POSTS
-CREATE TABLE likes_posts (
+-- LIKES
+CREATE TABLE likes (
   id VARCHAR(36) NOT NULL,
-  post_id VARCHAR(36) NOT NULL,
   profile_id VARCHAR(36) NOT NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
+  likeable_type ENUM('post', 'comment') NOT NULL,
+  likeable_id VARCHAR(36) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
   PRIMARY KEY (id),
-  UNIQUE KEY likes_posts_unique_active (post_id, profile_id, deleted_at),
-  CONSTRAINT likes_posts_post_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-  CONSTRAINT likes_posts_profile_fk FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
-  INDEX (profile_id),
-  INDEX (post_id)
+  UNIQUE KEY unique_like (profile_id, likeable_type, likeable_id),
+  INDEX (likeable_type, likeable_id),
+  CONSTRAINT fk_like_profile FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
 );
 
 -- COMMENTS
 CREATE TABLE comments (
   id VARCHAR(36) NOT NULL,
-  profile_id VARCHAR(36) NULL,
   post_id VARCHAR(36) NOT NULL,
-  parent_comment_id VARCHAR(36) NULL,
+  profile_id VARCHAR(36) NOT NULL,
+  parent_id VARCHAR(36) NULL,          -- NULL = comentario raíz, valor = respuesta a otro comentario
   content TEXT NOT NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL DEFAULT NULL,
+
   PRIMARY KEY (id),
   INDEX (post_id),
   INDEX (profile_id),
-  CONSTRAINT comments_profile_fk FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE SET NULL,
-  CONSTRAINT comments_post_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
-  CONSTRAINT comments_parent_fk FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE
-);
-
--- LIKES_COMMENTS
-CREATE TABLE likes_comments (
-  id VARCHAR(36) NOT NULL,
-  comment_id VARCHAR(36) NOT NULL,
-  profile_id VARCHAR(36) NOT NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY likes_comments_unique_active (comment_id, profile_id, deleted_at),
-  CONSTRAINT likes_comments_comment_fk FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
-  CONSTRAINT likes_comments_profile_fk FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
-  INDEX (profile_id),
-  INDEX (comment_id)
+  INDEX (parent_id),
+  CONSTRAINT fk_comment_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+  CONSTRAINT fk_comment_profile FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
+  CONSTRAINT fk_comment_parent FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
 );
 
 -- NOTIFICATIONS
