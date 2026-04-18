@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 
-import { AccessTokenGuard } from './services/guards/accesToken.guard';
+import { AccessTokenGuard } from './services/guards/accessToken.guard';
 import { TokenService } from '../modules/auth/domain/services/token.service';
 import { JwtTokenService } from '../modules/auth/infrastructure/services/security/jwt.service';
 

@@ -25,8 +25,12 @@ export class AccessTokenGuard implements CanActivate {
     const token = authHeaders.replace('Bearer ', '');
     if (!token) throw new UnauthorizedException();
 
-    const payload = this.tokenService.verifyAccessToken(token);
-    request['user'] = payload;
-    return true;
+    try {
+      const payload = this.tokenService.verifyAccessToken(token);
+      request['user'] = payload;
+      return true;
+    } catch {
+      throw new UnauthorizedException();
+    }
   }
 }

@@ -31,10 +31,12 @@ import { AccessToken } from '../../../../shared/services/decorators/accessToken.
 import { RefreshSessionUseCase } from '../../application/use-cases/session/refresh-session.usecase';
 import { clearCookie, setCookie } from '../helpers/cookie.helper';
 import { UserBasic } from '../../domain/types/user';
-import { AccessTokenGuard } from '../../../../shared/services/guards/accesToken.guard';
+import { AccessTokenGuard } from '../../../../shared/services/guards/accessToken.guard';
 import { CurrentUser } from '../../../../shared/services/decorators/currentUser.decorator';
 import { RevokeOneSessionUseCase } from '../../application/use-cases/session/revoke-one-session.usecase';
 import { Public } from '../../../../shared/services/decorators/public.decorator';
+import { FindAllSessionsUseCase } from '../../application/use-cases/session/find-all-session.usecase';
+import { SessionResponseDto } from '../dtos/session.dto';
 
 @Controller('auth')
 @ApiExtraModels(User)
@@ -45,6 +47,7 @@ export class AuthController {
     private readonly loginWithOAuthUseCase: LoginWithOAuthUseCase,
     private readonly refreshSessionUseCase: RefreshSessionUseCase,
     private readonly revokeOneSessionUseCase: RevokeOneSessionUseCase,
+    private readonly findAllSessionsUseCase: FindAllSessionsUseCase,
   ) {}
 
   @ApiOperation({
@@ -181,8 +184,29 @@ export class AuthController {
   }
 
   @ApiOperation({
+    summary: 'Find all sessions',
+    description: 'Find all user sessions',
+  })
+  @ApiResponse({
+    description: 'It returns all user sessions',
+    status: 200,
+    type: SessionResponseDto,
+  })
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(200)
+  @Get('sessions')
+  async sessions(@CurrentUser() user: PayloadAccessToken): Promise<SessionResponseDto[]> {
+    try {
+      const sessions = await this.findAllSessionsUseCase.execute(user.sub);
+      return sessions.map((session) => SessionResponseDto.fromDomain(session));
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
+  }
+
+  @ApiOperation({
     summary: 'Logout',
-    description: 'Logout',
+    description: 'It revokes the session in DB',
   })
   @ApiResponse({
     description: 'It only returns a 204 http status code',

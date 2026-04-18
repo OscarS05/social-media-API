@@ -22,6 +22,7 @@ import {
 import { Session as SessionORM } from '../../../src/modules/auth/infrastructure/persistence/db/entites/sessions.orm-entity';
 import { Roles } from '../../../src/modules/auth/domain/enums/roles.enum';
 import { TokenDto } from '../../../src/modules/auth/infrastructure/dtos/auth.dto';
+import { SessionResponseDto } from '../../../src/modules/auth/infrastructure/dtos/session.dto';
 
 describe('Auth e2e - identity/auth', () => {
   let app: INestApplication;
@@ -404,13 +405,46 @@ describe('Auth e2e - identity/auth', () => {
         .expect(401);
     });
   });
+
+  describe('GET /auth/sessions', () => {
+    let accessToken: string;
+
+    beforeAll(async () => {
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+
+      accessToken = (responseLogin.body as TokenDto).accessToken;
+    });
+
+    it('200 with a list of sessions', async () => {
+      const response = await request(server)
+        .get('/auth/sessions')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
+      const sessions = response.body as SessionResponseDto[];
+
+      expect(sessions.length).toBeGreaterThanOrEqual(1);
+      expect(sessions[0].id).toBeDefined();
+      expect(sessions[0].createdAt).toBeDefined();
+      expect(sessions[0].expiresAt).toBeDefined();
+      expect(sessions[0].device).toBeDefined();
+      expect(sessions[0].os).toBeDefined();
+      expect(sessions[0].browser).toBeDefined();
+      expect(sessions[0].ipAddress).toBeDefined();
+    });
+
+    it('401 with invalid token', async () => {
+      await request(server)
+        .get('/auth/sessions')
+        .set('Authorization', `Bearer invalidToken`)
+        .expect(401);
+    });
+  });
 });
 
 /**
-POST /auth/logout
-  ✓ 200 revoca la sesión correctamente
-  ✓ 401 sin token
-
 GET /auth/sessions
   ✓ 200 retorna lista de sesiones activas
 
