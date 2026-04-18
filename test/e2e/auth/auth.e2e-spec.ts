@@ -1,23 +1,7 @@
-/**
-POST /auth/refresh
-  ✓ 200 con refresh token válido → retorna nuevo accessToken
-  ✓ 401 con refresh token expirado o inválido
-
-POST /auth/logout
-  ✓ 200 revoca la sesión correctamente
-  ✓ 401 sin token
-
-GET /auth/sessions
-  ✓ 200 retorna lista de sesiones activas
-
-PUT /auth/revoke
-PUT /auth/revoke/id
-*/
-
 import { Server } from 'node:http';
 import { INestApplication } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -29,7 +13,7 @@ import {
   SEEDED_ADMIN,
   SEEDED_MEMBER,
 } from '../../../src/shared/database/factories/user.factory';
-import { RAW_USER_AGENT } from '../../factories/session.factory';
+import { ANOTHER_RAW_USER_AGENT, RAW_USER_AGENT } from '../../factories/session.factory';
 import {
   LoginResponse,
   PayloadAccessToken,
@@ -37,6 +21,7 @@ import {
 } from '../../../src/modules/auth/domain/types/session';
 import { Session as SessionORM } from '../../../src/modules/auth/infrastructure/persistence/db/entites/sessions.orm-entity';
 import { Roles } from '../../../src/modules/auth/domain/enums/roles.enum';
+import { TokenDto } from '../../../src/modules/auth/infrastructure/dtos/auth.dto';
 
 describe('Auth e2e - identity/auth', () => {
   let app: INestApplication;
@@ -250,4 +235,124 @@ describe('Auth e2e - identity/auth', () => {
       expect(bcrypt.compare(refreshToken, session.tokenHashed)).toBeTruthy();
     });
   });
+
+  describe('POST /auth/refresh', () => {
+    let loginRes: Response;
+    let accessToken: string;
+    let refreshToken: string;
+
+    beforeAll(async () => {
+      loginRes = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
+
+      accessToken = (loginRes.body as TokenDto).accessToken;
+      refreshToken = loginRes.headers['set-cookie'][0].split(';')[0].split('=')[1];
+    });
+
+    it('401 with invalid refresh token', async () => {
+      await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=invalidToken`)
+        .expect(401);
+    });
+
+    it('401 with expired refresh token', async () => {
+      const expiredRefreshToken = jwtService.sign(
+        { sub: SEEDED_MEMBER.id, version: 1 },
+        { expiresIn: '-1h', secret: process.env.REFRESH_SECRET },
+      );
+
+      await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${expiredRefreshToken}`)
+        .expect(401);
+    });
+
+    it('401 with invalid user agent', async () => {
+      await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', ANOTHER_RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(401);
+    });
+
+    it('returns tokens successsfully', async () => {
+      // INIT SESSION
+      const loginRes = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
+
+      const accessToken = (loginRes.body as TokenDto).accessToken;
+      const refreshToken = loginRes.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+      // REFRESH SESSION
+      const res = await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(200);
+
+      expect(res.body).toHaveProperty('accessToken');
+      const body = res.body as TokenDto;
+      const decoded: PayloadAccessToken = jwtService.decode(body.accessToken);
+      expect(decoded?.sub).toBe(SEEDED_MEMBER.id);
+      expect(decoded?.role).toBe(SEEDED_MEMBER.role);
+
+      const decodedRefresh: PayloadRefreshToken = jwtService.decode(
+        res.headers['set-cookie'][0].split(';')[0].split('=')[1],
+      );
+      expect(decodedRefresh).toHaveProperty('sub');
+      expect(decodedRefresh?.version).toBe(2); // 2nd session
+    });
+
+    // TEST WITH ANOTHER USER
+    it('401 with invalid refresh token by previous version', async () => {
+      const firstSession = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+
+      const accessTokenFirstSession = (firstSession.body as TokenDto).accessToken;
+      const refreshTokenFirstSession = firstSession.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=')[1];
+
+      const seccondSession = await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessTokenFirstSession}`)
+        .set('Cookie', `refreshToken=${refreshTokenFirstSession}`)
+        .expect(200);
+
+      const accessTokenSecondSession = (seccondSession.body as TokenDto).accessToken;
+
+      await request(server)
+        .post('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessTokenSecondSession}`)
+        .set('Cookie', `refreshToken=${refreshTokenFirstSession}`)
+        .expect(401);
+    });
+  });
 });
+
+/**
+POST /auth/logout
+  ✓ 200 revoca la sesión correctamente
+  ✓ 401 sin token
+
+GET /auth/sessions
+  ✓ 200 retorna lista de sesiones activas
+
+PUT /auth/revoke
+PUT /auth/revoke/id
+*/

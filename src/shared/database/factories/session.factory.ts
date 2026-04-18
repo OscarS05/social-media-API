@@ -23,6 +23,7 @@ const buildUserAgent = (): UserAgentParsed => ({
     vendor: faker.company.name(),
     model: faker.commerce.productName(),
   },
+  cpu: { architecture: faker.company.name() },
 });
 
 export const sessionFactoryData = (userId?: string, isTest?: boolean): SessionORM => {

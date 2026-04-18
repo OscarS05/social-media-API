@@ -134,10 +134,12 @@ export class AuthController {
     description: 'Refresh the session using access/refresh tokens, user agent and ip address',
   })
   @ApiResponse({
-    description: 'Access and refresh tokens were refreshed successfully',
+    description:
+      'If the tokens providing were valids, it update the session in DB with new token and new version, then, it returns the new tokens',
     status: 200,
     type: TokenDto,
   })
+  @HttpCode(200)
   @Post('refresh')
   async refreshTokens(
     @RefreshToken() refreshToken: string,

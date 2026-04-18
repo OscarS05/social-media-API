@@ -11,6 +11,7 @@ export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity 
       browser: { name: 'Chrome' },
       os: { name: 'Android' },
       device: { type: 'mobile', vendor: 'nokia', model: 'Lumia 635' },
+      cpu: { architecture: 'amd' },
     },
     ipAddress: '192.168.1.1',
     expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -30,7 +31,10 @@ export const USER_AGENT = {
   browser: { name: 'Firefox' },
   os: { name: 'Linux' },
   device: { type: 'desktop', vendor: 'Dell', model: 'XPS 15' },
+  cpu: { architecture: 'amd' },
 };
 export const RAW_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
+export const ANOTHER_RAW_USER_AGENT =
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0';
 export const IP_ADDRESS = '192.168.1.2';

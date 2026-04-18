@@ -4,7 +4,8 @@ import { SessionContext, Tokens } from '../../../domain/types/session';
 import { TokenService } from '../../../domain/services/token.service';
 import { SessionRepository } from '../../../domain/repositories/session.repository';
 import { HasherService } from '../../../domain/services/hasher.service';
-import { InvalidTokenError } from '../../../domain/errors/session.errors';
+import { UserAgentParsed } from '../../../domain/services/userAgent.service';
+import { InvalidTokenError } from '../../../domain/errors/auth.errors';
 
 @Injectable()
 export class RefreshSessionUseCase {
@@ -35,9 +36,8 @@ export class RefreshSessionUseCase {
       throw new InvalidTokenError();
     }
 
-    const deviceValid = Object.entries(context.userAgent).every(
-      ([key, value]) => session.userAgent[key] === value,
-    );
+    const deviceValid = this.isSameDevice(session.userAgent, context.userAgent);
+
     if (!deviceValid) {
       session.revoke();
       await this.sessionRepo.update(session.id, { revoked: true });
@@ -45,5 +45,19 @@ export class RefreshSessionUseCase {
     }
 
     return this.sessionManagerService.rotateSession(session, role);
+  }
+
+  private isSameDevice(storedAgent: UserAgentParsed, incomingAgent: UserAgentParsed): boolean {
+    const areEqual = (a: unknown, b: unknown) =>
+      a === b || (a === undefined && b === undefined);
+
+    return (
+      storedAgent.os.name === incomingAgent.os.name &&
+      storedAgent.browser.name === incomingAgent.browser.name &&
+      storedAgent.cpu.architecture === incomingAgent.cpu.architecture &&
+      areEqual(storedAgent.device.vendor, incomingAgent.device.vendor) &&
+      areEqual(storedAgent.device.type, incomingAgent.device.type) &&
+      areEqual(storedAgent.device.model, incomingAgent.device.model)
+    );
   }
 }

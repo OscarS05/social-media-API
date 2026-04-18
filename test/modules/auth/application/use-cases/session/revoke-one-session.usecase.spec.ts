@@ -4,11 +4,11 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { RevokeOneSessionUseCase } from '../../../../../../src/modules/auth/application/use-cases/session/revoke-one-session.usecase';
 import { TokenService } from '../../../../../../src/modules/auth/domain/services/token.service';
 import { SessionRepository } from '../../../../../../src/modules/auth/domain/repositories/session.repository';
-import { UnauthorizedError } from '../../../../../../src/modules/auth/domain/errors/auth.errors';
 import {
+  UnauthorizedError,
   InvalidTokenError,
-  SessionNotFoundError,
-} from '../../../../../../src/modules/auth/domain/errors/session.errors';
+} from '../../../../../../src/modules/auth/domain/errors/auth.errors';
+import { SessionNotFoundError } from '../../../../../../src/modules/auth/domain/errors/session.errors';
 import { MockJwtService } from '../../../infrastructure/adapters/services/jwtToken.service';
 import { MockSessionRepository } from '../../../infrastructure/adapters/repositories/session.repository';
 import { buildSessionEntity, REFRESH_TOKEN } from '../../../../../factories/session.factory';

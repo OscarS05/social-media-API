@@ -7,7 +7,6 @@ import { HasherService } from '../../../../../../src/modules/auth/domain/service
 import { SessionRepository } from '../../../../../../src/modules/auth/domain/repositories/session.repository';
 import { Roles } from '../../../../../../src/modules/auth/domain/enums/roles.enum';
 import { SessionContext } from '../../../../../../src/modules/auth/domain/types/session';
-import { InvalidTokenError } from '../../../../../../src/modules/auth/domain/errors/session.errors';
 import { MockJwtService } from '../../../infrastructure/adapters/services/jwtToken.service';
 import { MockHasherService } from '../../../infrastructure/adapters/services/hasher.service';
 import { MockSessionRepository } from '../../../infrastructure/adapters/repositories/session.repository';
@@ -21,6 +20,7 @@ import {
   USER_AGENT,
 } from '../../../../../factories/session.factory';
 import { sessionManagerService } from '../../../infrastructure/adapters/services/sessionManager.service';
+import { InvalidTokenError } from '../../../../../../src/modules/auth/domain/errors/auth.errors';
 
 describe('RefreshSessionUseCase', () => {
   let usecase: RefreshSessionUseCase;
