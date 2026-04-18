@@ -74,6 +74,7 @@ jobs:
       # DB configuration
       MYSQL_HOST: 127.0.0.1
       MYSQL_PORT: 3306
+      APP_URL: ${{ secrets.APP_URL }}
       MYSQL_USER: ${{ secrets.MYSQL_USER }}
       MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
       MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
