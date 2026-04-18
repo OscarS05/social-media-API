@@ -236,7 +236,7 @@ describe('Auth e2e - identity/auth', () => {
     });
   });
 
-  describe('POST /auth/refresh', () => {
+  describe('PUT /auth/refresh', () => {
     let loginRes: Response;
     let accessToken: string;
     let refreshToken: string;
@@ -253,7 +253,7 @@ describe('Auth e2e - identity/auth', () => {
 
     it('401 with invalid refresh token', async () => {
       await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=invalidToken`)
@@ -267,7 +267,7 @@ describe('Auth e2e - identity/auth', () => {
       );
 
       await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${expiredRefreshToken}`)
@@ -276,7 +276,7 @@ describe('Auth e2e - identity/auth', () => {
 
     it('401 with invalid user agent', async () => {
       await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', ANOTHER_RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
@@ -295,7 +295,7 @@ describe('Auth e2e - identity/auth', () => {
 
       // REFRESH SESSION
       const res = await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
@@ -327,7 +327,7 @@ describe('Auth e2e - identity/auth', () => {
         .split('=')[1];
 
       const seccondSession = await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessTokenFirstSession}`)
         .set('Cookie', `refreshToken=${refreshTokenFirstSession}`)
@@ -336,10 +336,71 @@ describe('Auth e2e - identity/auth', () => {
       const accessTokenSecondSession = (seccondSession.body as TokenDto).accessToken;
 
       await request(server)
-        .post('/auth/refresh')
+        .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessTokenSecondSession}`)
         .set('Cookie', `refreshToken=${refreshTokenFirstSession}`)
+        .expect(401);
+    });
+  });
+
+  describe('PUT /auth/logout', () => {
+    it('204 if the logout was successful', async () => {
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
+
+      const accessToken = (responseLogin.body as TokenDto).accessToken;
+      const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+      await request(server)
+        .put('/auth/logout')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(204);
+
+      const { jti }: PayloadRefreshToken = jwtService.decode(refreshToken);
+      const session = await sessionRepo.findOne({ where: { id: jti, revoked: true } });
+      expect(session).toBeDefined();
+    });
+
+    it('401 when trying to refresh with revoked session', async () => {
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
+
+      const accessToken = (responseLogin.body as TokenDto).accessToken;
+      const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+      await request(server)
+        .put('/auth/logout')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(204);
+
+      // Check if the revoked session works
+      await request(server)
+        .put('/auth/refresh')
+        .set('user-agent', RAW_USER_AGENT)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(404);
+    });
+
+    it('401 without token', async () => {
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
+
+      const accessToken = (responseLogin.body as TokenDto).accessToken;
+
+      await request(server)
+        .put('/auth/logout')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .set('Cookie', `refreshToken=${accessToken}`)
         .expect(401);
     });
   });

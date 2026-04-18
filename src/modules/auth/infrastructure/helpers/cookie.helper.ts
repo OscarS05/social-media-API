@@ -8,3 +8,11 @@ export const setCookie = (res: Response, name: string, token: string): void => {
     maxAge: parseInt(process.env.REFRESH_EXPIRES_IN || '86400'),
   });
 };
+
+export const clearCookie = (res: Response, name: string): void => {
+  res.clearCookie(name, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  });
+};

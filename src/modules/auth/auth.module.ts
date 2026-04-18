@@ -22,8 +22,6 @@ import { FindAllSessionsUseCase } from './application/use-cases/session/find-all
 import { RevokeAllSessionsUseCase } from './application/use-cases/session/revoke-all-sessions.usecase';
 import { UserRepositoryORM } from './infrastructure/persistence/db/repositories/user.repository';
 import { RefreshSessionUseCase } from './application/use-cases/session/refresh-session.usecase';
-import { JwtTokenService } from './infrastructure/services/security/jwt.service';
-import { TokenService } from './domain/services/token.service';
 import { HasherService } from './domain/services/hasher.service';
 import { UuidService } from './domain/services/uuid.service';
 import { SessionManagerService } from './application/services/session-manager.service';
@@ -31,11 +29,13 @@ import { SessionRepository } from './domain/repositories/session.repository';
 import { UserRepository } from './domain/repositories/user.repository';
 import { UserAgentService } from './domain/services/userAgent.service';
 import { IpAddressService } from './domain/services/ipAddress.service';
+import { SharedModule } from '../../shared/shared.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserORM, SessionOrm]),
     PassportModule,
+    SharedModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService<Env>) => {
         return {
@@ -54,7 +54,6 @@ import { IpAddressService } from './domain/services/ipAddress.service';
     { provide: UserRepository, useClass: UserRepositoryORM },
     { provide: HasherService, useClass: BcryptPasswordHasher },
     { provide: UuidService, useClass: UuidAdapter },
-    { provide: TokenService, useClass: JwtTokenService },
     { provide: UserAgentService, useClass: LibUserAgentService },
     { provide: IpAddressService, useClass: IpService },
     LoginUseCase,

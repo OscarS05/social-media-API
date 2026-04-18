@@ -19,7 +19,11 @@ import {
   InvalidTokenError,
 } from '../../domain/errors/auth.errors';
 import { InvalidNameError, InvalidRoleError } from '../../domain/errors/user.errors';
-import { SessionNotFoundError } from '../../domain/errors/session.errors';
+import {
+  RefreshTokenExpiredError,
+  RefreshTokenRevokedError,
+  SessionNotFoundError,
+} from '../../domain/errors/session.errors';
 
 export function mapDomainErrorToHttp(err: Error): HttpException {
   if (err instanceof AccountNotVerifiedError) return new ForbiddenException(err.message);
@@ -34,6 +38,8 @@ export function mapDomainErrorToHttp(err: Error): HttpException {
   if (err instanceof SessionNotFoundError) return new NotFoundException(err.message);
   if (err instanceof InvalidCredentialsError) return new UnauthorizedException(err.message);
   if (err instanceof InvalidTokenError) return new UnauthorizedException(err.message);
+  if (err instanceof RefreshTokenExpiredError) return new UnauthorizedException(err.message);
+  if (err instanceof RefreshTokenRevokedError) return new UnauthorizedException(err.message);
 
   return new InternalServerErrorException(err.message);
 }

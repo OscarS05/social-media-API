@@ -6,6 +6,7 @@ import { SessionRepository } from '../../../domain/repositories/session.reposito
 import { HasherService } from '../../../domain/services/hasher.service';
 import { UserAgentParsed } from '../../../domain/services/userAgent.service';
 import { InvalidTokenError } from '../../../domain/errors/auth.errors';
+import { SessionNotFoundError } from '../../../domain/errors/session.errors';
 
 @Injectable()
 export class RefreshSessionUseCase {
@@ -21,7 +22,7 @@ export class RefreshSessionUseCase {
     const { sub, jti, version } = this.tokenService.verifyRefreshToken(tokens.refreshToken);
 
     const session = await this.sessionRepo.findByIdAndUserId(jti, sub);
-    if (!session) throw new Error('Session not found');
+    if (!session) throw new SessionNotFoundError();
     session.isActive();
 
     if (session.version !== version) {

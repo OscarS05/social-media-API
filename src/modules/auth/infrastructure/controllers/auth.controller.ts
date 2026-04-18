@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 
@@ -14,13 +24,17 @@ import { IpAddress } from '../../../../shared/services/decorators/ipAddress.deco
 import { UserResponseDto } from '../dtos/user.dto';
 import type { UserAgentParsed } from '../../domain/services/userAgent.service';
 import { LoginUseCase } from '../../application/use-cases/users/login-local.usecase';
-import { LoginResponse } from '../../domain/types/session';
+import type { LoginResponse, PayloadAccessToken } from '../../domain/types/session';
 import { OAuthProfile } from '../../domain/types/auth';
 import { AuthProvider } from '../../domain/enums/providers.enum';
 import { AccessToken } from '../../../../shared/services/decorators/accessToken.decorator';
 import { RefreshSessionUseCase } from '../../application/use-cases/session/refresh-session.usecase';
-import { setCookie } from '../helpers/cookie.helper';
+import { clearCookie, setCookie } from '../helpers/cookie.helper';
 import { UserBasic } from '../../domain/types/user';
+import { AccessTokenGuard } from '../../../../shared/services/guards/accesToken.guard';
+import { CurrentUser } from '../../../../shared/services/decorators/currentUser.decorator';
+import { RevokeOneSessionUseCase } from '../../application/use-cases/session/revoke-one-session.usecase';
+import { Public } from '../../../../shared/services/decorators/public.decorator';
 
 @Controller('auth')
 @ApiExtraModels(User)
@@ -30,6 +44,7 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly loginWithOAuthUseCase: LoginWithOAuthUseCase,
     private readonly refreshSessionUseCase: RefreshSessionUseCase,
+    private readonly revokeOneSessionUseCase: RevokeOneSessionUseCase,
   ) {}
 
   @ApiOperation({
@@ -42,6 +57,7 @@ export class AuthController {
     description: 'Information about the saved user',
     type: UserResponseDto,
   })
+  @Public()
   @Post('register')
   async register(@Body() body: RegisterDto): Promise<UserBasic> {
     try {
@@ -66,6 +82,7 @@ export class AuthController {
     type: UserResponseDto,
   })
   @HttpCode(200)
+  @Public()
   @Post('login')
   async login(
     @Body() body: LoginDto,
@@ -94,6 +111,7 @@ export class AuthController {
     status: 302,
     description: 'User was redirected to Google authentication screen',
   })
+  @Public()
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {}
@@ -109,6 +127,7 @@ export class AuthController {
     type: UserResponseDto,
   })
   @Get('google/callback')
+  @Public()
   @UseGuards(AuthGuard('google'))
   async googleAuthCallback(
     @Req() req: Request,
@@ -131,16 +150,16 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Refresh session',
-    description: 'Refresh the session using access/refresh tokens, user agent and ip address',
+    description:
+      'Refresh the session using access/refresh tokens, user agent and ip address. If the tokens providing were valids, it update the session in DB with new token and new version, then, it returns the new tokens',
   })
   @ApiResponse({
-    description:
-      'If the tokens providing were valids, it update the session in DB with new token and new version, then, it returns the new tokens',
+    description: 'Return new tokens',
     status: 200,
     type: TokenDto,
   })
   @HttpCode(200)
-  @Post('refresh')
+  @Put('refresh')
   async refreshTokens(
     @RefreshToken() refreshToken: string,
     @AccessToken() accessToken: string,
@@ -155,8 +174,31 @@ export class AuthController {
       );
 
       setCookie(res, 'refreshToken', tokens.refreshToken);
-
       return { accessToken: tokens.accessToken };
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Logout',
+    description: 'Logout',
+  })
+  @ApiResponse({
+    description: 'It only returns a 204 http status code',
+    status: 204,
+  })
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(204)
+  @Put('logout')
+  async logout(
+    @CurrentUser() user: PayloadAccessToken,
+    @RefreshToken() refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    try {
+      await this.revokeOneSessionUseCase.execute(refreshToken, user.sub);
+      clearCookie(res, 'refreshToken');
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }
