@@ -480,43 +480,44 @@ describe('Auth e2e - identity/auth', () => {
     });
   });
 
-  // describe('DELETE /auth/sessions/:id', () => {
-  //   let accessToken: string;
+  describe('DELETE /auth/sessions/:id', () => {
+    let refreshToken: string;
+    let accessToken: string;
 
-  //   beforeAll(async () => {
-  //     // 2 sessions
-  //     const responseLogin = await request(server)
-  //       .post('/auth/login')
-  //       .set('user-agent', RAW_USER_AGENT)
-  //       .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
-  //     accessToken = (responseLogin.body as TokenDto).accessToken;
+    beforeAll(async () => {
+      await sessionRepo.update({ userId: SEEDED_ADMIN.id }, { revoked: true });
 
-  //     await request(server)
-  //       .post('/auth/login')
-  //       .set('user-agent', RAW_USER_AGENT)
-  //       .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
-  //   });
+      // 2 sessions
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+      accessToken = (responseLogin.body as TokenDto).accessToken;
+      refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
 
-  //   it('204 with all user sessions closed', async () => {
-  //     await request(server)
-  //       .delete('/auth/sessions')
-  //       .set('Authorization', `Bearer ${accessToken}`)
-  //       .expect(204);
+      await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+    });
 
-  //     const { sub }: PayloadAccessToken = jwtService.decode(accessToken);
-  //     const sessions = await sessionRepo.find({ where: { userId: sub, revoked: false } });
-  //     expect(sessions.length).toBe(0);
-  //   });
+    it('204 with that session closed', async () => {
+      const { jti, sub }: PayloadRefreshToken = jwtService.decode(refreshToken);
 
-  //   it('401 with invalid token', async () => {
-  //     await request(server)
-  //       .get('/auth/sessions')
-  //       .set('Authorization', `Bearer invalidToken`)
-  //       .expect(401);
-  //   });
-  // });
+      await request(server)
+        .delete(`/auth/sessions/${jti}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(204);
+
+      const sessions = await sessionRepo.find({ where: { userId: sub, revoked: false } });
+      expect(sessions.length).toBe(1);
+    });
+
+    it('401 with invalid token', async () => {
+      await request(server)
+        .get('/auth/sessions')
+        .set('Authorization', `Bearer invalidToken`)
+        .expect(401);
+    });
+  });
 });
-
-/**
-PUT /auth/revoke/id
-*/
