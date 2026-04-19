@@ -345,7 +345,7 @@ describe('Auth e2e - identity/auth', () => {
     });
   });
 
-  describe('PUT /auth/logout', () => {
+  describe('DELETE /auth/sessions/current', () => {
     it('204 if the logout was successful', async () => {
       const responseLogin = await request(server)
         .post('/auth/login')
@@ -356,7 +356,7 @@ describe('Auth e2e - identity/auth', () => {
       const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
 
       await request(server)
-        .put('/auth/logout')
+        .delete('/auth/sessions/current')
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
         .expect(204);
@@ -376,7 +376,7 @@ describe('Auth e2e - identity/auth', () => {
       const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
 
       await request(server)
-        .put('/auth/logout')
+        .delete('/auth/sessions/current')
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
         .expect(204);
@@ -399,7 +399,7 @@ describe('Auth e2e - identity/auth', () => {
       const accessToken = (responseLogin.body as TokenDto).accessToken;
 
       await request(server)
-        .put('/auth/logout')
+        .delete('/auth/sessions/current')
         .set('Authorization', `Bearer ${accessToken}`)
         .set('Cookie', `refreshToken=${accessToken}`)
         .expect(401);
@@ -442,12 +442,81 @@ describe('Auth e2e - identity/auth', () => {
         .expect(401);
     });
   });
+
+  describe('DELETE /auth/sessions', () => {
+    let accessToken: string;
+
+    beforeAll(async () => {
+      const responseLogin = await request(server)
+        .post('/auth/login')
+        .set('user-agent', RAW_USER_AGENT)
+        .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+
+      accessToken = (responseLogin.body as TokenDto).accessToken;
+    });
+
+    it('200 with a list of sessions', async () => {
+      const response = await request(server)
+        .get('/auth/sessions')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
+      const sessions = response.body as SessionResponseDto[];
+
+      expect(sessions.length).toBeGreaterThanOrEqual(1);
+      expect(sessions[0].id).toBeDefined();
+      expect(sessions[0].createdAt).toBeDefined();
+      expect(sessions[0].expiresAt).toBeDefined();
+      expect(sessions[0].device).toBeDefined();
+      expect(sessions[0].os).toBeDefined();
+      expect(sessions[0].browser).toBeDefined();
+      expect(sessions[0].ipAddress).toBeDefined();
+    });
+
+    it('401 with invalid token', async () => {
+      await request(server)
+        .get('/auth/sessions')
+        .set('Authorization', `Bearer invalidToken`)
+        .expect(401);
+    });
+  });
+
+  // describe('DELETE /auth/sessions/:id', () => {
+  //   let accessToken: string;
+
+  //   beforeAll(async () => {
+  //     // 2 sessions
+  //     const responseLogin = await request(server)
+  //       .post('/auth/login')
+  //       .set('user-agent', RAW_USER_AGENT)
+  //       .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+  //     accessToken = (responseLogin.body as TokenDto).accessToken;
+
+  //     await request(server)
+  //       .post('/auth/login')
+  //       .set('user-agent', RAW_USER_AGENT)
+  //       .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
+  //   });
+
+  //   it('204 with all user sessions closed', async () => {
+  //     await request(server)
+  //       .delete('/auth/sessions')
+  //       .set('Authorization', `Bearer ${accessToken}`)
+  //       .expect(204);
+
+  //     const { sub }: PayloadAccessToken = jwtService.decode(accessToken);
+  //     const sessions = await sessionRepo.find({ where: { userId: sub, revoked: false } });
+  //     expect(sessions.length).toBe(0);
+  //   });
+
+  //   it('401 with invalid token', async () => {
+  //     await request(server)
+  //       .get('/auth/sessions')
+  //       .set('Authorization', `Bearer invalidToken`)
+  //       .expect(401);
+  //   });
+  // });
 });
 
 /**
-GET /auth/sessions
-  ✓ 200 retorna lista de sesiones activas
-
-PUT /auth/revoke
 PUT /auth/revoke/id
 */

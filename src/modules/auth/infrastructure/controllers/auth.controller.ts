@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
+  Param,
   Post,
   Put,
   Req,
@@ -37,6 +39,8 @@ import { RevokeOneSessionUseCase } from '../../application/use-cases/session/rev
 import { Public } from '../../../../shared/services/decorators/public.decorator';
 import { FindAllSessionsUseCase } from '../../application/use-cases/session/find-all-session.usecase';
 import { SessionResponseDto } from '../dtos/session.dto';
+import { RevokeAllSessionsUseCase } from '../../application/use-cases/session/revoke-all-sessions.usecase';
+import { TokenService } from '../../domain/services/token.service';
 
 @Controller('auth')
 @ApiExtraModels(User)
@@ -46,8 +50,10 @@ export class AuthController {
     private readonly loginUseCase: LoginUseCase,
     private readonly loginWithOAuthUseCase: LoginWithOAuthUseCase,
     private readonly refreshSessionUseCase: RefreshSessionUseCase,
-    private readonly revokeOneSessionUseCase: RevokeOneSessionUseCase,
     private readonly findAllSessionsUseCase: FindAllSessionsUseCase,
+    private readonly revokeAllSessionsUseCase: RevokeAllSessionsUseCase,
+    private readonly revokeOneSessionUseCase: RevokeOneSessionUseCase,
+    private readonly tokenService: TokenService,
   ) {}
 
   @ApiOperation({
@@ -184,6 +190,76 @@ export class AuthController {
   }
 
   @ApiOperation({
+    summary: 'Logout',
+    description: 'It revokes the session in DB',
+  })
+  @ApiResponse({
+    description: 'It only returns a 204 http status code',
+    status: 204,
+  })
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(204)
+  @Delete('sessions/current')
+  async logout(
+    @CurrentUser() user: PayloadAccessToken,
+    @RefreshToken() refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    try {
+      const { jti } = this.tokenService.verifyRefreshToken(refreshToken);
+      await this.revokeOneSessionUseCase.execute(jti, user.sub);
+      clearCookie(res, 'refreshToken');
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Close sessions',
+    description: 'Close all user sessions',
+  })
+  @ApiResponse({
+    description: 'It only returns a 204',
+    status: 204,
+  })
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(204)
+  @Delete('sessions')
+  async closeSessions(
+    @CurrentUser() user: PayloadAccessToken,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<void> {
+    try {
+      await this.revokeAllSessionsUseCase.execute(user.sub);
+      clearCookie(res, 'refreshToken');
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Close a session',
+    description: 'Close only one user session',
+  })
+  @ApiResponse({
+    description: 'It only returns a 204',
+    status: 204,
+  })
+  @UseGuards(AccessTokenGuard)
+  @HttpCode(204)
+  @Delete('sessions/:id')
+  async closeSession(
+    @Param('id') id: string,
+    @CurrentUser() user: PayloadAccessToken,
+  ): Promise<void> {
+    try {
+      await this.revokeOneSessionUseCase.execute(id, user.sub);
+    } catch (error) {
+      throw mapDomainErrorToHttp(error as Error);
+    }
+  }
+
+  @ApiOperation({
     summary: 'Find all sessions',
     description: 'Find all user sessions',
   })
@@ -199,30 +275,6 @@ export class AuthController {
     try {
       const sessions = await this.findAllSessionsUseCase.execute(user.sub);
       return sessions.map((session) => SessionResponseDto.fromDomain(session));
-    } catch (error) {
-      throw mapDomainErrorToHttp(error as Error);
-    }
-  }
-
-  @ApiOperation({
-    summary: 'Logout',
-    description: 'It revokes the session in DB',
-  })
-  @ApiResponse({
-    description: 'It only returns a 204 http status code',
-    status: 204,
-  })
-  @UseGuards(AccessTokenGuard)
-  @HttpCode(204)
-  @Put('logout')
-  async logout(
-    @CurrentUser() user: PayloadAccessToken,
-    @RefreshToken() refreshToken: string,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<void> {
-    try {
-      await this.revokeOneSessionUseCase.execute(refreshToken, user.sub);
-      clearCookie(res, 'refreshToken');
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }
