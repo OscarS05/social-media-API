@@ -4,7 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { TokenService } from '../../../modules/auth/domain/services/token.service';
+import { TokenService } from '../../../domain/services/token.service';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()

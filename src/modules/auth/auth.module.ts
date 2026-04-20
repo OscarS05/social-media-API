@@ -10,7 +10,6 @@ import { GoogleStrategy } from './infrastructure/services/strategies/google.stra
 import { LoginUseCase } from './application/use-cases/users/login-local.usecase';
 import { RegisterUserUseCase } from './application/use-cases/users/register-with-local.usecase';
 import { BcryptPasswordHasher } from './infrastructure/services/security/bcrypt-hasher.service';
-import { UuidAdapter } from './infrastructure/services/security/uuid.service';
 import { Env } from '../../shared/config/env.model';
 import { LoginWithOAuthUseCase } from './application/use-cases/users/login-with-oauth';
 import { IpService } from './infrastructure/services/security/ipAddress.service';
@@ -23,19 +22,22 @@ import { RevokeAllSessionsUseCase } from './application/use-cases/session/revoke
 import { UserRepositoryORM } from './infrastructure/persistence/db/repositories/user.repository';
 import { RefreshSessionUseCase } from './application/use-cases/session/refresh-session.usecase';
 import { HasherService } from './domain/services/hasher.service';
-import { UuidService } from './domain/services/uuid.service';
 import { SessionManagerService } from './application/services/session-manager.service';
 import { SessionRepository } from './domain/repositories/session.repository';
 import { UserRepository } from './domain/repositories/user.repository';
 import { UserAgentService } from './domain/services/userAgent.service';
 import { IpAddressService } from './domain/services/ipAddress.service';
-import { SharedModule } from '../../shared/shared.module';
+import { JwtTokenService } from './infrastructure/services/security/jwt.service';
+import { TokenService } from './domain/services/token.service';
+import { AccessTokenGuard } from './infrastructure/services/guards/accessToken.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { UuidService } from './domain/services/uuid.service';
+import { UuidAdapter } from './infrastructure/services/security/uuid.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserORM, SessionOrm]),
     PassportModule,
-    SharedModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService<Env>) => {
         return {
@@ -50,12 +52,14 @@ import { SharedModule } from '../../shared/shared.module';
   ],
   controllers: [AuthController],
   providers: [
+    { provide: TokenService, useClass: JwtTokenService },
     { provide: SessionRepository, useClass: SessionRepositoryORM },
     { provide: UserRepository, useClass: UserRepositoryORM },
     { provide: HasherService, useClass: BcryptPasswordHasher },
-    { provide: UuidService, useClass: UuidAdapter },
     { provide: UserAgentService, useClass: LibUserAgentService },
     { provide: IpAddressService, useClass: IpService },
+    { provide: UuidService, useClass: UuidAdapter },
+    { provide: APP_GUARD, useClass: AccessTokenGuard },
     LoginUseCase,
     RegisterUserUseCase,
     GoogleStrategy,
@@ -66,5 +70,6 @@ import { SharedModule } from '../../shared/shared.module';
     RefreshSessionUseCase,
     SessionManagerService,
   ],
+  exports: [TokenService],
 })
 export class AuthModule {}

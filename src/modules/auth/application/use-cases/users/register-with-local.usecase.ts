@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 
 import { UserRepository } from '../../../domain/repositories/user.repository';
-import { UuidService } from '../../../domain/services/uuid.service';
 import { HasherService } from '../../../domain/services/hasher.service';
 import { UserEntity } from '../../../domain/entities/user.entity';
 import { AuthProvider } from '../../../domain/enums/providers.enum';
 import { EmailAlreadyInUseError } from '../../../domain/errors/auth.errors';
 import { UserBasic, UserLocal } from '../../../domain/types/user';
+import { UuidService } from '../../../domain/services/uuid.service';
 
 @Injectable()
 export class RegisterUserUseCase {

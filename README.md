@@ -1,98 +1,318 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+  <a href="https://nestjs.com/" target="_blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="NestJS Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<h1 align="center">Social Network App</h1>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<p align="center">
+  A modern, scalable social media platform built with <strong>NestJS</strong>, <strong>TypeScript</strong> and <strong>hexagonal architecture</strong>.
+  <br />
+  Portfolio project demonstrating enterprise-grade architecture patterns and best practices.
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📋 Table of Contents
 
-## Project setup
+- [About the Project](#about-the-project)
+- [Architecture & Patterns](#architecture--patterns)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+  - [Database Setup](#database-setup)
+- [Running the Application](#running-the-application)
+- [Testing](#testing)
+- [API Documentation](#api-documentation)
+- [License](#license)
 
-```bash
-$ npm install
+---
+
+## About the Project
+
+**Social Network App** is a comprehensive portfolio project that demonstrates the implementation of a full-featured social media platform using modern backend technologies and architectural patterns.
+
+This project showcases:
+
+- **Production-ready code** with enterprise architectural patterns
+- **RESTful API** design with best practices
+- **Authentication & Authorization** with OAuth2.0 and JWT
+- **Real-time features** using Socket.io
+- **Comprehensive testing** with Jest and Supertest
+- **Database design** with TypeORM and MySQL
+- **Containerization** with Docker
+
+---
+
+## Architecture & Patterns
+
+This project is built following **Domain-Driven Design (DDD)** principles combined with **Hexagonal Architecture** (ports and adapters pattern), ensuring clean code separation and maintainability.
+
+### Architectural Layers
+
+```text
+┌─────────────────────────────────────┐
+│    Infrastructure Layer             │
+│  (Controllers, DTOs, Guards)        │
+├─────────────────────────────────────┤
+│    Application Layer                │
+│  (Use Cases, Services)              │
+├─────────────────────────────────────┤
+│    Domain Layer                     │
+│  (Entities, Value Objects, Errors)  │
+└─────────────────────────────────────┘
 ```
 
-## Compile and run the project
+### Core Patterns Implemented
 
-```bash
-# development
-$ npm run start
+- **Value Objects**: Strong typing and business logic encapsulation
+- **Domain Entities**: Rich objects with behavior
+- **Use Cases**: Isolated business logic
+- **Repositories**: Data access abstraction
+- **Services**: Cross-cutting concerns
+- **DTOs**: Request/Response validation and transformation
+- **Error Handling**: Custom domain errors and mappers
 
-# watch mode
-$ npm run start:dev
+---
 
-# production mode
-$ npm run start:prod
+## Tech Stack
+
+### Core Framework
+
+- **NestJS** - Progressive Node.js framework
+- **TypeScript** - Static typing for robust code
+
+### API & Architecture
+
+- **RESTful API** - Standard HTTP endpoints
+- **Socket.io** - Real-time bidirectional communication
+- **OAuth2.0** - Third-party authentication (Google)
+
+### Database & ORM
+
+- **TypeORM** - Object-Relational Mapping
+- **MySQL** - Relational database
+- **Database Migrations** - Version control for schema changes
+
+### Testing & Quality
+
+- **ESLint** - Code linting
+- **Jest** - Test framework
+- **Supertest** - HTTP assertion library
+- **Test Coverage** - Comprehensive unit and E2E tests
+
+### DevOps & Deployment
+
+- **Docker** - Containerization
+- **Docker Compose** - Multi-container orchestration
+
+---
+
+## Features
+
+### Authentication & Authorization
+
+- ✅ Local authentication (username/password)
+- ✅ OAuth2.0 integration (Google)
+- ✅ JWT-based token authentication
+- ✅ Refresh token rotation
+- ✅ Session management with version control
+- ✅ Reuse detection for enhanced security
+- ✅ Multi-session support per user
+
+### User Management
+
+- ✅ User registration and profile management
+- ✅ Role-based access control (RBAC)
+- ✅ User agents and IP address tracking
+- ✅ Session revocation capabilities
+
+### Real-time Capabilities
+
+- ✅ Email verification with Nodemailer
+- ✅ Different types of chats with Socket.io
+- ✅ Real-time notifications infrastructure
+
+### Social Features
+
+- ✅ Follows and blocks
+- ✅ Posts, comments and likes
+- ✅ Chats of type individual, group and broadcast channels
+
+---
+
+## Project Structure
+
+```text
+src/
+├── app.module.ts                    # Main application module
+├── main.ts                          # Application entry point
+├── modules/
+│   ├── auth/                        # Authentication module
+│   │   ├── application/             # Application layer
+│   │   │   ├── services/            # Business services
+│   │   │   └── use-cases/           # Isolated use cases
+│   │   ├── domain/                  # Domain layer
+│   │   │   ├── entities/            # Domain entities
+│   │   │   ├── enums/               # Enumerations
+│   │   │   ├── errors/              # Custom errors
+│   │   │   ├── repositories/        # Repository contracts
+│   │   │   ├── services/            # Domain services
+│   │   │   ├── types/               # TypeScript types
+│   │   │   └── value-objects/       # Value objects
+│   │   └── infrastructure/          # Infrastructure layer
+│   │       ├── controllers/         # HTTP controllers
+│   │       ├── dtos/                # Data transfer objects
+│   │       ├── guards/              # Authorization guards
+│   │       ├── mappers/             # Domain to DTO mapping
+│   │       ├── persistence/         # Database implementations
+│   │       ├── services/            # Technical services
+│   │       └── strategies/          # Passport strategies
+│   └── social/                      # Social features module
+│       └── profile/                 # User profiles
+├── shared/
+│   ├── config/                      # Shared configuration
+│   ├── database/                    # Database configuration
+│   │   ├── config/                  # ORM config
+│   │   ├── factories/               # Test data factories
+│   │   ├── migrations/              # Database migrations
+│   │   └── seeders/                 # Database seeders
+│   └── services/                    # Shared services
+└── test/                            # Test files
+    ├── factories/                   # Test fixtures
+    ├── e2e/                         # End-to-end tests
+    └── modules/                     # Module tests
 ```
 
-## Run tests
+---
+
+## Getting Started
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js** >= 20.19.0
+- **npm** >= 11.12.1
+- **Docker** & **Docker Compose**
+- **MySQL** >= 8.0 (or use Docker)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone git@github.com:OscarS05/social-media-API.git
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+### Environment Variables
+
+Create a `.env` file in the project root based on the `.env.example` file.
+
+### Database Setup
+
+1. **Create database**
+
+   If you build and Run with Docker Compose, this will start MySQL Database on port 3306
+
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Create database and run migrations**
+
+   ```bash
+   npm run migrations:run
+   ```
+
+3. **Seed initial data (optional)**
+
+   ```bash
+   npm run seeders:run
+   ```
+
+---
+
+## Running the Application
+
+### Development Mode
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Deployment
+The application will run on `http://localhost:3000` with hot reload enabled.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Production Mode
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run build
+npm run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## Testing
 
-Check out a few resources that may come in handy when working with NestJS:
+### Unit Tests
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run test
+```
 
-## Support
+### E2E Tests
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npm run test:e2e
+```
 
-## Stay in touch
+### Test Coverage
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run test:cov
+```
+
+### Watch Mode for Tests
+
+```bash
+npm run test:watch
+```
+
+---
+
+## API Documentation
+
+All API documentation is in swagger: `localhost:3000/docs`
+
+---
+
+## Built With
+
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [TypeScript](https://www.typescriptlang.org/) - Typed superset of JavaScript
+- [TypeORM](https://typeorm.io/) - Object-Relational Mapping library
+- [MySQL](https://www.mysql.com/) - Relational database
+- [Socket.io](https://socket.io/) - Real-time communication
+- [Jest](https://jestjs.io/) - Testing framework
+- [Docker](https://www.docker.com/) - Container platform
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is open source and available under the MIT License - see the LICENSE file for details.
+
+---
+
+<p align="center">
+  <strong>Portfolio project showcasing modern backend development practices</strong>
+</p>

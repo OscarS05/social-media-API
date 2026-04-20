@@ -33,7 +33,7 @@ import { AccessToken } from '../../../../shared/services/decorators/accessToken.
 import { RefreshSessionUseCase } from '../../application/use-cases/session/refresh-session.usecase';
 import { clearCookie, setCookie } from '../helpers/cookie.helper';
 import { UserBasic } from '../../domain/types/user';
-import { AccessTokenGuard } from '../../../../shared/services/guards/accessToken.guard';
+import { AccessTokenGuard } from '../services/guards/accessToken.guard';
 import { CurrentUser } from '../../../../shared/services/decorators/currentUser.decorator';
 import { RevokeOneSessionUseCase } from '../../application/use-cases/session/revoke-one-session.usecase';
 import { Public } from '../../../../shared/services/decorators/public.decorator';
