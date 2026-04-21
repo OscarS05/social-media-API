@@ -33,6 +33,8 @@ import { AccessTokenGuard } from './infrastructure/services/guards/accessToken.g
 import { APP_GUARD } from '@nestjs/core';
 import { UuidService } from './domain/services/uuid.service';
 import { UuidAdapter } from './infrastructure/services/security/uuid.service';
+import { TransactionManager } from './domain/services/transaction-manager.service';
+import { TypeOrmTransactionManager } from './infrastructure/services/transaction/typeorm-transaction-manager';
 
 @Module({
   imports: [
@@ -59,6 +61,7 @@ import { UuidAdapter } from './infrastructure/services/security/uuid.service';
     { provide: UserAgentService, useClass: LibUserAgentService },
     { provide: IpAddressService, useClass: IpService },
     { provide: UuidService, useClass: UuidAdapter },
+    { provide: TransactionManager, useClass: TypeOrmTransactionManager },
     { provide: APP_GUARD, useClass: AccessTokenGuard },
     LoginUseCase,
     RegisterUserUseCase,

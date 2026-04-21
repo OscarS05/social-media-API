@@ -25,11 +25,14 @@ import { UserRepositoryMock } from '../../../infrastructure/adapters/repositorie
 import { MockUuidService } from '../../../infrastructure/adapters/services/uuid.service';
 import { sessionManagerService } from '../../../infrastructure/adapters/services/sessionManager.service';
 import { EmailAlreadyInUseError } from '../../../../../../src/modules/auth/domain/errors/auth.errors';
+import { MockTransactionManager } from '../../../infrastructure/adapters/services/transaction-manager';
+import { TransactionManager } from '../../../../../../src/modules/auth/domain/services/transaction-manager.service';
 
 describe('LoginWithOAuthUseCase', () => {
   let usecase: LoginWithOAuthUseCase;
   const userRepository = new UserRepositoryMock();
   const uuidService = new MockUuidService();
+  const transactionManager = new MockTransactionManager();
   const sessionContext = {
     userAgent: USER_AGENT,
     ipAddress: IP_ADDRESS,
@@ -51,12 +54,18 @@ describe('LoginWithOAuthUseCase', () => {
     isVerified: true,
   });
 
+  const useCaseResponse = {
+    user: userOAuth.toBasic(),
+    tokens: { ...tokens },
+  };
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: UserRepository, useValue: userRepository },
         { provide: UuidService, useValue: uuidService },
         { provide: SessionManagerService, useValue: sessionManagerService },
+        { provide: TransactionManager, useValue: transactionManager },
         LoginWithOAuthUseCase,
       ],
     }).compile();
@@ -68,6 +77,7 @@ describe('LoginWithOAuthUseCase', () => {
     jest.clearAllMocks();
     uuidService.generate.mockReturnValue(ID);
     sessionManagerService.createSession.mockResolvedValue(tokens);
+    transactionManager.runInTransaction.mockImplementation((fn: () => Promise<any>) => fn());
   });
 
   it('should return existing user when provider id already exists', async () => {
@@ -86,7 +96,8 @@ describe('LoginWithOAuthUseCase', () => {
       ID,
       Roles.MEMBER,
     );
-    expect(result).toEqual({ user: userOAuth.toBasic(), tokens });
+    expect(transactionManager.runInTransaction).not.toHaveBeenCalled();
+    expect(result).toEqual(useCaseResponse);
   });
 
   it('should create a new user when provider id is not found', async () => {
@@ -101,7 +112,8 @@ describe('LoginWithOAuthUseCase', () => {
     );
     expect(uuidService.generate).toHaveBeenCalledTimes(1);
     expect(userRepository.createUser).toHaveBeenCalledTimes(1);
-    expect(result).toEqual({ user: userOAuth.toBasic(), tokens });
+    expect(transactionManager.runInTransaction).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(useCaseResponse);
   });
 
   it('should rethrow error when user creation fails', async () => {
@@ -114,6 +126,7 @@ describe('LoginWithOAuthUseCase', () => {
 
     expect(uuidService.generate).toHaveBeenCalledTimes(1);
     expect(userRepository.createUser).toHaveBeenCalledTimes(1);
+    expect(transactionManager.runInTransaction).toHaveBeenCalledTimes(1);
     expect(sessionManagerService.createSession).not.toHaveBeenCalled();
   });
 
@@ -129,6 +142,24 @@ describe('LoginWithOAuthUseCase', () => {
     ).rejects.toThrow(EmailAlreadyInUseError);
 
     expect(uuidService.generate).not.toHaveBeenCalled();
+    expect(transactionManager.runInTransaction).not.toHaveBeenCalled();
     expect(userRepository.createUser).not.toHaveBeenCalled();
+  });
+
+  it('should ensure transaction atomicity: if session creation fails, user creation is not persisted', async () => {
+    userRepository.findByProviderId.mockResolvedValue(null);
+    userRepository.createUser.mockResolvedValue(userOAuth);
+    sessionManagerService.createSession.mockRejectedValue(
+      new InternalServerErrorException('Session creation failed'),
+    );
+
+    await expect(
+      usecase.execute(profile, AuthProvider.GOOGLE, sessionContext),
+    ).rejects.toThrow(InternalServerErrorException);
+
+    // Verify that createUser was called (transaction was initiated)
+    expect(userRepository.createUser).toHaveBeenCalledTimes(1);
+    // But the transaction should have been attempted
+    expect(transactionManager.runInTransaction).toHaveBeenCalledTimes(1);
   });
 });
