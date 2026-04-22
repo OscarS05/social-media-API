@@ -43,7 +43,6 @@ CREATE TABLE sessions (
 
 -- PROFILES
 CREATE TABLE profiles (
-  id VARCHAR(36) NOT NULL,
   user_id VARCHAR(36) NOT NULL,
   username VARCHAR(50) NOT NULL,
   avatar_url TEXT NULL,
@@ -51,10 +50,10 @@ CREATE TABLE profiles (
   type_privacy ENUM('public','private') NOT NULL DEFAULT 'public',
   bio VARCHAR(255) NULL,
   website_url VARCHAR(255) NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
+  deleted_at TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (user_id),
   UNIQUE KEY profiles_username_unique (username, deleted_at),
   INDEX (user_id),
   INDEX (username),
