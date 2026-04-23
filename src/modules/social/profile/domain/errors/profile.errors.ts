@@ -32,3 +32,17 @@ export class InvalidPathError extends Error {
     this.name = 'InvalidPathError';
   }
 }
+
+export class InvalidProfileError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'Invalid profile');
+    this.name = 'InvalidProfileError';
+  }
+}
+
+export class InternalServerError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'Internal server error');
+    this.name = 'InternalServerError';
+  }
+}

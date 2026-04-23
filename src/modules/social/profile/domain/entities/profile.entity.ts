@@ -2,6 +2,7 @@ import { Privacy } from '../enums/privacy.enum';
 import { Profile, ProfileBasic, UpdateProfileData } from '../types/profile';
 import { BioVO } from '../value-objects/bio.vo';
 import { PathVO } from '../value-objects/path.vo';
+import { UrlVO } from '../value-objects/url.vo';
 import { UsernameVO } from '../value-objects/username.vo';
 import { uuidVO } from '../value-objects/uuidVO';
 
@@ -9,8 +10,8 @@ export class ProfileEntity {
   private constructor(
     private readonly _userId: uuidVO,
     private _username: UsernameVO,
-    private _avatarUrl: PathVO | null,
-    private _coverPhotoUrl: PathVO | null,
+    private _avatarUrl: PathVO | UrlVO | null,
+    private _coverPhotoUrl: PathVO | UrlVO | null,
     private _typePrivacy: Privacy,
     private _bio: BioVO,
     private readonly _createdAt: Date,
@@ -24,6 +25,20 @@ export class ProfileEntity {
       UsernameVO.create(data.username),
       data.avatarUrl ? PathVO.create(data.avatarUrl) : null,
       data.coverPhotoUrl ? PathVO.create(data.coverPhotoUrl) : null,
+      data.typePrivacy,
+      BioVO.create(data.bio ?? ''),
+      new Date(),
+      new Date(),
+      null,
+    );
+  }
+
+  static createAfterOAuth(data: ProfileBasic): ProfileEntity {
+    return new ProfileEntity(
+      new uuidVO(data.userId),
+      UsernameVO.create(data.username),
+      data.avatarUrl ? UrlVO.create(data.avatarUrl) : null,
+      data.coverPhotoUrl ? UrlVO.create(data.coverPhotoUrl) : null,
       data.typePrivacy,
       BioVO.create(data.bio ?? ''),
       new Date(),

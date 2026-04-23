@@ -14,6 +14,15 @@ export type Profile = {
 
 export type ProfileBasic = Omit<Profile, 'createdAt' | 'updatedAt' | 'deletedAt'>;
 
-export type UpdateProfileData = Partial<
-  Omit<Profile, 'createdAt' | 'updatedAt' | 'deletedAt' | 'userId'>
->;
+export type UpdateProfileData = Partial<Omit<Profile, 'createdAt' | 'deletedAt' | 'userId'>>;
+
+export type ImageData = {
+  buffer: Buffer;
+  filename: string;
+};
+
+export type OAuthProfile = {
+  name: string;
+  userId: string;
+  avatarUrl?: string;
+};
