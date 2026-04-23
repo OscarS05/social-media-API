@@ -201,5 +201,36 @@ describe('UserEntity', () => {
     it('should to throw InvalidHashError if the new password is not a valid bcrypt hash', () => {
       expect(() => user.changePassword('invalido')).toThrow(InvalidHashError);
     });
+
+    it('should set a domain event', () => {
+      const event = {
+        id: user.id,
+        name: user.name,
+        avatarUrl: null,
+      };
+
+      user.addDomainEvent = event;
+
+      expect(user.domainEvents).toMatchObject([
+        {
+          userId: event.id,
+          name: event.name,
+          avatarUrl: event.avatarUrl,
+        },
+      ]);
+    });
+
+    it('should clear domain events', () => {
+      const event = {
+        id: user.id,
+        name: user.name,
+        avatarUrl: null,
+      };
+
+      user.addDomainEvent = event;
+      user.clearEvents();
+
+      expect(user.domainEvents).toMatchObject([]);
+    });
   });
 });

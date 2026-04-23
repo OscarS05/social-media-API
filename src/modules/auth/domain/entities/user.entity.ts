@@ -11,8 +11,12 @@ import { BcryptHashVO } from '../value-objects/bcryptHash.vo';
 import { uuidVO } from '../value-objects/uuidVO';
 import { CreateUserData, UserBasic, UserRawData } from '../types/user';
 import { PlainPasswordVO } from '../value-objects/plain-password';
+import { UserCreatedEvent } from '../events/user-created.event';
+import { UserOAuth } from '../types/auth';
 
 export class UserEntity {
+  private _domainEvents: object[] = [];
+
   private constructor(
     private readonly _id: uuidVO,
     private _name: NameVO,
@@ -97,6 +101,15 @@ export class UserEntity {
     return { id: this.id, name: this.name, email: this.email, role: this.role };
   }
 
+  clearEvents(): void {
+    this._domainEvents = [];
+  }
+  set addDomainEvent(data: UserOAuth) {
+    this._domainEvents.push(new UserCreatedEvent(data.id, data.name, data.avatarUrl ?? null));
+  }
+  get domainEvents(): object[] {
+    return [...this._domainEvents];
+  }
   get id(): string {
     return this._id.get();
   }

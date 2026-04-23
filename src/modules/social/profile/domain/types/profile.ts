@@ -24,5 +24,5 @@ export type ImageData = {
 export type OAuthProfile = {
   name: string;
   userId: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 };

@@ -27,12 +27,15 @@ import { sessionManagerService } from '../../../infrastructure/adapters/services
 import { EmailAlreadyInUseError } from '../../../../../../src/modules/auth/domain/errors/auth.errors';
 import { MockTransactionManager } from '../../../infrastructure/adapters/services/transaction-manager';
 import { TransactionManager } from '../../../../../../src/modules/auth/domain/services/transaction-manager.service';
+import { MockDomainEvent } from '../../../infrastructure/adapters/events/domain-event.mock';
+import { DomainEventPublisher } from '../../../../../../src/shared/domain/events/domain-event-publisher';
 
 describe('LoginWithOAuthUseCase', () => {
   let usecase: LoginWithOAuthUseCase;
   const userRepository = new UserRepositoryMock();
   const uuidService = new MockUuidService();
   const transactionManager = new MockTransactionManager();
+  const mockDomainEvent = new MockDomainEvent();
   const sessionContext = {
     userAgent: USER_AGENT,
     ipAddress: IP_ADDRESS,
@@ -66,6 +69,7 @@ describe('LoginWithOAuthUseCase', () => {
         { provide: UuidService, useValue: uuidService },
         { provide: SessionManagerService, useValue: sessionManagerService },
         { provide: TransactionManager, useValue: transactionManager },
+        { provide: DomainEventPublisher, useValue: mockDomainEvent },
         LoginWithOAuthUseCase,
       ],
     }).compile();
@@ -78,6 +82,7 @@ describe('LoginWithOAuthUseCase', () => {
     uuidService.generate.mockReturnValue(ID);
     sessionManagerService.createSession.mockResolvedValue(tokens);
     transactionManager.runInTransaction.mockImplementation((fn: () => Promise<any>) => fn());
+    mockDomainEvent.publish.mockResolvedValue('');
   });
 
   it('should return existing user when provider id already exists', async () => {
@@ -161,5 +166,23 @@ describe('LoginWithOAuthUseCase', () => {
     expect(userRepository.createUser).toHaveBeenCalledTimes(1);
     // But the transaction should have been attempted
     expect(transactionManager.runInTransaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('should ensure transaction atomicity: if event publication fails, user and session creation are not persisted', async () => {
+    userRepository.findByProviderId.mockResolvedValue(null);
+    userRepository.createUser.mockResolvedValue(userOAuth);
+    sessionManagerService.createSession.mockResolvedValue(useCaseResponse);
+    mockDomainEvent.publish.mockRejectedValue(new InternalServerErrorException());
+
+    await expect(
+      usecase.execute(profile, AuthProvider.GOOGLE, sessionContext),
+    ).rejects.toThrow(InternalServerErrorException);
+
+    // Verify that createUser was called (transaction was initiated)
+    expect(userRepository.createUser).toHaveBeenCalledTimes(1);
+    // But the transaction should have been attempted
+    expect(transactionManager.runInTransaction).toHaveBeenCalledTimes(1);
+    expect(sessionManagerService.createSession).toHaveBeenCalledTimes(1);
+    expect(mockDomainEvent.publish).toHaveBeenCalledTimes(1);
   });
 });

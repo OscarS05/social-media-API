@@ -195,7 +195,7 @@ src/
 
 Ensure you have the following installed:
 
-- **Node.js** >= 20.19.0
+- **Node.js** >= 22.0.0
 - **npm** >= 11.12.1
 - **Docker** & **Docker Compose**
 - **MySQL** >= 8.0 (or use Docker)

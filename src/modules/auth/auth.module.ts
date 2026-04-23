@@ -35,6 +35,8 @@ import { UuidService } from './domain/services/uuid.service';
 import { UuidAdapter } from './infrastructure/services/security/uuid.service';
 import { TransactionManager } from './domain/services/transaction-manager.service';
 import { TypeOrmTransactionManager } from './infrastructure/services/transaction/typeorm-transaction-manager';
+import { DomainEventPublisher } from '../../shared/domain/events/domain-event-publisher';
+import { EventEmitterPublisher } from '../../shared/infrastructure/events/event-emitter-publisher';
 
 @Module({
   imports: [
@@ -62,6 +64,7 @@ import { TypeOrmTransactionManager } from './infrastructure/services/transaction
     { provide: IpAddressService, useClass: IpService },
     { provide: UuidService, useClass: UuidAdapter },
     { provide: TransactionManager, useClass: TypeOrmTransactionManager },
+    { provide: DomainEventPublisher, useClass: EventEmitterPublisher },
     { provide: APP_GUARD, useClass: AccessTokenGuard },
     LoginUseCase,
     RegisterUserUseCase,
