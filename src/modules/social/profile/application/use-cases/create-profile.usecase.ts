@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ImageData, ProfileBasic } from '../domain/types/profile';
-import { ProfileRepository } from '../domain/repositories/profile.repository';
-import { ProfileEntity } from '../domain/entities/profile.entity';
-import { InvalidProfileError } from '../domain/errors/profile.errors';
-import { ImageStoragePort } from '../domain/services/image.service';
+import { ImageData, ProfileBasic } from '../../domain/types/profile';
+import { ProfileRepository } from '../../domain/repositories/profile.repository';
+import { ProfileEntity } from '../../domain/entities/profile.entity';
+import { InvalidProfileError } from '../../domain/errors/profile.errors';
+import { ImageStoragePort } from '../../domain/services/image.service';
 
 @Injectable()
 export class CreateProfileUseCase {

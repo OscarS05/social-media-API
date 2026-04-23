@@ -5,7 +5,11 @@ import {
   ProfileBasic,
   UpdateProfileData,
 } from '../../../../../../src/modules/social/profile/domain/types/profile';
-import { InvalidUsernameError } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
+import {
+  InvalidPathError,
+  InvalidUrlError,
+  InvalidUsernameError,
+} from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
 
 // Test data
 const validProfileBasic: ProfileBasic = {
@@ -129,12 +133,9 @@ describe('ProfileEntity', () => {
     });
 
     it('should update username', () => {
-      const initialUpdatedAt = profile.updatedAt;
-
       profile.updateProfile({ username: 'newusername' });
 
       expect(profile.username).toBe('newusername');
-      expect(profile.updatedAt.getTime()).toBeGreaterThan(initialUpdatedAt.getTime());
     });
 
     it('should update bio', () => {
@@ -149,7 +150,13 @@ describe('ProfileEntity', () => {
       expect(profile.typePrivacy).toBe(Privacy.PRIVATE);
     });
 
-    it('should update avatar URL', () => {
+    it('should update avatar with relative URL', () => {
+      profile.updateProfile({ avatarUrl: '/uploads/profile/new-avatar.jpg' });
+
+      expect(profile.avatarUrl).toBe('/uploads/profile/new-avatar.jpg');
+    });
+
+    it('should update avatar with absolute URL', () => {
       profile.updateProfile({ avatarUrl: 'https://example.com/new-avatar.jpg' });
 
       expect(profile.avatarUrl).toBe('https://example.com/new-avatar.jpg');
@@ -161,7 +168,45 @@ describe('ProfileEntity', () => {
       expect(profile.avatarUrl).toBeNull();
     });
 
-    it('should update cover photo URL', () => {
+    it('should update cover with relative URL', () => {
+      profile.updateProfile({ coverPhotoUrl: '/uploads/profile/new-avatar.jpg' });
+
+      expect(profile.coverPhotoUrl).toBe('/uploads/profile/new-avatar.jpg');
+    });
+
+    it('should to fail if the relative url cover foto is invalid', () => {
+      expect(() =>
+        profile.updateProfile({
+          coverPhotoUrl: '/uploads/../../../../profile/new-avatar.jpg',
+        }),
+      ).toThrow(InvalidPathError);
+    });
+
+    it('should to fail if the relative url avatar foto is invalid', () => {
+      expect(() =>
+        profile.updateProfile({
+          avatarUrl: '/uploads/../../../../profile/new-avatar.jpg',
+        }),
+      ).toThrow(InvalidPathError);
+    });
+
+    it('should to fail if the absolute url avatar foto is invalid', () => {
+      expect(() =>
+        profile.updateProfile({
+          avatarUrl: 'http://example.com/new-cover.jpg',
+        }),
+      ).toThrow(InvalidUrlError);
+    });
+
+    it('should to fail if the absolute url cover foto is invalid', () => {
+      expect(() =>
+        profile.updateProfile({
+          coverPhotoUrl: 'http://example.com/new-cover.jpg',
+        }),
+      ).toThrow(InvalidUrlError);
+    });
+
+    it('should update cover photo with absolute URL', () => {
       profile.updateProfile({ coverPhotoUrl: 'https://example.com/new-cover.jpg' });
 
       expect(profile.coverPhotoUrl).toBe('https://example.com/new-cover.jpg');

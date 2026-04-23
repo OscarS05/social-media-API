@@ -24,5 +24,6 @@ export const coverData: ImageData = {
   filename: 'cover.jpg',
 };
 
+export const CDN_URL = 'https://google.cloud.com/cdn/bucket/uuid-123';
 export const AVATAR_URL = '/images/avatar-123.jpg';
 export const COVER_URL = '/images/cover-123.jpg';

@@ -1,19 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateProfileUseCase } from '../../../../../src/modules/social/profile/application/create-profile.usecase';
-import { ProfileRepository } from '../../../../../src/modules/social/profile/domain/repositories/profile.repository';
-import { ImageStoragePort } from '../../../../../src/modules/social/profile/domain/services/image.service';
-import { InvalidProfileError } from '../../../../../src/modules/social/profile/domain/errors/profile.errors';
-import { MockProfileRepository } from '../infrastructure/repositories/profile.repository-mock';
-import { MockImageStorage } from '../infrastructure/services/image.service-mock';
-import { ProfileEntity } from '../../../../../src/modules/social/profile/domain/entities/profile.entity';
+import { CreateProfileUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/create-profile.usecase';
+import { ProfileRepository } from '../../../../../../src/modules/social/profile/domain/repositories/profile.repository';
+import { ImageStoragePort } from '../../../../../../src/modules/social/profile/domain/services/image.service';
+import { InvalidProfileError } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
+import { MockProfileRepository } from '../../infrastructure/repositories/profile.repository-mock';
+import { MockImageStorage } from '../../infrastructure/services/image.service-mock';
+import { ProfileEntity } from '../../../../../../src/modules/social/profile/domain/entities/profile.entity';
 import {
   AVATAR_URL,
   avatarData,
   buildProfileEntity,
   COVER_URL,
   coverData,
-} from '../../../../factories/profile.factory';
-import { ProfileBasic } from '../../../../../src/modules/social/profile/domain/types/profile';
+} from '../../../../../factories/profile.factory';
+import { ProfileBasic } from '../../../../../../src/modules/social/profile/domain/types/profile';
 
 describe('CreateProfileUseCase', () => {
   let usecase: CreateProfileUseCase;

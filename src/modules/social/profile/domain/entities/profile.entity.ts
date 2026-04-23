@@ -23,22 +23,8 @@ export class ProfileEntity {
     return new ProfileEntity(
       new uuidVO(data.userId),
       UsernameVO.create(data.username),
-      data.avatarUrl ? PathVO.create(data.avatarUrl) : null,
-      data.coverPhotoUrl ? PathVO.create(data.coverPhotoUrl) : null,
-      data.typePrivacy,
-      BioVO.create(data.bio ?? ''),
-      new Date(),
-      new Date(),
-      null,
-    );
-  }
-
-  static createAfterOAuth(data: ProfileBasic): ProfileEntity {
-    return new ProfileEntity(
-      new uuidVO(data.userId),
-      UsernameVO.create(data.username),
-      data.avatarUrl ? UrlVO.create(data.avatarUrl) : null,
-      data.coverPhotoUrl ? UrlVO.create(data.coverPhotoUrl) : null,
+      data.avatarUrl ? this.resolveUrl(data.avatarUrl) : null,
+      data.coverPhotoUrl ? this.resolveUrl(data.coverPhotoUrl) : null,
       data.typePrivacy,
       BioVO.create(data.bio ?? ''),
       new Date(),
@@ -51,14 +37,24 @@ export class ProfileEntity {
     return new ProfileEntity(
       new uuidVO(data.userId),
       UsernameVO.create(data.username),
-      data.avatarUrl ? PathVO.create(data.avatarUrl) : null,
-      data.coverPhotoUrl ? PathVO.create(data.coverPhotoUrl) : null,
+      data.avatarUrl ? this.resolveUrl(data.avatarUrl) : null,
+      data.coverPhotoUrl ? this.resolveUrl(data.coverPhotoUrl) : null,
       data.typePrivacy,
       BioVO.create(data.bio ?? ''),
       data.createdAt,
       data.updatedAt,
       data.deletedAt ?? null,
     );
+  }
+
+  private static resolveUrl(value: string): PathVO | UrlVO {
+    if (value.startsWith('/')) return PathVO.create(value);
+    return UrlVO.create(value);
+  }
+
+  private resolveUrl(value: string): PathVO | UrlVO {
+    if (value.startsWith('/')) return PathVO.create(value);
+    return UrlVO.create(value);
   }
 
   toBasic(): ProfileBasic {
@@ -77,9 +73,9 @@ export class ProfileEntity {
     if (data.bio !== undefined) this._bio = BioVO.create(data.bio ?? '');
     if (data.typePrivacy !== undefined) this._typePrivacy = data.typePrivacy;
     if (data.avatarUrl !== undefined)
-      this._avatarUrl = data.avatarUrl ? PathVO.create(data.avatarUrl) : null;
+      this._avatarUrl = data.avatarUrl ? this.resolveUrl(data.avatarUrl) : null;
     if (data.coverPhotoUrl !== undefined)
-      this._coverPhotoUrl = data.coverPhotoUrl ? PathVO.create(data.coverPhotoUrl) : null;
+      this._coverPhotoUrl = data.coverPhotoUrl ? this.resolveUrl(data.coverPhotoUrl) : null;
     this._updatedAt = new Date();
   }
 

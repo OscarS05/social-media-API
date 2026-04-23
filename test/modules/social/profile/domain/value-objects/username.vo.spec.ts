@@ -24,7 +24,7 @@ describe('UsernameVO', () => {
     });
 
     it('should throw error for username too long', () => {
-      const longUsername = 'a'.repeat(21);
+      const longUsername = 'a'.repeat(51);
       expect(() => UsernameVO.create(longUsername)).toThrow(InvalidUsernameError);
       expect(() => UsernameVO.create(longUsername)).toThrow('Invalid length');
     });

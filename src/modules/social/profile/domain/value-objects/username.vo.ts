@@ -7,7 +7,7 @@ export class UsernameVO {
 
   static create(value: string) {
     const trimmed = value.trim();
-    if (trimmed.length < 3 || trimmed.length > 20) {
+    if (trimmed.length < 3 || trimmed.length > 50) {
       throw new InvalidUsernameError('Invalid length');
     }
 

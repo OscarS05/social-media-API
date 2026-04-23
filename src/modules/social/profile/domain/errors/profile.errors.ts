@@ -46,3 +46,10 @@ export class InternalServerError extends Error {
     this.name = 'InternalServerError';
   }
 }
+
+export class UniqueViolationError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'UserName already in use');
+    this.name = 'UniqueViolationError';
+  }
+}
