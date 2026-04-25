@@ -1,5 +1,5 @@
 import { Privacy } from '../enums/privacy.enum';
-import { Profile, ProfileBasic, UpdateProfileData } from '../types/profile';
+import { CreateProfilData, Profile, ProfileBasic, UpdateProfileData } from '../types/profile';
 import { BioVO } from '../value-objects/bio.vo';
 import { PathVO } from '../value-objects/path.vo';
 import { UrlVO } from '../value-objects/url.vo';
@@ -19,7 +19,7 @@ export class ProfileEntity {
     private _deletedAt: Date | null,
   ) {}
 
-  static create(data: ProfileBasic): ProfileEntity {
+  static create(data: CreateProfilData): ProfileEntity {
     return new ProfileEntity(
       new uuidVO(data.userId),
       UsernameVO.create(data.username),

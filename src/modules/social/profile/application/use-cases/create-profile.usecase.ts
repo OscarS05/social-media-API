@@ -1,27 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { ImageData, ProfileBasic } from '../../domain/types/profile';
+import { CreateProfilData, ImageData, ProfileBasic } from '../../domain/types/profile';
 import { ProfileRepository } from '../../domain/repositories/profile.repository';
 import { ProfileEntity } from '../../domain/entities/profile.entity';
-import { InvalidProfileError } from '../../domain/errors/profile.errors';
-import { ImageStoragePort } from '../../../../../shared/domain/services/image.service';
+import { UniqueViolationError } from '../../domain/errors/profile.errors';
+import { ImageManagerService } from '../../domain/services/image-manager.service';
 
 @Injectable()
 export class CreateProfileUseCase {
   constructor(
     private readonly profileRepo: ProfileRepository,
-    private readonly imageService: ImageStoragePort,
+    private readonly imageManager: ImageManagerService,
   ) {}
 
   async execute(
-    data: ProfileBasic,
+    data: CreateProfilData,
     avatarData?: ImageData,
     coverData?: ImageData,
   ): Promise<ProfileBasic> {
     const existing = await this.profileRepo.findByUserId(data.userId);
-    if (existing) throw new InvalidProfileError('The user already have a profile');
+    if (existing) throw new UniqueViolationError('The user already have a profile');
 
     const usernameInUse = await this.profileRepo.findByUserName(data.username);
-    if (usernameInUse) throw new InvalidProfileError('The username is already in use');
+    if (usernameInUse) throw new UniqueViolationError('The username is already in use');
 
     const newProfile: ProfileEntity = await this.profileRepo.create(
       ProfileEntity.create({
@@ -34,33 +34,27 @@ export class CreateProfileUseCase {
       }),
     );
 
+    let avatarPath: string | null = null;
+    let coverPath: string | null = null;
+
     try {
-      const [avatarPath, coverPath] = await Promise.all([
-        avatarData?.buffer
-          ? this.imageService.save(avatarData.buffer, avatarData.filename)
-          : null,
-        coverData?.buffer
-          ? this.imageService.save(coverData.buffer, coverData.filename)
-          : null,
+      [avatarPath, coverPath] = await this.imageManager.saveImages([
+        avatarData ?? null,
+        coverData ?? null,
       ]);
 
       if (avatarPath || coverPath) {
         newProfile.updateProfile({
-          avatarUrl: avatarPath?.get() ?? null,
-          coverPhotoUrl: coverPath?.get() ?? null,
+          avatarUrl: avatarPath ?? null,
+          coverPhotoUrl: coverPath ?? null,
         });
 
-        return (
-          await this.profileRepo.update(newProfile.userId, {
-            avatarUrl: newProfile.avatarUrl,
-            coverPhotoUrl: newProfile.coverPhotoUrl,
-            updatedAt: newProfile.updatedAt,
-          })
-        ).toBasic();
+        return (await this.profileRepo.update(newProfile.userId, newProfile)).toBasic();
       }
 
       return newProfile.toBasic();
     } catch (error) {
+      await this.imageManager.deleteImages([avatarPath, coverPath]);
       await this.profileRepo.delete(newProfile.userId);
       throw error;
     }

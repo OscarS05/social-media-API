@@ -13,6 +13,7 @@ export type Profile = {
 };
 
 export type ProfileBasic = Omit<Profile, 'createdAt' | 'updatedAt' | 'deletedAt'>;
+export type CreateProfilData = Omit<Profile, 'createdAt' | 'updatedAt' | 'deletedAt'>;
 
 export type UpdateProfileData = Partial<Omit<Profile, 'createdAt' | 'deletedAt' | 'userId'>>;
 export type UpdateProfileInput = Partial<
