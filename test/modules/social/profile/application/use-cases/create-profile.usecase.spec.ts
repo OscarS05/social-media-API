@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateProfileUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/create-profile.usecase';
 import { ProfileRepository } from '../../../../../../src/modules/social/profile/domain/repositories/profile.repository';
-import { ImageStoragePort } from '../../../../../../src/modules/social/profile/domain/services/image.service';
+import { ImageStoragePort } from '../../../../../../src/shared/domain/services/image.service';
 import { InvalidProfileError } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
 import { MockProfileRepository } from '../../infrastructure/repositories/profile.repository-mock';
 import { MockImageStorage } from '../../infrastructure/services/image.service-mock';

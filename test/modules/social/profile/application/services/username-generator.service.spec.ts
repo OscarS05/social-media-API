@@ -34,7 +34,6 @@ describe('UsernameGeneratorService', () => {
     expect(result).toBe('oscar_s');
   });
 
-  // Normalize
   it('should normalize name (lowercase and spaces)', () => {
     const result = service.generate('Oscar Santiago', []);
     expect(result).toBe('oscar_santiago');
@@ -68,5 +67,10 @@ describe('UsernameGeneratorService', () => {
   it('should handle complex real-world name', () => {
     const result = service.generate('  ÓSCAR!!!   SÁNCHEZ 123  ', ['oscar_sanchez_123']);
     expect(result).toBe('oscar_sanchez_123_1');
+  });
+
+  it('should handle complex real-world name', () => {
+    const result = service.generate('oscar_santiago123', []);
+    expect(result).toBe('oscar_santiago123');
   });
 });

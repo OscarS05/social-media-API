@@ -26,8 +26,10 @@ export class UsernameGeneratorService {
         .trim()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/[^a-z0-9\s_]/g, '')
         .replace(/\s+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '')
         .slice(0, 20) || 'user'
     );
   }

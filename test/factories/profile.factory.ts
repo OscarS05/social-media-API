@@ -27,3 +27,15 @@ export const coverData: ImageData = {
 export const CDN_URL = 'https://google.cloud.com/cdn/bucket/uuid-123';
 export const AVATAR_URL = '/images/avatar-123.jpg';
 export const COVER_URL = '/images/cover-123.jpg';
+export const NEW_COVER_URL = '/new/cover';
+export const NEW_AVATAR_URL = '/new/avatar';
+
+export const urlImages = {
+  avatarUrl: AVATAR_URL,
+  coverPhotoUrl: COVER_URL,
+};
+
+export const newUrlImages = {
+  avatarUrl: NEW_AVATAR_URL,
+  coverPhotoUrl: NEW_COVER_URL,
+};

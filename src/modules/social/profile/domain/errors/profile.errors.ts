@@ -47,9 +47,23 @@ export class InternalServerError extends Error {
   }
 }
 
+export class UsernameAlreadyInUseError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'Username already in use');
+    this.name = 'UsernameAlreadyInUseError';
+  }
+}
+
 export class UniqueViolationError extends Error {
   constructor(message?: string | null) {
     super(message || 'UserName already in use');
     this.name = 'UniqueViolationError';
+  }
+}
+
+export class DomainNotFoundError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'Profile not found');
+    this.name = 'NotFoundError';
   }
 }
