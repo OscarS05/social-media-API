@@ -62,7 +62,6 @@ CREATE TABLE profiles (
 
 -- FOLLOWS
 CREATE TABLE follows (
-  id VARCHAR(36) NOT NULL,
   follower_id VARCHAR(36) NOT NULL,
   following_id VARCHAR(36) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -77,10 +76,8 @@ CREATE TABLE follows (
 
 -- BLOCKS
 CREATE TABLE blocks (
-  id VARCHAR(36) NOT NULL,
   blocker_id VARCHAR(36) NOT NULL,
   blocked_id VARCHAR(36) NOT NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY blocks_unique_active (blocker_id, blocked_id, deleted_at),
@@ -93,15 +90,25 @@ CREATE TABLE posts (
   id VARCHAR(36) NOT NULL,
   profile_id VARCHAR(36) NOT NULL,
   content TEXT NULL,
-  media_url TEXT NULL,
-  media_type ENUM('image','video') NULL,
-  deleted_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id),
   INDEX (profile_id),
   INDEX (created_at),
   CONSTRAINT posts_profile_fk FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE
+);
+
+-- MEDIA_POSTS
+CREATE TABLE media_posts (
+  id VARCHAR(36) NOT NULL,
+  post_id VARCHAR(36) NOT NULL,
+  url TEXT NOT NULL,
+  type ENUM('image','video') NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX (post_id),
+  CONSTRAINT posts_media_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
 -- LIKES

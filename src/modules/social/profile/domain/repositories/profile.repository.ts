@@ -1,5 +1,10 @@
 import { ProfileEntity } from '../entities/profile.entity';
-import { UpdateProfileData } from '../types/profile';
+import {
+  ProfileAccessContext,
+  ProfileView,
+  ProfileViewOptions,
+  UpdateProfileData,
+} from '../types/profile';
 
 export abstract class ProfileRepository {
   abstract findByUserId(userId: string): Promise<ProfileEntity | null>;
@@ -8,4 +13,13 @@ export abstract class ProfileRepository {
   abstract create(data: ProfileEntity): Promise<ProfileEntity>;
   abstract update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity>;
   abstract delete(userId: string): Promise<void>;
+
+  abstract getProfileAccessContext(
+    viewerId: string,
+    ownerId: string,
+  ): Promise<ProfileAccessContext | null>;
+  abstract getProfileViewByUserId(
+    userId: string,
+    options?: ProfileViewOptions,
+  ): Promise<ProfileView>;
 }

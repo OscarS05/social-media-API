@@ -67,3 +67,10 @@ export class DomainNotFoundError extends Error {
     this.name = 'NotFoundError';
   }
 }
+
+export class ProfileAccessDeniedError extends Error {
+  constructor(message?: string | null) {
+    super(message || 'User is blocked');
+    this.name = 'ProfileAccessDeniedError';
+  }
+}

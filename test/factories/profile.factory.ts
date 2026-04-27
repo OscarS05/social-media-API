@@ -1,6 +1,11 @@
 import { ProfileEntity } from '../../src/modules/social/profile/domain/entities/profile.entity';
 import { Privacy } from '../../src/modules/social/profile/domain/enums/privacy.enum';
-import { ImageData, Profile } from '../../src/modules/social/profile/domain/types/profile';
+import {
+  ImageData,
+  Profile,
+  ProfileView,
+} from '../../src/modules/social/profile/domain/types/profile';
+import { POST } from './posts.factory';
 
 export const buildProfileEntity = (overrides?: Partial<Profile>): ProfileEntity => {
   return ProfileEntity.create({
@@ -38,4 +43,21 @@ export const urlImages = {
 export const newUrlImages = {
   avatarUrl: NEW_AVATAR_URL,
   coverPhotoUrl: NEW_COVER_URL,
+};
+
+export const ALL_PROFILE_DATA: ProfileView = {
+  profile: buildProfileEntity(),
+  relations: {
+    followers: 150,
+    following: 300,
+  },
+  posts: [POST, POST],
+};
+
+export const LIMITED_PROFILE_DATA: ProfileView = {
+  profile: buildProfileEntity(),
+  relations: {
+    followers: 150,
+    following: 300,
+  },
 };
