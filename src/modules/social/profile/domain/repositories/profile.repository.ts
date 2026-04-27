@@ -1,6 +1,7 @@
 import { ProfileEntity } from '../entities/profile.entity';
 import {
   ProfileAccessContext,
+  ProfilePreview,
   ProfileView,
   ProfileViewOptions,
   UpdateProfileData,
@@ -14,6 +15,7 @@ export abstract class ProfileRepository {
   abstract update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity>;
   abstract delete(userId: string): Promise<void>;
 
+  abstract findAllProfilesByUsername(username: string): Promise<ProfilePreview[]>;
   abstract getProfileAccessContext(
     viewerId: string,
     ownerId: string,

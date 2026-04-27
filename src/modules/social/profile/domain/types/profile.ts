@@ -44,6 +44,11 @@ export type ProfileViewOptions = {
   postsCursor?: string;
 };
 
+export type ProfilePreview = Omit<
+  ProfileBasic,
+  'createdAt' | 'updatedAt' | 'deletedAt' | 'bio' | 'coverPhotoUrl' | 'typePrivacy'
+>;
+
 export type ImageData = {
   buffer: Buffer;
   filename: string;

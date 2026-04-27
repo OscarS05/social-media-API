@@ -9,6 +9,7 @@ export class MockProfileRepository extends ProfileRepository {
   update = jest.fn();
   delete = jest.fn();
 
+  findAllProfilesByUsername = jest.fn();
   getProfileAccessContext = jest.fn();
   getProfileViewByUserId = jest.fn();
 }

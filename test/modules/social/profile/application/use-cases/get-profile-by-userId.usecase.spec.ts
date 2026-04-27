@@ -35,10 +35,6 @@ describe('GetProfileByUserIdUseCase', () => {
     jest.clearAllMocks();
   });
 
-  /**
-    1. find the profile with its userId blocked
-  */
-
   // === SUCCESS ===
 
   it('should get all profile data successfully if the profile is public', async () => {
