@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GetProfileByUserId } from '../../../../../../src/modules/social/profile/application/use-cases/get-profile-by-userId.usecase';
+import { GetProfileByUserIdUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/get-profile-by-userId.usecase';
 import { ProfileRepository } from '../../../../../../src/modules/social/profile/domain/repositories/profile.repository';
 import { MockProfileRepository } from '../../infrastructure/repositories/profile.repository-mock';
 import { ID } from '../../../../../factories/user.factory';
@@ -14,8 +14,8 @@ import {
   ProfileAccessDeniedError,
 } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
 
-describe('GetProfileByUserId', () => {
-  let usecase: GetProfileByUserId;
+describe('GetProfileByUserIdUseCase', () => {
+  let usecase: GetProfileByUserIdUseCase;
   const profileRepo = new MockProfileRepository();
 
   const viewerId = ID;
@@ -23,9 +23,12 @@ describe('GetProfileByUserId', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [{ provide: ProfileRepository, useValue: profileRepo }, GetProfileByUserId],
+      providers: [
+        { provide: ProfileRepository, useValue: profileRepo },
+        GetProfileByUserIdUseCase,
+      ],
     }).compile();
-    usecase = module.get<GetProfileByUserId>(GetProfileByUserId);
+    usecase = module.get<GetProfileByUserIdUseCase>(GetProfileByUserIdUseCase);
   });
 
   beforeEach(() => {

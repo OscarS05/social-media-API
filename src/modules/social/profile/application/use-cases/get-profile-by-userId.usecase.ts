@@ -7,7 +7,7 @@ import {
 import { ProfileAccessContext } from '../../domain/types/profile';
 
 @Injectable()
-export class GetProfileByUserId {
+export class GetProfileByUserIdUseCase {
   constructor(private readonly profileRepo: ProfileRepository) {}
 
   public async execute(viewerId: string, ownerId: string) {
