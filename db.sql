@@ -76,10 +76,11 @@ CREATE TABLE blocks (
   blocker_id VARCHAR(36) NOT NULL,
   blocked_id VARCHAR(36) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
-  UNIQUE KEY blocks_unique_active (blocker_id, blocked_id, deleted_at),
-  CONSTRAINT blocks_blocker_fk FOREIGN KEY (blocker_id) REFERENCES profiles(id) ON DELETE CASCADE,
-  CONSTRAINT blocks_blocked_fk FOREIGN KEY (blocked_id) REFERENCES profiles(id) ON DELETE CASCADE
+  PRIMARY KEY blocks_unique_active (blocker_id, blocked_id),
+  INDEX (blocker_id),
+  INDEX (blocked_id),
+  CONSTRAINT blocks_blocker_fk FOREIGN KEY (blocker_id) REFERENCES profiles(user_id) ON DELETE CASCADE,
+  CONSTRAINT blocks_blocked_fk FOREIGN KEY (blocked_id) REFERENCES profiles(user_id) ON DELETE CASCADE
 );
 
 -- POSTS

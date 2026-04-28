@@ -15,6 +15,7 @@ import { User } from '../../../../../auth/infrastructure/persistence/db/entites/
 import { ApiProperty } from '@nestjs/swagger';
 import { Privacy } from '../../../domain/enums/privacy.enum';
 import { Follows } from './follows.orm-entity';
+import { Blocks } from './blocks.orm-entity';
 
 @Entity({ name: 'profiles' })
 @Unique(['username', 'deleted_at'])
@@ -30,15 +31,25 @@ export class Profiles extends BaseEntity {
     onDelete: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'user_id' })
   following!: Follows[];
 
   @OneToMany(() => Follows, (f) => f.following, {
     onDelete: 'CASCADE',
     nullable: false,
   })
-  @JoinColumn({ name: 'user_id' })
   follower!: Follows[];
+
+  @OneToMany(() => Blocks, (b) => b.blocked, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  blocksGiven!: Blocks[]; // Users I block
+
+  @OneToMany(() => Blocks, (b) => b.blocker, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  blocksReceived!: Blocks[]; // Users who block me
 
   @ApiProperty({ description: 'The user ID. Its a uuid' })
   @PrimaryColumn({ name: 'user_id', type: 'varchar', length: 36 })
