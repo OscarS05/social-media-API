@@ -7,15 +7,18 @@ import {
   Entity,
   Index,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthProvider } from '../../../../domain/enums/providers.enum';
 import { Exclude } from 'class-transformer';
+import { Profiles } from '../../../../../social/profile/infrastructure/persistence/entities/profile.orm-entity';
 
 @Entity({ name: 'users' })
-@Index(['email', 'deletedAt'])
+@Unique(['email', 'deletedAt'])
 @Index(['provider', 'providerId'])
 export class User extends BaseEntity {
   @ApiProperty({ description: 'The id of the user', example: '1319-4c9a-1319-' })
@@ -54,7 +57,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({
     description:
-      'The id that identifies the user with the provider using authentication with Google or Facebook',
+      'The id that identifies the user with the provider using authentication with Google',
     example: '6085c332-1319-4c9a',
   })
   @Column({
@@ -70,20 +73,19 @@ export class User extends BaseEntity {
   resetToken?: string | null;
 
   @ApiProperty({
-    description:
-      'User verified by email or by third-party provider by signing in with Google or Facebook',
+    description: 'User verified by email or by third-party provider by signing in with Google',
   })
   @Column({ name: 'is_verified', type: 'boolean', default: false })
   isVerified!: boolean;
 
   @ApiProperty({
-    description: 'The date the user authentication method was deleted',
+    description: 'The date the user was deleted',
     example: null,
   })
   @Column('timestamp', { name: 'deleted_at', nullable: true, precision: 0 })
   deletedAt?: Date | null;
 
-  @ApiProperty({ description: 'The date the user authentication method was created' })
+  @ApiProperty({ description: 'The date the user was created' })
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
@@ -92,7 +94,7 @@ export class User extends BaseEntity {
   })
   createdAt!: Date;
 
-  @ApiProperty({ description: 'The date the user authentication method was updated' })
+  @ApiProperty({ description: 'The date the user was updated' })
   @UpdateDateColumn({
     name: 'updated_at',
     type: 'timestamp',
@@ -102,9 +104,8 @@ export class User extends BaseEntity {
   })
   updatedAt!: Date;
 
-  // Relations
-  //   @OneToMany(() => Profile, (p) => p.user)
-  //   profiles: Profile[];
+  @OneToOne(() => Profiles, (p) => p.user)
+  profile!: Profiles[];
 
   @OneToMany(() => Session, (Session) => Session.user)
   sessions!: Session[];

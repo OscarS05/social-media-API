@@ -52,7 +52,7 @@ describe('GetProfilesByUsernameUseCase', () => {
     await expect(usecase.execute('valid_username_123')).rejects.toThrow('Database down');
   });
 
-  it('should throw an error if the database failed', async () => {
+  it('should throw an error if the username is invalid', async () => {
     await expect(usecase.execute('invalid__username__')).rejects.toThrow(InvalidUsernameError);
   });
 });

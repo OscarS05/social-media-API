@@ -41,21 +41,19 @@ CREATE TABLE sessions (
   CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- PROFILES
+-- PROFILE
 CREATE TABLE profiles (
   user_id VARCHAR(36) NOT NULL,
   username VARCHAR(50) NOT NULL,
-  avatar_url TEXT NULL,
-  cover_photo_url TEXT NULL,
+  avatar_url VARCHAR(2083) NULL,
+  cover_photo_url VARCHAR(2083) NULL,
   type_privacy ENUM('public','private') NOT NULL DEFAULT 'public',
   bio VARCHAR(255) NULL,
-  website_url VARCHAR(255) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (user_id),
   UNIQUE KEY profiles_username_unique (username, deleted_at),
-  INDEX (user_id),
   INDEX (username),
   CONSTRAINT profiles_user_id_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -66,12 +64,11 @@ CREATE TABLE follows (
   following_id VARCHAR(36) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  PRIMARY KEY (id),
-  UNIQUE KEY follows_unique (follower_id, following_id),
+  PRIMARY KEY follows_unique (follower_id, following_id),
   INDEX (following_id),
   INDEX (follower_id),
-  CONSTRAINT follows_follower_fk FOREIGN KEY (follower_id) REFERENCES profiles(id) ON DELETE CASCADE,
-  CONSTRAINT follows_following_fk FOREIGN KEY (following_id) REFERENCES profiles(id) ON DELETE CASCADE
+  CONSTRAINT follows_follower_fk FOREIGN KEY (follower_id) REFERENCES profiles(user_id) ON DELETE CASCADE,
+  CONSTRAINT follows_following_fk FOREIGN KEY (following_id) REFERENCES profiles(user_id) ON DELETE CASCADE
 );
 
 -- BLOCKS
