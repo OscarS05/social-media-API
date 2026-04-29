@@ -11,7 +11,7 @@ export abstract class ProfileRepository {
   abstract findByUserName(username: string): Promise<ProfileEntity | null>;
   abstract findUsernames(username: string): Promise<string[]>;
   abstract create(data: ProfileEntity): Promise<ProfileEntity>;
-  abstract update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity | null>;
+  abstract update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity>;
   abstract delete(userId: string): Promise<void>;
 
   abstract findAllProfilesByUsername(username: string): Promise<ProfilePreview[]>;

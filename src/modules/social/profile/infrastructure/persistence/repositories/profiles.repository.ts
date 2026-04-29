@@ -15,6 +15,7 @@ import {
 } from '../../../domain/types/profile';
 import { ProfileViewMapper } from '../../mappers/profileView.mapper';
 import { ProfileAccessContextMapper } from '../../mappers/profileAccessContext.mapper';
+import { DomainNotFoundError } from '../../../domain/errors/profile.errors';
 
 export type ProfileAccessContextRaw = {
   userId: string;
@@ -44,11 +45,13 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
     return ProfileMapper.toDomain(newProfile);
   }
 
-  async update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity | null> {
+  async update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity> {
     await this.repo.update(userId, changes);
 
     const profile = await this.repo.findOne({ where: { userId } });
-    return profile ? ProfileMapper.toDomain(profile) : null;
+    if (!profile) throw new DomainNotFoundError();
+
+    return ProfileMapper.toDomain(profile);
   }
 
   async delete(userId: string): Promise<void> {
