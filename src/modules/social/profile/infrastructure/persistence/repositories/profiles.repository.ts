@@ -136,7 +136,7 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
     return ProfileAccessContextMapper.fromRaw(result);
   }
 
-  async getProfileDataByUserId(userId: string): Promise<ProfileView | null> {
+  async getProfileBaseView(userId: string): Promise<ProfileView | null> {
     const result = await this.repo
       .createQueryBuilder('p')
       .select([

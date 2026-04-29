@@ -7,16 +7,21 @@ import {
   ALL_PROFILE_DATA,
   buildProfileEntity,
   LIMITED_PROFILE_DATA,
+  PROFILE_DATA,
 } from '../../../../../factories/profile.factory';
 import { ProfileAccessContext } from '../../../../../../src/modules/social/profile/domain/types/profile';
 import {
   DomainNotFoundError,
   ProfileAccessDeniedError,
 } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
+import { MockPostRepository } from '../../infrastructure/repositories/post.repository';
+import { PostRepository } from '../../../../../../src/modules/social/profile/domain/repositories/post.respository';
+import { POST } from '../../../../../factories/posts.factory';
 
 describe('GetProfileByUserIdUseCase', () => {
   let usecase: GetProfileByUserIdUseCase;
   const profileRepo = new MockProfileRepository();
+  const postRepo = new MockPostRepository();
 
   const viewerId = ID;
   const ownerId = buildProfileEntity().userId;
@@ -25,6 +30,7 @@ describe('GetProfileByUserIdUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: ProfileRepository, useValue: profileRepo },
+        { provide: PostRepository, useValue: postRepo },
         GetProfileByUserIdUseCase,
       ],
     }).compile();
@@ -32,7 +38,7 @@ describe('GetProfileByUserIdUseCase', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   // === SUCCESS ===
@@ -47,17 +53,21 @@ describe('GetProfileByUserIdUseCase', () => {
     };
 
     profileRepo.getProfileAccessContext.mockResolvedValue(accessContext);
-    profileRepo.getProfileViewByUserId.mockResolvedValue(ALL_PROFILE_DATA);
+    profileRepo.getProfileBaseView.mockResolvedValue(PROFILE_DATA);
+    postRepo.getPostsWithMedia.mockResolvedValue([POST]);
 
     const response = await usecase.execute(viewerId, ownerId);
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledWith(viewerId, ownerId);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledWith(ownerId, {
-      includePosts: true,
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(1);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
+    expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(1);
+    expect(postRepo.getPostsWithMedia).toHaveBeenCalledWith(ownerId, { limit: 15 });
+    expect(response).toStrictEqual({
+      ...PROFILE_DATA,
+      posts: [POST],
     });
-    expect(response).toStrictEqual(ALL_PROFILE_DATA);
   });
 
   it('should get all profile data if the profile is private and the requested user is followed and follower', async () => {
@@ -70,15 +80,16 @@ describe('GetProfileByUserIdUseCase', () => {
     };
 
     profileRepo.getProfileAccessContext.mockResolvedValue(accessContext);
-    profileRepo.getProfileViewByUserId.mockResolvedValue(ALL_PROFILE_DATA);
+    profileRepo.getProfileBaseView.mockResolvedValue(PROFILE_DATA);
+    postRepo.getPostsWithMedia.mockResolvedValue(ALL_PROFILE_DATA.posts);
 
     const response = await usecase.execute(viewerId, ownerId);
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledWith(ownerId, {
-      includePosts: true,
-    });
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(1);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
+    expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(1);
+    expect(postRepo.getPostsWithMedia).toHaveBeenCalledWith(ownerId, { limit: 15 });
     expect(response).toStrictEqual(ALL_PROFILE_DATA);
   });
 
@@ -92,15 +103,14 @@ describe('GetProfileByUserIdUseCase', () => {
     };
 
     profileRepo.getProfileAccessContext.mockResolvedValue(accessContext);
-    profileRepo.getProfileViewByUserId.mockResolvedValue(LIMITED_PROFILE_DATA);
+    profileRepo.getProfileBaseView.mockResolvedValue(PROFILE_DATA);
 
     const response = await usecase.execute(viewerId, ownerId);
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledWith(ownerId, {
-      includePosts: false,
-    });
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(1);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
+    expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(0);
     expect(response).toStrictEqual(LIMITED_PROFILE_DATA);
   });
 
@@ -112,7 +122,7 @@ describe('GetProfileByUserIdUseCase', () => {
     await expect(usecase.execute(viewerId, ownerId)).rejects.toThrow(DomainNotFoundError);
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(0);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(0);
   });
 
   it('should throw an ProfileAccessDeniedError if there is a block', async () => {
@@ -129,7 +139,7 @@ describe('GetProfileByUserIdUseCase', () => {
     await expect(usecase.execute(viewerId, ownerId)).rejects.toThrow(ProfileAccessDeniedError);
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(0);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(0);
   });
 
   it('should throw an InternalServerError if the database failed', async () => {
@@ -138,6 +148,6 @@ describe('GetProfileByUserIdUseCase', () => {
     await expect(usecase.execute(viewerId, ownerId)).rejects.toThrow('Database failed');
 
     expect(profileRepo.getProfileAccessContext).toHaveBeenCalledTimes(1);
-    expect(profileRepo.getProfileViewByUserId).toHaveBeenCalledTimes(0);
+    expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(0);
   });
 });

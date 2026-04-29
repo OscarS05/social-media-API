@@ -3,6 +3,7 @@ import { Privacy } from '../../src/modules/social/profile/domain/enums/privacy.e
 import {
   ImageData,
   Profile,
+  ProfileData,
   ProfileView,
 } from '../../src/modules/social/profile/domain/types/profile';
 import { POST } from './posts.factory';
@@ -45,6 +46,14 @@ export const newUrlImages = {
   coverPhotoUrl: NEW_COVER_URL,
 };
 
+export const PROFILE_DATA: ProfileData = {
+  profile: buildProfileEntity(),
+  relations: {
+    followers: 150,
+    following: 300,
+  },
+};
+
 export const ALL_PROFILE_DATA: ProfileView = {
   profile: buildProfileEntity(),
   relations: {
@@ -60,4 +69,5 @@ export const LIMITED_PROFILE_DATA: ProfileView = {
     followers: 150,
     following: 300,
   },
+  posts: [],
 };

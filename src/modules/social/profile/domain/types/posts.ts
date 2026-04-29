@@ -21,3 +21,8 @@ export type PostData = {
   post: Post;
   media: MediaPosts[];
 };
+
+export type Pagination = {
+  limit?: number;
+  cursor?: string;
+};

@@ -11,5 +11,5 @@ export class MockProfileRepository extends ProfileRepository {
 
   findAllProfilesByUsername = jest.fn();
   getProfileAccessContext = jest.fn();
-  getProfileViewByUserId = jest.fn();
+  getProfileBaseView = jest.fn();
 }

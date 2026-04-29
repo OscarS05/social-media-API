@@ -35,15 +35,10 @@ export type ProfileView = {
     followers: number;
     following: number;
   };
-  posts?: PostData[];
+  posts: PostData[];
 };
 
 export type ProfileData = Omit<ProfileView, 'posts'>;
-
-export type Pagination = {
-  limit?: number;
-  cursor?: string;
-};
 
 export type ProfilePreview = Omit<
   ProfileBasic,

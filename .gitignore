@@ -12,6 +12,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# IA
+.codex
+
 # OS
 .DS_Store
 

@@ -21,5 +21,5 @@ export abstract class ProfileRepository {
     ownerId: string,
   ): Promise<ProfileAccessContext>;
 
-  abstract getProfileDataByUserId(userId: string): Promise<ProfileData | null>;
+  abstract getProfileBaseView(userId: string): Promise<ProfileData | null>;
 }
