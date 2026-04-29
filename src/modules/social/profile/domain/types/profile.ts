@@ -38,10 +38,11 @@ export type ProfileView = {
   posts?: PostData[];
 };
 
-export type ProfileViewOptions = {
-  includePosts?: boolean;
-  postsLimit?: number;
-  postsCursor?: string;
+export type ProfileData = Omit<ProfileView, 'posts'>;
+
+export type Pagination = {
+  limit?: number;
+  cursor?: string;
 };
 
 export type ProfilePreview = Omit<

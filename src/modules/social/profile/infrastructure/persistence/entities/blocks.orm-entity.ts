@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { Profiles } from './profile.orm-entity';
+import { Profiles } from './profiles.orm-entity';
 
 @Entity({ name: 'blocks' })
 @Index(['blocker_id'])

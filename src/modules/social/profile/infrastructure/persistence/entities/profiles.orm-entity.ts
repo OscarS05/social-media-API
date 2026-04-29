@@ -2,6 +2,7 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
@@ -104,6 +105,6 @@ export class Profiles extends BaseEntity {
     description: 'The date the user profile was deleted',
     example: null,
   })
-  @Column('timestamp', { name: 'deleted_at', nullable: true, precision: 0 })
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true, precision: 0 })
   deletedAt?: Date | null;
 }

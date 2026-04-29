@@ -4,6 +4,7 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   Index,
   OneToMany,
@@ -15,7 +16,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { AuthProvider } from '../../../../domain/enums/providers.enum';
 import { Exclude } from 'class-transformer';
-import { Profiles } from '../../../../../social/profile/infrastructure/persistence/entities/profile.orm-entity';
+import { Profiles } from '../../../../../social/profile/infrastructure/persistence/entities/profiles.orm-entity';
 
 @Entity({ name: 'users' })
 @Unique(['email', 'deletedAt'])
@@ -82,7 +83,7 @@ export class User extends BaseEntity {
     description: 'The date the user was deleted',
     example: null,
   })
-  @Column('timestamp', { name: 'deleted_at', nullable: true, precision: 0 })
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true, precision: 0 })
   deletedAt?: Date | null;
 
   @ApiProperty({ description: 'The date the user was created' })
