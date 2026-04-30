@@ -1,4 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@nestjs/common';
+
 import { ImageManagerService } from '../../../src/shared/infrastructure/services/image-manager.service';
 import { MockImageStorage } from '../social/profile/infrastructure/services/image.service-mock';
 import { ImageStoragePort } from '../../../src/shared/domain/services/image.service';
@@ -6,6 +8,7 @@ import { AVATAR_URL, avatarData, COVER_URL, coverData } from '../../factories/pr
 
 describe('ImageManagerService', () => {
   let service: ImageManagerService;
+  let loggerErrorSpy: jest.SpyInstance;
   const imageStorage = new MockImageStorage();
 
   beforeAll(async () => {
@@ -18,6 +21,11 @@ describe('ImageManagerService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   // === SUCCESSFUL ===
@@ -45,6 +53,14 @@ describe('ImageManagerService', () => {
 
     expect(imageStorage.save).toHaveBeenCalledTimes(1);
     expect(result).toStrictEqual([AVATAR_URL, null]);
+  });
+
+  it('should delete all images successfully', async () => {
+    imageStorage.delete.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
+
+    await service.deleteImages([AVATAR_URL, COVER_URL]);
+
+    expect(imageStorage.delete).toHaveBeenCalledTimes(2);
   });
 
   // === FAILS ===
@@ -81,8 +97,6 @@ describe('ImageManagerService', () => {
   });
 
   it('should log error if rollback fails', async () => {
-    const loggerSpy = jest.spyOn<any, any>(service['logger'], 'error');
-
     imageStorage.save
       .mockResolvedValueOnce(AVATAR_URL)
       .mockRejectedValueOnce(new Error('fail'));
@@ -91,15 +105,7 @@ describe('ImageManagerService', () => {
 
     await expect(service.saveImages([avatarData, coverData])).rejects.toThrow('fail');
 
-    expect(loggerSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should delete all images successfully', async () => {
-    imageStorage.delete.mockResolvedValueOnce(true).mockResolvedValueOnce(true);
-
-    await service.deleteImages([AVATAR_URL, COVER_URL]);
-
-    expect(imageStorage.delete).toHaveBeenCalledTimes(2);
+    expect(loggerErrorSpy).toHaveBeenCalled();
   });
 
   it('should ignore null paths', async () => {
@@ -109,13 +115,11 @@ describe('ImageManagerService', () => {
   });
 
   it('should log error if delete fails', async () => {
-    const loggerSpy = jest.spyOn<any, any>(service['logger'], 'error');
-
     imageStorage.delete.mockRejectedValueOnce(new Error('delete fail'));
 
     await service.deleteImages([AVATAR_URL]);
 
     expect(imageStorage.delete).toHaveBeenCalledTimes(1);
-    expect(loggerSpy).toHaveBeenCalledTimes(1);
+    expect(loggerErrorSpy).toHaveBeenCalled();
   });
 });

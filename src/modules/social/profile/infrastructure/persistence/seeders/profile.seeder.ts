@@ -42,7 +42,7 @@ export default class ProfileSeeder implements SeederTask {
 
     await profileRepo.save([
       profileFactoryData(SEEDED_ADMIN.id, true),
-      profileFactoryData(SEEDED_MEMBER.id, true),
+      profileFactoryData(SEEDED_MEMBER.id, false),
     ]);
   }
 }

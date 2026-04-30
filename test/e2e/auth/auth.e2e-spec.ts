@@ -48,7 +48,7 @@ describe('Auth e2e - identity/auth', () => {
     dataSource = app.get(DataSource);
     await dataSource.dropDatabase();
     await dataSource.runMigrations();
-    await new MainSeeder().runTestSeeders(dataSource);
+    await new MainSeeder().runTestSeeders(dataSource, ['users', 'sessions']);
 
     userRepo = dataSource.getRepository(UserORM);
     sessionRepo = dataSource.getRepository(SessionORM);

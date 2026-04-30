@@ -7,7 +7,7 @@ import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factory/user.factory';
 import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
 
 export default class UserSeeder implements SeederTask {
-  tag = ['auth'];
+  tag = ['users', 'auth'];
   private dataSource: DataSource;
   private factoryManager?: SeederFactoryManager | undefined;
 

@@ -16,7 +16,7 @@ import { ProfileModule } from './modules/social/profile/profile.module';
     EventEmitterModule.forRoot(),
     AuthModule,
     DatabaseModule,
-    ProfileModule,
+    // ProfileModule,
   ],
 })
 export class AppModule {}
