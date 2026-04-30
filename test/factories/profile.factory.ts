@@ -7,10 +7,11 @@ import {
   ProfileView,
 } from '../../src/modules/social/profile/domain/types/profile';
 import { POST } from './posts.factory';
+import { USER_ID } from './session.factory';
 
 export const buildProfileEntity = (overrides?: Partial<Profile>): ProfileEntity => {
   return ProfileEntity.create({
-    userId: '68c07572-ff80-4326-8aff-3d109fbd5bcb',
+    userId: USER_ID,
     username: 'newusername',
     typePrivacy: Privacy.PUBLIC,
     bio: 'My bio',

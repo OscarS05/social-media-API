@@ -12,7 +12,7 @@ import { EMAIL, EMAIL_OAUTH_GOOGLE, NAME, PASSWORD_PLAIN } from '../../factories
 import {
   SEEDED_ADMIN,
   SEEDED_MEMBER,
-} from '../../../src/shared/database/factories/user.factory';
+} from '../../../src/modules/auth/infrastructure/persistence/db/factory/user.factory';
 import { ANOTHER_RAW_USER_AGENT, RAW_USER_AGENT } from '../../factories/session.factory';
 import {
   LoginResponse,

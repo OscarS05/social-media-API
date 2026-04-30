@@ -19,7 +19,7 @@ import { Follows } from './follows.orm-entity';
 import { Blocks } from './blocks.orm-entity';
 
 @Entity({ name: 'profiles' })
-@Unique(['username', 'deleted_at'])
+@Unique(['username', 'deletedAt'])
 export class Profiles extends BaseEntity {
   @OneToOne(() => User, (user) => user.profile, {
     onDelete: 'CASCADE',

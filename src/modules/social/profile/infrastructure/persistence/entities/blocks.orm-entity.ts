@@ -12,8 +12,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Profiles } from './profiles.orm-entity';
 
 @Entity({ name: 'blocks' })
-@Index(['blocker_id'])
-@Index(['blocked_id'])
+@Index(['blockerId'])
+@Index(['blockedId'])
 export class Blocks extends BaseEntity {
   @ManyToOne(() => Profiles, (profile) => profile.blocksGiven, {
     onDelete: 'CASCADE',

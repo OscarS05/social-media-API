@@ -4,7 +4,7 @@ import { Session } from '../../src/modules/auth/domain/types/session';
 export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity => {
   return SessionEntity.create({
     id: 'b8ae448b-6435-4a5b-888e-e945b808ca8a',
-    userId: '68c07572-ff80-4326-8aff-3d109fbd5bcb',
+    userId: USER_ID,
     tokenHashed: '$2b$10$.dPEexCNqjgbMdE.etF6sO91fIcAH0oGQ3meuMeX0zkHEow/y3Blm',
     version: 1,
     userAgent: {
@@ -18,6 +18,8 @@ export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity 
     ...overrides,
   });
 };
+
+export const USER_ID = '68c07572-ff80-4326-8aff-3d109fbd5bcb';
 
 export const ACCESS_TOKEN = 'eyJhbGciOi456';
 export const REFRESH_TOKEN = 'eyJhbGciOi123';

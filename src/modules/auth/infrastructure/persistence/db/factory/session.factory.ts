@@ -1,13 +1,13 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { faker } from '@faker-js/faker';
 
-import { Session as SessionORM } from '../../../modules/auth/infrastructure/persistence/db/entites/sessions.orm-entity';
-import type { UserAgentParsed } from '../../../modules/auth/domain/services/userAgent.service';
+import { Session as SessionORM } from '../entites/sessions.orm-entity';
+import type { UserAgentParsed } from '../../../../domain/services/userAgent.service';
 import {
   IP_ADDRESS,
   REFRESH_TOKEN_HASHED,
   USER_AGENT,
-} from '../../../../test/factories/session.factory';
+} from '../../../../../../../test/factories/session.factory';
 
 const buildUserAgent = (): UserAgentParsed => ({
   browser: {

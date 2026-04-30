@@ -1,9 +1,11 @@
 import { setSeederFactory } from 'typeorm-extension';
 import { faker } from '@faker-js/faker';
 
-import { User as UserORM } from '../../../modules/auth/infrastructure/persistence/db/entites/user.orm-entity';
-import { Roles } from '../../../modules/auth/domain/enums/roles.enum';
-import { AuthProvider } from '../../../modules/auth/domain/enums/providers.enum';
+import { User as UserORM } from '../entites/user.orm-entity';
+import { Roles } from '../../../../domain/enums/roles.enum';
+import { AuthProvider } from '../../../../domain/enums/providers.enum';
+import { USER_ID } from '../../../../../../../test/factories/session.factory';
+import { ID } from '../../../../../../../test/factories/user.factory';
 
 export const userFactory = setSeederFactory(UserORM, () => {
   const user = new UserORM();
@@ -33,7 +35,7 @@ export const userFactory = setSeederFactory(UserORM, () => {
 });
 
 export const SEEDED_ADMIN = {
-  id: '70a35f48-3335-454a-833f-4b359e3c658a',
+  id: USER_ID,
   name: 'Admin Test',
   email: 'admin@test.com',
   password: 'Password123!',
@@ -47,7 +49,7 @@ export const SEEDED_ADMIN = {
 };
 
 export const SEEDED_MEMBER = {
-  id: 'b1c2d3e4-f5a6-4890-bcde-f12345678901',
+  id: ID,
   name: 'Member Test',
   email: 'member@test.com',
   password: 'Password123!',
