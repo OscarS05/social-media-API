@@ -122,8 +122,7 @@ jobs:
 
       - name: Ensure database exists
         run: |
-          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
-            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;
+          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;"
 
       - name: Run migrations
         run: npm run migrations:run:test
@@ -202,8 +201,7 @@ jobs:
 
       - name: Ensure database exists
         run: |
-          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
-            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;
+          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;"
 
       - name: Run migrations
         run: npm run migrations:run:test
