@@ -19,7 +19,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --runInBand",
     "typeorm": "typeorm-ts-node-commonjs -d ./src/shared/database/config/ormconfig.ts",
-    "migrations:generate": "npm run typeorm migration:generate",
+    "migrations:generate": "npm run typeorm migration:generate -d ./src/shared/database/migrations",
     "migrations:create": "typeorm-ts-node-commonjs migration:create",
     "migrations:show": "npm run typeorm migration:show",
     "migrations:run": "npm run typeorm migration:run",

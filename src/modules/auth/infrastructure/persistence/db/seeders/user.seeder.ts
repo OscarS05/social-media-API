@@ -3,8 +3,8 @@ import { DataSource, Repository } from 'typeorm';
 
 import { User as UserORM } from '../entites/user.orm-entity';
 import { SeederContext } from '../../../../../../shared/database/seeders/config/context';
-import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factory/user.factory';
 import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../../../test/factories/user.factory';
 
 export default class UserSeeder implements SeederTask {
   tag = ['users', 'auth'];
@@ -34,7 +34,7 @@ export default class UserSeeder implements SeederTask {
     return response[1].map((user) => user.id);
   }
 
-  // For tests e2e — predictable data, without faker
+  // For tests e2e and integration — predictable data, without faker
   async runForTests(): Promise<void> {
     const userRepository = this.dataSource.getRepository(UserORM);
 

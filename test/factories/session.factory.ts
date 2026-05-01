@@ -1,10 +1,11 @@
 import { SessionEntity } from '../../src/modules/auth/domain/entities/session.entity';
 import { Session } from '../../src/modules/auth/domain/types/session';
+import { MEMBER_ID } from './user.factory';
 
 export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity => {
   return SessionEntity.create({
     id: 'b8ae448b-6435-4a5b-888e-e945b808ca8a',
-    userId: USER_ID,
+    userId: MEMBER_ID,
     tokenHashed: '$2b$10$.dPEexCNqjgbMdE.etF6sO91fIcAH0oGQ3meuMeX0zkHEow/y3Blm',
     version: 1,
     userAgent: {
@@ -19,8 +20,7 @@ export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity 
   });
 };
 
-export const USER_ID = '68c07572-ff80-4326-8aff-3d109fbd5bcb';
-
+export const SECOND_SESSION_ID = '3018dc0d-4c5d-4194-9107-eda4f5904f63';
 export const ACCESS_TOKEN = 'eyJhbGciOi456';
 export const REFRESH_TOKEN = 'eyJhbGciOi123';
 export const NEW_REFRESH_TOKEN = 'eyJhbGciOi789';

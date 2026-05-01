@@ -1,16 +1,17 @@
 import { profileFactoryData } from '../factory/profile.factory';
 import { SeederContext } from '../../../../../../shared/database/seeders/config/context';
 import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
-import {
-  SEEDED_ADMIN,
-  SEEDED_MEMBER,
-} from '../../../../../auth/infrastructure/persistence/db/factory/user.factory';
 import { Profiles as ProfilesORM } from '../entities/profiles.orm-entity';
 import { DataSource } from 'typeorm';
 import { SeederFactoryManager } from 'typeorm-extension';
+import {
+  buildProfileEntity,
+  USERNAME,
+} from '../../../../../../../test/factories/profile.factory';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../../../test/factories/user.factory';
 
 export default class ProfileSeeder implements SeederTask {
-  tag: string[] = ['users', 'session', 'profile'];
+  tag: string[] = ['profile'];
   private dataSource: DataSource;
   private factoryManager?: SeederFactoryManager | undefined;
 
@@ -40,9 +41,11 @@ export default class ProfileSeeder implements SeederTask {
   async runForTests(): Promise<void> {
     const profileRepo = this.dataSource.getRepository(ProfilesORM);
 
-    await profileRepo.save([
-      profileFactoryData(SEEDED_ADMIN.id, true),
-      profileFactoryData(SEEDED_MEMBER.id, false),
-    ]);
+    const admin = profileRepo.create(buildProfileEntity({ userId: SEEDED_ADMIN.id }));
+    const member = profileRepo.create(
+      buildProfileEntity({ userId: SEEDED_MEMBER.id, username: USERNAME }),
+    );
+
+    await profileRepo.save([admin, member]);
   }
 }

@@ -4,8 +4,12 @@ import { DataSource } from 'typeorm';
 import { Session as SessionORM } from '../entites/sessions.orm-entity';
 import { SeederContext } from '../../../../../../shared/database/seeders/config/context';
 import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
-import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factory/user.factory';
 import { sessionFactoryData } from '../factory/session.factory';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../../../test/factories/user.factory';
+import {
+  buildSessionEntity,
+  SECOND_SESSION_ID,
+} from '../../../../../../../test/factories/session.factory';
 
 export default class SessionSeeder implements SeederTask {
   tag = ['users', 'auth', 'sessions'];
@@ -39,9 +43,10 @@ export default class SessionSeeder implements SeederTask {
 
   async runForTests(): Promise<void> {
     const sessionRepo = this.dataSource.getRepository(SessionORM);
-    await sessionRepo.save([
-      sessionFactoryData(SEEDED_ADMIN.id, true),
-      sessionFactoryData(SEEDED_MEMBER.id, true),
-    ]);
+    const admin = sessionRepo.create(buildSessionEntity({ userId: SEEDED_ADMIN.id }));
+    const member = sessionRepo.create(
+      buildSessionEntity({ id: SECOND_SESSION_ID, userId: SEEDED_MEMBER.id }),
+    );
+    await sessionRepo.save([admin, member]);
   }
 }

@@ -7,11 +7,11 @@ import {
   ProfileView,
 } from '../../src/modules/social/profile/domain/types/profile';
 import { POST } from './posts.factory';
-import { USER_ID } from './session.factory';
+import { MEMBER_ID } from './user.factory';
 
 export const buildProfileEntity = (overrides?: Partial<Profile>): ProfileEntity => {
   return ProfileEntity.create({
-    userId: USER_ID,
+    userId: MEMBER_ID,
     username: 'newusername',
     typePrivacy: Privacy.PUBLIC,
     bio: 'My bio',
@@ -31,6 +31,8 @@ export const coverData: ImageData = {
   filename: 'cover.jpg',
 };
 
+export const NEW_USERNAME = 'new_username_123';
+export const USERNAME = 'username_123';
 export const CDN_URL = 'https://google.cloud.com/cdn/bucket/uuid-123';
 export const AVATAR_URL = '/images/avatar-123.jpg';
 export const COVER_URL = '/images/cover-123.jpg';

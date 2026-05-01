@@ -8,7 +8,6 @@ import {
   OneToMany,
   OneToOne,
   PrimaryColumn,
-  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -19,7 +18,6 @@ import { Follows } from './follows.orm-entity';
 import { Blocks } from './blocks.orm-entity';
 
 @Entity({ name: 'profiles' })
-@Unique(['username', 'deletedAt'])
 export class Profiles extends BaseEntity {
   @OneToOne(() => User, (user) => user.profile, {
     onDelete: 'CASCADE',
@@ -59,6 +57,23 @@ export class Profiles extends BaseEntity {
   @ApiProperty({ description: `The user's nick name` })
   @Column({ name: 'username', type: 'varchar', length: 50, nullable: false })
   username!: string;
+
+  @Column({
+    name: 'active_username',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    asExpression: `
+    CASE
+      WHEN deleted_at IS NULL THEN username
+      ELSE NULL
+    END
+  `,
+    generatedType: 'STORED',
+    unique: true,
+    select: false,
+  })
+  activeUsername?: string | null;
 
   @ApiProperty({ description: 'Profile biography' })
   @Column({ name: 'bio', type: 'varchar', length: 255, nullable: true })

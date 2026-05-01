@@ -19,7 +19,7 @@ import { Exclude } from 'class-transformer';
 import { Profiles } from '../../../../../social/profile/infrastructure/persistence/entities/profiles.orm-entity';
 
 @Entity({ name: 'users' })
-@Unique(['email', 'deletedAt'])
+@Unique(['activeEmail'])
 @Index(['provider', 'providerId'])
 export class User extends BaseEntity {
   @ApiProperty({ description: 'The id of the user', example: '1319-4c9a-1319-' })
@@ -40,6 +40,23 @@ export class User extends BaseEntity {
   })
   @Column({ type: 'varchar', length: 255, nullable: false })
   email!: string;
+
+  @Column({
+    name: 'active_email',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    asExpression: `
+    CASE
+      WHEN deleted_at IS NULL THEN email
+      ELSE NULL
+    END
+  `,
+    generatedType: 'STORED',
+    unique: true,
+    select: false,
+  })
+  activeEmail?: string | null;
 
   @ApiProperty({
     description: 'The password of the user for auth',
