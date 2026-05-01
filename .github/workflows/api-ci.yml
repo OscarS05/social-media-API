@@ -120,11 +120,6 @@ jobs:
             sleep 2
           done
 
-      - name: Ensure database exists and grant privileges
-        run: |
-          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
-            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;
-
       - name: Run migrations
         run: npm run migrations:run:test
 
@@ -199,11 +194,6 @@ jobs:
             echo "Waiting for mysql on 127.0.0.1:3306"
             sleep 2
           done
-
-      - name: Ensure database exists and grant privileges
-        run: |
-          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
-            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`;
 
       - name: Run migrations
         run: npm run migrations:run:test
