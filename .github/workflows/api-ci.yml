@@ -54,6 +54,10 @@ jobs:
       ROUNDS_HASH_PASSWORD: 10
       REFRESH_SECRET: ${{ secrets.REFRESH_SECRET }}
       REFRESH_EXPIRES_IN: ${{ secrets.REFRESH_EXPIRES_IN }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_NAME: ${{ secrets.MYSQL_NAME }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_NAME }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
