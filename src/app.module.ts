@@ -5,7 +5,7 @@ import { DatabaseModule } from './shared/database/config/database.module';
 import { validationSchema } from './shared/config/validate-envs';
 import { AuthModule } from './modules/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ProfileModule } from './modules/social/profile/profile.module';
+// import { ProfileModule } from './modules/social/profile/profile.module';
 
 @Module({
   imports: [

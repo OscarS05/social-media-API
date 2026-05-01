@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GetProfileByUserIdUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/get-profile-by-userId.usecase';
 import { ProfileRepository } from '../../../../../../src/modules/social/profile/domain/repositories/profile.repository';
 import { MockProfileRepository } from '../../infrastructure/repositories/profile.repository-mock';
-import { ID } from '../../../../../factories/user.factory';
 import {
   ALL_PROFILE_DATA,
   buildProfileEntity,
@@ -17,13 +16,14 @@ import {
 import { MockPostRepository } from '../../infrastructure/repositories/post.repository';
 import { PostRepository } from '../../../../../../src/modules/social/profile/domain/repositories/post.respository';
 import { POST } from '../../../../../factories/posts.factory';
+import { ADMIN_ID } from '../../../../../factories/user.factory';
 
 describe('GetProfileByUserIdUseCase', () => {
   let usecase: GetProfileByUserIdUseCase;
   const profileRepo = new MockProfileRepository();
   const postRepo = new MockPostRepository();
 
-  const viewerId = ID;
+  const viewerId = ADMIN_ID;
   const ownerId = buildProfileEntity().userId;
 
   beforeAll(async () => {

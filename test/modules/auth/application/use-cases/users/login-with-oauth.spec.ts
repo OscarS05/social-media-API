@@ -11,7 +11,7 @@ import { Roles } from '../../../../../../src/modules/auth/domain/enums/roles.enu
 import {
   buildUserEntity,
   EMAIL,
-  ID,
+  ADMIN_ID,
   NAME,
   PROVIDER_ID,
 } from '../../../../../factories/user.factory';
@@ -48,7 +48,7 @@ describe('LoginWithOAuthUseCase', () => {
   const tokens = { accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN };
 
   const userOAuth = buildUserEntity({
-    id: ID,
+    id: ADMIN_ID,
     provider: AuthProvider.GOOGLE,
     providerId: PROVIDER_ID,
     email: EMAIL,
@@ -79,7 +79,7 @@ describe('LoginWithOAuthUseCase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    uuidService.generate.mockReturnValue(ID);
+    uuidService.generate.mockReturnValue(ADMIN_ID);
     sessionManagerService.createSession.mockResolvedValue(tokens);
     transactionManager.runInTransaction.mockImplementation((fn: () => Promise<any>) => fn());
     mockDomainEvent.publish.mockResolvedValue('');
@@ -98,7 +98,7 @@ describe('LoginWithOAuthUseCase', () => {
     expect(userRepository.createUser).not.toHaveBeenCalled();
     expect(sessionManagerService.createSession).toHaveBeenCalledWith(
       sessionContext,
-      ID,
+      ADMIN_ID,
       Roles.MEMBER,
     );
     expect(transactionManager.runInTransaction).not.toHaveBeenCalled();

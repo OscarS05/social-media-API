@@ -5,13 +5,14 @@ import {
 import { InvalidTokenError } from '../../../../../src/modules/auth/domain/errors/auth.errors';
 import { SessionEntity } from '../../../../../src/modules/auth/domain/entities/session.entity';
 import { UserAgentParsed } from '../../../../../src/modules/auth/domain/services/userAgent.service';
-import { USER_AGENT, USER_ID } from '../../../../factories/session.factory';
+import { USER_AGENT } from '../../../../factories/session.factory';
+import { MEMBER_ID } from '../../../../factories/user.factory';
 
 describe('SessionEntity entity', () => {
   const now = new Date();
   const expiration = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
   const id = 'b7a88a82-3f59-416f-b7b9-bcfc3cf81097';
-  const userId = USER_ID;
+  const userId = MEMBER_ID;
   const tokenHashed = '$2b$10$.dPEexCNqjgbMdE.etF6sO91fIcAH0oGQ3meuMeX0zkHEow/y3Blm';
   const userAgentParsed: UserAgentParsed = USER_AGENT;
   const ipAddress = '127.0.0.1';

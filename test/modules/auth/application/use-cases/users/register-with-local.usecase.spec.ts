@@ -12,7 +12,7 @@ import { MockHasherService } from '../../../infrastructure/adapters/services/has
 import {
   buildUserEntity,
   EMAIL,
-  ID,
+  ADMIN_ID,
   NAME,
   PASSWORD_HASHED,
   PASSWORD_PLAIN,
@@ -47,7 +47,7 @@ describe('RegisterUserUseCase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    uuidService.generate.mockReturnValue(ID);
+    uuidService.generate.mockReturnValue(ADMIN_ID);
     hasherService.hash.mockResolvedValue(passwordHashed);
   });
 
@@ -62,7 +62,7 @@ describe('RegisterUserUseCase', () => {
     expect(hasherService.hash).toHaveBeenCalledWith(PASSWORD_PLAIN);
     expect(userRepository.createUser).toHaveBeenCalledWith(
       expect.objectContaining({
-        id: ID,
+        id: ADMIN_ID,
         name: NAME,
         email: EMAIL,
         provider: 'local',
@@ -70,7 +70,7 @@ describe('RegisterUserUseCase', () => {
         password: passwordHashed,
       }),
     );
-    expect(result).toEqual({ id: ID, name: NAME, email: EMAIL, role: 'member' });
+    expect(result).toEqual({ id: ADMIN_ID, name: NAME, email: EMAIL, role: 'member' });
   });
 
   it('should throw EmailAlreadyInUseError when user already exists', async () => {

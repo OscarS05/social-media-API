@@ -4,9 +4,9 @@ import { faker } from '@faker-js/faker';
 import { Profiles as ProfilesORM } from '../entities/profiles.orm-entity';
 import { Privacy } from '../../../domain/enums/privacy.enum';
 import { buildProfileEntity } from '../../../../../../../test/factories/profile.factory';
-import { SEEDED_ADMIN } from '../../../../../auth/infrastructure/persistence/db/factory/user.factory';
+import { SEEDED_ADMIN } from '../../../../../../../test/factories/user.factory';
 
-const profileMock = buildProfileEntity({ ...SEEDED_ADMIN });
+const profileMock = buildProfileEntity({ userId: SEEDED_ADMIN.id });
 
 export const profileFactoryData = (userId?: string, isAdmin?: boolean): ProfilesORM => {
   const profile = new ProfilesORM();

@@ -8,11 +8,14 @@ import { JwtService } from '@nestjs/jwt';
 import { createTestApp } from '../app.e2e';
 import MainSeeder from '../../../src/shared/database/seeders/app.seeder';
 import { User as UserORM } from '../../../src/modules/auth/infrastructure/persistence/db/entites/user.orm-entity';
-import { EMAIL, EMAIL_OAUTH_GOOGLE, NAME, PASSWORD_PLAIN } from '../../factories/user.factory';
 import {
+  EMAIL,
+  EMAIL_OAUTH_GOOGLE,
+  NAME,
+  PASSWORD_PLAIN,
   SEEDED_ADMIN,
   SEEDED_MEMBER,
-} from '../../../src/modules/auth/infrastructure/persistence/db/factory/user.factory';
+} from '../../factories/user.factory';
 import { ANOTHER_RAW_USER_AGENT, RAW_USER_AGENT } from '../../factories/session.factory';
 import {
   LoginResponse,
