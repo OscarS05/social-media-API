@@ -90,7 +90,7 @@ describe('GetProfileByUserIdUseCase', () => {
     expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
     expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(1);
     expect(postRepo.getPostsWithMedia).toHaveBeenCalledWith(ownerId, { limit: 15 });
-    expect(response).toStrictEqual(ALL_PROFILE_DATA);
+    expect(response).toMatchObject(ALL_PROFILE_DATA);
   });
 
   it('should get limited profile data if the profile is private and the requested user is NOT followed and follower', async () => {

@@ -22,6 +22,7 @@ export class ProfileViewMapper {
         followers: Number(raw.followers),
         following: Number(raw.following),
       },
+      posts: [],
     };
   }
 }

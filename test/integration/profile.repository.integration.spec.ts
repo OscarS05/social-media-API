@@ -1,32 +1,14 @@
-jest.mock('@faker-js/faker', () => ({
-  faker: {
-    string: { uuid: () => '1960c469-381d-4603-ac6a-88ef9c989966' },
-    internet: { username: () => 'testuser' },
-    lorem: { sentence: () => 'bio' },
-    image: { avatar: () => 'avatar.jpg', url: () => 'cover.jpg' },
-    helpers: { arrayElement: (arr: Privacy[]) => arr[0] },
-    date: {
-      past: () => new Date(),
-      recent: () => new Date(),
-    },
-  },
-}));
-
 import { DataSource, Repository } from 'typeorm';
-import { Profiles as ProfileORM } from '../../../../../../src/modules/social/profile/infrastructure/persistence/entities/profiles.orm-entity';
+import { Profiles as ProfileORM } from '../../src/modules/social/profile/infrastructure/persistence/entities/profiles.orm-entity';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import MainSeeder from '../../../../../../src/shared/database/seeders/app.seeder';
-import { typeOrmConfig } from '../../../../../../src/shared/database/config/typeorm.config';
-import {
-  buildProfileEntity,
-  NEW_USERNAME,
-  USERNAME,
-} from '../../../../../factories/profile.factory';
-import { ProfileRepositoryTypeORM } from '../../../../../../src/modules/social/profile/infrastructure/persistence/repositories/profiles.repository';
-import { Privacy } from '../../../../../../src/modules/social/profile/domain/enums/privacy.enum';
-import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../factories/user.factory';
-import { SECOND_SESSION_ID } from '../../../../../factories/session.factory';
+import MainSeeder from '../../src/shared/database/seeders/app.seeder';
+import { typeOrmConfig } from '../../src/shared/database/config/typeorm.config';
+import { buildProfileEntity, NEW_USERNAME, USERNAME } from '../factories/profile.factory';
+import { ProfileRepositoryTypeORM } from '../../src/modules/social/profile/infrastructure/persistence/repositories/profiles.repository';
+import { Privacy } from '../../src/modules/social/profile/domain/enums/privacy.enum';
+import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factories/user.factory';
+import { SECOND_SESSION_ID } from '../factories/session.factory';
 
 describe('UserRepository (integration)', () => {
   let dataSource: DataSource;

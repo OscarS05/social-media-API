@@ -5,6 +5,5 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "transformIgnorePatterns": ["node_modules/(?!(@faker-js/faker)/)"],
-  "testMatch": ["<rootDir>/e2e/**/*.e2e-spec.ts"]
+  "testMatch": ["<rootDir>/unit/**/*.spec.ts"]
 }
