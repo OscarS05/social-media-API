@@ -124,6 +124,14 @@ jobs:
             sleep 2
           done
 
+      - name: Ensure database exists and grant privileges
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
+            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`; \
+            CREATE USER IF NOT EXISTS '${{ secrets.MYSQL_USER }}'@'%' IDENTIFIED BY '${{ secrets.MYSQL_PASSWORD }}'; \
+            GRANT ALL PRIVILEGES ON \`${{ secrets.MYSQL_NAME }}\`.* TO '${{ secrets.MYSQL_USER }}'@'%'; \
+            FLUSH PRIVILEGES;"
+
       - name: Run migrations
         run: npm run migrations:run:test
 
@@ -207,3 +215,11 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e
+
+      - name: Ensure database exists and grant privileges
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -p"${{ secrets.MYSQL_PASSWORD }}" -e "\
+            CREATE DATABASE IF NOT EXISTS \`${{ secrets.MYSQL_NAME }}\`; \
+            CREATE USER IF NOT EXISTS '${{ secrets.MYSQL_USER }}'@'%' IDENTIFIED BY '${{ secrets.MYSQL_PASSWORD }}'; \
+            GRANT ALL PRIVILEGES ON \`${{ secrets.MYSQL_NAME }}\`.* TO '${{ secrets.MYSQL_USER }}'@'%'; \
+            FLUSH PRIVILEGES;"
