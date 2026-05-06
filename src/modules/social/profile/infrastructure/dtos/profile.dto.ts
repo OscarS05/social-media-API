@@ -1,16 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  Matches,
-  MaxLength,
-} from 'class-validator';
+import { IsEnum, IsString, IsUUID, Length, Matches, MaxLength } from 'class-validator';
 
 import { Privacy } from '../../domain/enums/privacy.enum';
 import { ProfileBasic } from '../../domain/types/profile';
+import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -36,7 +29,6 @@ export class CreateProfileDto {
     description: 'Profile biography. Maximum 280 characters.',
   })
   @IsString()
-  @IsOptional()
   @MaxLength(280)
   bio!: string | null;
 
@@ -48,6 +40,8 @@ export class CreateProfileDto {
   @IsEnum(Privacy)
   typePrivacy!: Privacy;
 }
+
+export class UpdateProfileDto extends PartialType(CreateProfileDto) {}
 
 export class ProfileResponseDto {
   @ApiProperty({

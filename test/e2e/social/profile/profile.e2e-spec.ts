@@ -228,4 +228,184 @@ describe('Profile e2e - social/profile', () => {
         .expect(400);
     });
   });
+
+  describe('PATCH /profile', () => {
+    describe('Successful updates', () => {
+      beforeEach(async () => {
+        await profileRepo.deleteAll();
+        await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
+      });
+
+      it('should update the profile updating only one field', async () => {
+        const newBio = 'new biography';
+        const res = await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .field('bio', newBio)
+          .expect(200);
+
+        const resBody = res.body as ProfileResponseDto;
+
+        expect(resBody.userId).toBe(MEMBER_ID);
+        expect(resBody.bio).toBe(newBio);
+      });
+
+      it('should update the profile updating only the avatar', async () => {
+        const profile = await profileRepo.findOne({
+          where: { userId: MEMBER_ID },
+        });
+
+        const res = await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .attach('avatar', Buffer.from('fake-avatar-image'), { filename: 'avatar.png' })
+          .expect(200);
+
+        const resBody = res.body as ProfileResponseDto;
+        expect(resBody?.avatarUrl).toBeTruthy();
+        expect(resBody?.avatarUrl).toMatch('/uploads/avatars/');
+
+        expect(resBody.username).toBe(profile?.username);
+        expect(resBody.bio).toBe(profile?.bio);
+        expect(resBody.typePrivacy).toBe(profile?.typePrivacy);
+
+        testImagesSaved.push(resBody?.avatarUrl || '');
+      });
+
+      it('should update the profile updating only the cover', async () => {
+        const profile = await profileRepo.findOne({
+          where: { userId: MEMBER_ID },
+        });
+
+        const res = await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .attach('coverPhoto', Buffer.from('fake-cover-image'), { filename: 'cover.png' })
+          .expect(200);
+
+        const resBody = res.body as ProfileResponseDto;
+        expect(resBody?.coverPhotoUrl).toBeTruthy();
+        expect(resBody?.coverPhotoUrl).toMatch('/uploads/covers/');
+
+        expect(resBody.username).toBe(profile?.username);
+        expect(resBody.bio).toBe(profile?.bio);
+        expect(resBody.typePrivacy).toBe(profile?.typePrivacy);
+
+        testImagesSaved.push(resBody?.coverPhotoUrl || '');
+      });
+
+      it('should update the profile updating both avatar and cover image', async () => {
+        const profile = await profileRepo.findOne({
+          where: { userId: MEMBER_ID },
+        });
+
+        const res = await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .attach('avatar', Buffer.from('fake-avatar-image'), { filename: 'avatar.png' })
+          .attach('coverPhoto', Buffer.from('fake-cover-image'), { filename: 'cover.png' })
+          .expect(200);
+
+        const resBody = res.body as ProfileResponseDto;
+        expect(resBody?.avatarUrl).not.toBe(profile?.avatarUrl);
+        expect(resBody?.coverPhotoUrl).not.toBe(profile?.coverPhotoUrl);
+
+        testImagesSaved.push(resBody?.avatarUrl || '');
+        testImagesSaved.push(resBody?.coverPhotoUrl || '');
+      });
+
+      it('should update the profile updating all fields with images', async () => {
+        const oldProfile = await profileRepo.findOne({ where: { userId: MEMBER_ID } });
+
+        const newBio = 'new biography';
+        const newUsername = 'new_username_12345';
+        const res = await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .field('username', newUsername)
+          .field('typePrivacy', Privacy.PRIVATE)
+          .field('bio', newBio)
+          .attach('avatar', Buffer.from('fake-avatar-image'), { filename: 'avatar.png' })
+          .attach('coverPhoto', Buffer.from('fake-cover-image'), { filename: 'cover.png' })
+          .expect(200);
+
+        const resBody = res.body as ProfileResponseDto;
+
+        expect(resBody.userId).toBe(MEMBER_ID);
+        expect(resBody.bio).toBe(newBio);
+        expect(resBody.username).toBe(newUsername);
+        expect(resBody.typePrivacy).toBe(Privacy.PRIVATE);
+        expect(resBody.username).not.toBe(oldProfile?.username);
+        expect(resBody.bio).not.toBe(oldProfile?.bio);
+        expect(resBody.typePrivacy).not.toBe(oldProfile?.typePrivacy);
+        expect(resBody.coverPhotoUrl).not.toBe(oldProfile?.coverPhotoUrl);
+        expect(resBody.avatarUrl).not.toBe(oldProfile?.avatarUrl);
+
+        testImagesSaved.push(resBody?.avatarUrl || '');
+        testImagesSaved.push(resBody?.coverPhotoUrl || '');
+      });
+    });
+
+    describe('Fail cases', () => {
+      it('404 if profile does not exist', async () => {
+        await profileRepo.deleteAll();
+
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .field('username', body.username)
+          .expect(404);
+
+        await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
+      });
+
+      it('409 with username already in use', async () => {
+        const anotherProfile = await profileRepo.findOne({ where: { userId: ADMIN_ID } });
+
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .field('username', anotherProfile?.username || '')
+          .expect(409);
+      });
+
+      it('400 with invalid image extension', async () => {
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .attach('avatar', Buffer.from('fake-avatar-image'), { filename: 'avatar.pdf' })
+          .expect(400);
+      });
+
+      it('400 with invalid image', async () => {
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .attach('avatar', Buffer.from(''), { filename: 'avatar.pdf' })
+          .expect(400);
+      });
+
+      it('401 without token', async () => {
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer invalidToken`)
+          .expect(401);
+      });
+
+      it('401 with expired token', async () => {
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${expiredToken}]`)
+          .expect(401);
+      });
+
+      it('400 with invalid username', async () => {
+        await request(server)
+          .patch('/profile')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .field('username', 'invalid..username123')
+          .expect(400);
+      });
+    });
+  });
 });
