@@ -24,7 +24,7 @@ describe('ImageLocalService (integration)', () => {
     it('should save image physically', async () => {
       const buffer = Buffer.from('fake-image');
 
-      const result = await service.save(buffer, 'avatar.jpg');
+      const result = await service.save(buffer, 'avatar.jpg', 'avatars');
 
       const filePath = path.join(process.cwd(), result.replace(/^\/+/, ''));
 

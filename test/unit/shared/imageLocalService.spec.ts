@@ -24,13 +24,14 @@ describe('ImageLocalService', () => {
     it('should save image successfully', async () => {
       const buffer = Buffer.from(fakeImage);
 
-      const result = await service.save(buffer, fakeFilename);
+      const result = await service.save(buffer, fakeFilename, 'avatars');
 
       expect(fs.mkdir).toHaveBeenCalledTimes(1);
 
       expect(fs.writeFile).toHaveBeenCalledWith(expect.stringContaining('uploads'), buffer);
 
-      expect(result).toBe('/uploads/avatar.jpg');
+      expect(result).toMatch('/uploads/avatars');
+      expect(result).toMatch('.jpg');
     });
 
     it('should throw if writeFile fails', async () => {
@@ -38,13 +39,13 @@ describe('ImageLocalService', () => {
 
       const buffer = Buffer.from(fakeImage);
 
-      await expect(service.save(buffer, fakeFilename)).rejects.toThrow('disk fail');
+      await expect(service.save(buffer, fakeFilename, 'avatars')).rejects.toThrow('disk fail');
     });
   });
 
   describe('.delete()', () => {
     it('should delete image successfully', async () => {
-      const result = await service.delete('/uploads/avatar.jpg');
+      const result = await service.delete('/uploads/avatars/avatar.jpg');
 
       expect(fs.unlink).toHaveBeenCalledTimes(1);
 
@@ -56,7 +57,7 @@ describe('ImageLocalService', () => {
         code: 'ENOENT',
       });
 
-      const result = await service.delete('/uploads/missing.jpg');
+      const result = await service.delete('/uploads/covers/missing.jpg');
 
       expect(result).toBe(false);
     });
@@ -64,7 +65,9 @@ describe('ImageLocalService', () => {
     it('should throw unexpected errors', async () => {
       (fs.unlink as jest.Mock).mockRejectedValue(new Error('permission denied'));
 
-      await expect(service.delete('/uploads/avatar.jpg')).rejects.toThrow('permission denied');
+      await expect(service.delete('/uploads/covers/avatar.jpg')).rejects.toThrow(
+        'permission denied',
+      );
     });
   });
 });

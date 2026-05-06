@@ -10,6 +10,7 @@ import { Privacy } from '../../src/modules/social/profile/domain/enums/privacy.e
 import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factories/user.factory';
 import { SECOND_SESSION_ID } from '../factories/session.factory';
 import { SeedersTag } from '../../src/shared/database/seeders/config/types';
+import { ProfileEntity } from '../../src/modules/social/profile/domain/entities/profile.entity';
 
 describe('UserRepository (integration)', () => {
   let dataSource: DataSource;
@@ -81,10 +82,14 @@ describe('UserRepository (integration)', () => {
         typePrivacy: Privacy.PUBLIC,
       };
       const newUpdatedAt = new Date(new Date().getTime() + 1000);
-      const newProfile = await profileRepo.update(profilesExisting[0].userId, {
-        ...changes,
-        updatedAt: newUpdatedAt,
-      });
+      const newProfile = await profileRepo.update(
+        profilesExisting[0].userId,
+        ProfileEntity.fromPersistence({
+          ...changes,
+          updatedAt: newUpdatedAt,
+          userId: profilesExisting[0].userId,
+        } as ProfileORM),
+      );
       expect(profilesExisting[0].username).not.toBe(changes.username);
       expect(newProfile.toBasic()).toMatchObject(changes);
       expect(newUpdatedAt.getTime()).toBeGreaterThanOrEqual(
@@ -98,8 +103,13 @@ describe('UserRepository (integration)', () => {
         updatedAt: new Date(),
       }; // Different userId
 
-      // update the a username already in use by profile[0]
-      await expect(profileRepo.update(profilesExisting[1].userId, changes)).rejects.toThrow();
+      // update the profile with a username already in use by profile[0]
+      await expect(
+        profileRepo.update(
+          profilesExisting[1].userId,
+          ProfileEntity.fromPersistence({ ...profilesExisting[1], ...changes }),
+        ),
+      ).rejects.toThrow();
     });
   });
 

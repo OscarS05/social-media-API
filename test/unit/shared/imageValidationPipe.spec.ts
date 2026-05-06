@@ -1,5 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
-import { ImageValidationPipe } from '../../../src/shared/services/pipes/imageValidation.pipe';
+import {
+  BadRequestError,
+  ImageValidationPipe,
+} from '../../../src/shared/services/pipes/imageValidation.pipe';
 
 describe('ImageValidationPipe', () => {
   let pipe: ImageValidationPipe;
@@ -32,7 +34,7 @@ describe('ImageValidationPipe', () => {
         size: 1024,
       } as Express.Multer.File;
 
-      expect(() => pipe.transform(file)).toThrow(BadRequestException);
+      expect(() => pipe.transform(file)).toThrow(BadRequestError);
 
       expect(() => pipe.transform(file)).toThrow(
         'Invalid image type. Allowed: jpg, jpeg, png, webp',
@@ -45,7 +47,7 @@ describe('ImageValidationPipe', () => {
         size: 31 * 1024 * 1024,
       } as Express.Multer.File;
 
-      expect(() => pipe.transform(file)).toThrow(BadRequestException);
+      expect(() => pipe.transform(file)).toThrow(BadRequestError);
 
       expect(() => pipe.transform(file)).toThrow('Image size exceeds 30MB limit');
     });

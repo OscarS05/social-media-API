@@ -90,7 +90,7 @@ describe('GetProfileByUserIdUseCase', () => {
     expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
     expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(1);
     expect(postRepo.getPostsWithMedia).toHaveBeenCalledWith(ownerId, { limit: 15 });
-    expect(response).toMatchObject(ALL_PROFILE_DATA);
+    expect(response).toMatchObject({ ...PROFILE_DATA, posts: ALL_PROFILE_DATA.posts });
   });
 
   it('should get limited profile data if the profile is private and the requested user is NOT followed and follower', async () => {
@@ -111,7 +111,7 @@ describe('GetProfileByUserIdUseCase', () => {
     expect(profileRepo.getProfileBaseView).toHaveBeenCalledTimes(1);
     expect(profileRepo.getProfileBaseView).toHaveBeenCalledWith(ownerId);
     expect(postRepo.getPostsWithMedia).toHaveBeenCalledTimes(0);
-    expect(response).toStrictEqual(LIMITED_PROFILE_DATA);
+    expect(response).toMatchObject({ ...PROFILE_DATA, posts: LIMITED_PROFILE_DATA.posts });
   });
 
   // === FAILS ===

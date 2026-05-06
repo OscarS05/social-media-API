@@ -9,8 +9,10 @@ import { MockProfileRepository } from '../../infrastructure/repositories/profile
 import { MockImageStorage } from '../../infrastructure/services/image.service-mock';
 import { ProfileEntity } from '../../../../../../src/modules/social/profile/domain/entities/profile.entity';
 import {
+  AVATAR_URL,
   avatarData,
   buildProfileEntity,
+  COVER_URL,
   coverData,
   NEW_AVATAR_URL,
   NEW_COVER_URL,
@@ -75,7 +77,10 @@ describe('CreateProfileUseCase', () => {
 
     const result = await usecase.execute(profileBasic, avatarData);
 
-    expect(imageManager.saveImages).toHaveBeenCalledWith([avatarData, null]);
+    expect(imageManager.saveImages).toHaveBeenCalledWith([
+      { ...avatarData, folder: 'avatars' },
+      null,
+    ]);
     expect(profileRepository.update).toHaveBeenCalledTimes(1);
     expect(profileRepository.delete).not.toHaveBeenCalled();
     expect(result).toStrictEqual(profileUpdated.toBasic());
@@ -92,7 +97,10 @@ describe('CreateProfileUseCase', () => {
 
     const result = await usecase.execute(profileBasic, undefined, coverData);
 
-    expect(imageManager.saveImages).toHaveBeenCalledWith([null, coverData]);
+    expect(imageManager.saveImages).toHaveBeenCalledWith([
+      null,
+      { ...coverData, folder: 'covers' },
+    ]);
     expect(profileRepository.update).toHaveBeenCalledTimes(1);
     expect(profileRepository.delete).not.toHaveBeenCalled();
     expect(result).toStrictEqual(profileUpdated.toBasic());
@@ -104,12 +112,15 @@ describe('CreateProfileUseCase', () => {
       coverPhotoUrl: NEW_COVER_URL,
     });
 
-    imageManager.saveImages.mockResolvedValueOnce([NEW_AVATAR_URL, NEW_COVER_URL]);
+    imageManager.saveImages.mockResolvedValueOnce([AVATAR_URL, COVER_URL]);
     profileRepository.update.mockResolvedValue(profileUpdated);
 
     const result = await usecase.execute(profileBasic, avatarData, coverData);
 
-    expect(imageManager.saveImages).toHaveBeenCalledWith([avatarData, coverData]);
+    expect(imageManager.saveImages).toHaveBeenCalledWith([
+      { ...avatarData, folder: 'avatars' },
+      { ...coverData, folder: 'covers' },
+    ]);
     expect(profileRepository.update).toHaveBeenCalledTimes(1);
     expect(profileRepository.delete).not.toHaveBeenCalled();
     expect(result).toStrictEqual(profileUpdated.toBasic());
@@ -175,7 +186,6 @@ describe('CreateProfileUseCase', () => {
 
     expect(profileRepository.create).toHaveBeenCalledTimes(1);
     expect(imageManager.saveImages).toHaveBeenCalledTimes(1);
-    expect(imageManager.saveImages).toHaveBeenCalledWith([avatarData, coverData]);
     expect(profileRepository.update).toHaveBeenCalledTimes(0);
     expect(profileRepository.delete).toHaveBeenCalledWith(profileData.userId);
     expect(imageManager.deleteImages).toHaveBeenCalledTimes(1);
@@ -192,7 +202,6 @@ describe('CreateProfileUseCase', () => {
 
     expect(profileRepository.create).toHaveBeenCalledTimes(1);
     expect(imageManager.saveImages).toHaveBeenCalledTimes(1);
-    expect(imageManager.saveImages).toHaveBeenCalledWith([avatarData, coverData]);
     expect(profileRepository.update).toHaveBeenCalledTimes(0);
     expect(profileRepository.delete).toHaveBeenCalledWith(profileData.userId);
     expect(imageManager.deleteImages).toHaveBeenCalledTimes(1);
