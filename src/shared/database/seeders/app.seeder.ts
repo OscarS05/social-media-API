@@ -5,6 +5,7 @@ import UserSeeder from '../../../modules/auth/infrastructure/persistence/db/seed
 import SessionSeeder from '../../../modules/auth/infrastructure/persistence/db/seeders/session.seeder';
 import { SeederContext } from './config/context';
 import ProfileSeeder from '../../../modules/social/profile/infrastructure/persistence/seeders/profile.seeder';
+import { SeedersTag } from './config/types';
 
 export default class MainSeeder implements Seeder {
   public async run(
@@ -18,7 +19,7 @@ export default class MainSeeder implements Seeder {
     await new ProfileSeeder(ctx, usersId).run();
   }
 
-  public async runTestSeeders(dataSource: DataSource, tags: string[]): Promise<void> {
+  public async runTestSeeders(dataSource: DataSource, tags: SeedersTag[]): Promise<void> {
     const ctx = new SeederContext(dataSource);
 
     const allSeeders = [UserSeeder, SessionSeeder, ProfileSeeder];

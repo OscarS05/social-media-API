@@ -35,8 +35,8 @@ export class UpdateProfileUseCase {
     }
 
     const [newAvatarUrl, newCoverUrl] = await this.imageManager.saveImages([
-      avatarData ?? null,
-      coverData ?? null,
+      avatarData ? { ...avatarData, folder: 'avatars' } : null,
+      coverData ? { ...coverData, folder: 'covers' } : null,
     ]);
 
     let updatedProfile: ProfileEntity;

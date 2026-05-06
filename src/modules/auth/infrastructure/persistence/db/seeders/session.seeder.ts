@@ -3,7 +3,10 @@ import { DataSource } from 'typeorm';
 
 import { Session as SessionORM } from '../entites/sessions.orm-entity';
 import { SeederContext } from '../../../../../../shared/database/seeders/config/context';
-import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
+import {
+  SeedersTag,
+  SeederTask,
+} from '../../../../../../shared/database/seeders/config/types';
 import { sessionFactoryData } from '../factory/session.factory';
 import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../../../test/factories/user.factory';
 import {
@@ -12,7 +15,7 @@ import {
 } from '../../../../../../../test/factories/session.factory';
 
 export default class SessionSeeder implements SeederTask {
-  tag = ['users', 'auth', 'sessions'];
+  tag = [SeedersTag.USERS, SeedersTag.SESSIONS];
   private dataSource: DataSource;
   private factoryManager?: SeederFactoryManager | undefined;
 

@@ -9,6 +9,7 @@ import { ProfileRepositoryTypeORM } from '../../src/modules/social/profile/infra
 import { Privacy } from '../../src/modules/social/profile/domain/enums/privacy.enum';
 import { SEEDED_ADMIN, SEEDED_MEMBER } from '../factories/user.factory';
 import { SECOND_SESSION_ID } from '../factories/session.factory';
+import { SeedersTag } from '../../src/shared/database/seeders/config/types';
 
 describe('UserRepository (integration)', () => {
   let dataSource: DataSource;
@@ -28,7 +29,7 @@ describe('UserRepository (integration)', () => {
     await dataSource.dropDatabase();
     await dataSource.runMigrations();
 
-    await new MainSeeder().runTestSeeders(dataSource, ['users', 'sessions']);
+    await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.USERS, SeedersTag.SESSIONS]);
   });
 
   afterAll(async () => {
@@ -39,7 +40,7 @@ describe('UserRepository (integration)', () => {
   describe('.create()', () => {
     afterEach(async () => {
       await profileRepoInstance.deleteAll();
-      await new MainSeeder().runTestSeeders(dataSource, ['profile']);
+      await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
     });
 
     it('should create a profile successfully', async () => {
@@ -63,7 +64,7 @@ describe('UserRepository (integration)', () => {
   describe('.update()', () => {
     afterEach(async () => {
       await profileRepoInstance.deleteAll();
-      await new MainSeeder().runTestSeeders(dataSource, ['profile']);
+      await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
     });
 
     let profilesExisting: ProfileORM[] = [];
@@ -105,7 +106,7 @@ describe('UserRepository (integration)', () => {
   describe('.delete()', () => {
     afterEach(async () => {
       await profileRepoInstance.deleteAll();
-      await new MainSeeder().runTestSeeders(dataSource, ['profile']);
+      await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
     });
 
     it('should delete a profile successfully', async () => {

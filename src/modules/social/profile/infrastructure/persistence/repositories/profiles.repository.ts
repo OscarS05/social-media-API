@@ -11,7 +11,6 @@ import {
   ProfileAccessContext,
   ProfilePreview,
   ProfileView,
-  UpdateProfileData,
 } from '../../../domain/types/profile';
 import { ProfileViewMapper } from '../../mappers/profileView.mapper';
 import { ProfileAccessContextMapper } from '../../mappers/profileAccessContext.mapper';
@@ -45,8 +44,8 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
     return ProfileMapper.toDomain(newProfile);
   }
 
-  async update(userId: string, changes: UpdateProfileData): Promise<ProfileEntity> {
-    await this.repo.update(userId, changes);
+  async update(userId: string, data: ProfileEntity): Promise<ProfileEntity> {
+    await this.repo.update(userId, ProfileMapper.toUpdate(data));
 
     const profile = await this.repo.findOne({ where: { userId } });
     if (!profile) throw new DomainNotFoundError();

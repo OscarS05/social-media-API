@@ -29,4 +29,15 @@ export class ProfileMapper {
     orm.deletedAt = domainEntity.deletedAt;
     return orm;
   }
+
+  static toUpdate(data: ProfileEntity): ProfileORM {
+    const orm = new ProfileORM();
+    orm.username = data.username;
+    orm.bio = data.bio;
+    orm.typePrivacy = data.typePrivacy;
+    orm.avatarUrl = data.avatarUrl;
+    orm.coverPhotoUrl = data.coverPhotoUrl;
+    orm.updatedAt = data.updatedAt;
+    return orm;
+  }
 }

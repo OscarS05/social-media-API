@@ -3,11 +3,14 @@ import { DataSource, Repository } from 'typeorm';
 
 import { User as UserORM } from '../entites/user.orm-entity';
 import { SeederContext } from '../../../../../../shared/database/seeders/config/context';
-import { SeederTask } from '../../../../../../shared/database/seeders/config/types';
+import {
+  SeedersTag,
+  SeederTask,
+} from '../../../../../../shared/database/seeders/config/types';
 import { SEEDED_ADMIN, SEEDED_MEMBER } from '../../../../../../../test/factories/user.factory';
 
 export default class UserSeeder implements SeederTask {
-  tag = ['users', 'auth'];
+  tag = [SeedersTag.USERS, SeedersTag.SESSIONS];
   private dataSource: DataSource;
   private factoryManager?: SeederFactoryManager | undefined;
 

@@ -4,3 +4,9 @@ export interface SeederTask {
   run(): Promise<any>;
   runForTests(): Promise<void>;
 }
+
+export enum SeedersTag {
+  USERS = 'users',
+  SESSIONS = 'sessions',
+  PROFILE = 'profile',
+}

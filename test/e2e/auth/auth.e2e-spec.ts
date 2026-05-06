@@ -27,7 +27,7 @@ import { Roles } from '../../../src/modules/auth/domain/enums/roles.enum';
 import { TokenDto } from '../../../src/modules/auth/infrastructure/dtos/auth.dto';
 import { SessionResponseDto } from '../../../src/modules/auth/infrastructure/dtos/session.dto';
 
-describe('Auth e2e - identity/auth', () => {
+describe('Auth e2e - /auth', () => {
   let app: INestApplication;
   let server: Server;
   let dataSource: DataSource;

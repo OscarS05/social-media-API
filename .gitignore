@@ -15,6 +15,9 @@ lerna-debug.log*
 # IA
 .codex
 
+# Media
+/uploads
+
 # OS
 .DS_Store
 

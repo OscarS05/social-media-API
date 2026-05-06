@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ImageStoragePort } from '../../domain/services/image.service';
+import { Folder, ImageStoragePort } from '../../domain/services/image.service';
 
 @Injectable()
 export class ImageManagerService {
@@ -8,11 +8,13 @@ export class ImageManagerService {
   constructor(private readonly imageStorage: ImageStoragePort) {}
 
   async saveImages(
-    images: Array<{ buffer: Buffer; filename: string } | null>,
+    images: Array<{ buffer: Buffer; filename: string; folder: Folder } | null>,
   ): Promise<Array<string | null>> {
     const results = await Promise.allSettled(
       images.map((img) =>
-        img?.buffer ? this.imageStorage.save(img.buffer, img.filename) : Promise.resolve(null),
+        img?.buffer
+          ? this.imageStorage.save(img.buffer, img.filename, img.folder)
+          : Promise.resolve(null),
       ),
     );
 

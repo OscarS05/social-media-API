@@ -39,8 +39,8 @@ export class CreateProfileUseCase {
 
     try {
       [avatarPath, coverPath] = await this.imageManager.saveImages([
-        avatarData ?? null,
-        coverData ?? null,
+        avatarData ? { ...avatarData, folder: 'avatars' } : null,
+        coverData ? { ...coverData, folder: 'covers' } : null,
       ]);
 
       if (avatarPath || coverPath) {
