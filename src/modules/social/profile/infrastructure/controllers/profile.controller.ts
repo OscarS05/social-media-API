@@ -1,15 +1,31 @@
-import { Body, Controller, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiBody, ApiExtraModels, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 import { Profiles as ProfileORM } from '../persistence/entities/profiles.orm-entity';
 import { ProfileErrorMapper } from '../mappers/error.mapper';
-import { CreateProfileDto, ProfileResponseDto, UpdateProfileDto } from '../dtos/profile.dto';
+import {
+  CreateProfileDto,
+  FindProfilesQueryParam,
+  ProfilePreviewResponseDto,
+  ProfileResponseDto,
+  UpdateProfileDto,
+} from '../dtos/profile.dto';
 import { CreateProfileUseCase } from '../../application/use-cases/create-profile.usecase';
 import { ImageValidationPipe } from '../../../../../shared/services/pipes/imageValidation.pipe';
 import type { PayloadAccessToken } from '../../../../auth/domain/types/session';
 import { CurrentUser } from '../../../../../shared/services/decorators/currentUser.decorator';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.usecase';
+import { GetProfilesByUsernameUseCase } from '../../application/use-cases/get-profiles-by-username.usecase';
 
 type ImageUploaded = {
   avatar?: Express.Multer.File[];
@@ -22,6 +38,7 @@ export class ProfileController {
   constructor(
     private readonly createProfileUseCase: CreateProfileUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
+    private readonly getProfilesByUsernameUseCase: GetProfilesByUsernameUseCase,
   ) {}
 
   @ApiOperation({
@@ -108,6 +125,26 @@ export class ProfileController {
       );
 
       return ProfileResponseDto.fromDomain(response);
+    } catch (error) {
+      throw ProfileErrorMapper(error as Error);
+    }
+  }
+
+  @ApiOperation({
+    summary: 'Gets a list of profile previews',
+    description: 'Gets a list of profile previews using a query parameter',
+  })
+  @ApiQuery({ type: FindProfilesQueryParam })
+  @ApiResponse({
+    status: 200,
+    description: 'Gets profile previews',
+    type: ProfilePreviewResponseDto,
+  })
+  @Get()
+  async findProfiles(@Query('search') search: string): Promise<ProfilePreviewResponseDto[]> {
+    try {
+      const profiles = await this.getProfilesByUsernameUseCase.execute(search);
+      return profiles.map((p) => ProfilePreviewResponseDto.fromDomain(p));
     } catch (error) {
       throw ProfileErrorMapper(error as Error);
     }

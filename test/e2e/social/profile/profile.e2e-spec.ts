@@ -13,6 +13,7 @@ import { USERNAME } from '../../../factories/profile.factory';
 import { Privacy } from '../../../../src/modules/social/profile/domain/enums/privacy.enum';
 import {
   CreateProfileDto,
+  ProfilePreviewResponseDto,
   ProfileResponseDto,
 } from '../../../../src/modules/social/profile/infrastructure/dtos/profile.dto';
 import { ImageManagerService } from '../../../../src/shared/infrastructure/services/image-manager.service';
@@ -405,6 +406,82 @@ describe('Profile e2e - social/profile', () => {
           .set('Authorization', `Bearer ${accessToken}`)
           .field('username', 'invalid..username123')
           .expect(400);
+      });
+    });
+  });
+
+  describe('GET /profile?query=?', () => {
+    beforeAll(async () => {
+      await profileRepo.deleteAll();
+      await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
+    });
+
+    describe('Successful gests', () => {
+      it('should find all profile previews', async () => {
+        const res = await request(server)
+          .get('/profile?search=' + 'user')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(200);
+
+        const resBody = res.body as ProfilePreviewResponseDto[];
+
+        expect(resBody.length).toBe(2);
+        expect(resBody[0].avatarUrl).toBeDefined();
+        expect(resBody[0].username).toBeTruthy();
+      });
+
+      it('should find one profile preview', async () => {
+        const res = await request(server)
+          .get('/profile?search=' + USERNAME)
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(200);
+
+        const resBody = res.body as ProfilePreviewResponseDto[];
+
+        expect(resBody.length).toBe(1);
+        expect(resBody[0].avatarUrl).toBeDefined();
+        expect(resBody[0].username).toBeTruthy();
+      });
+
+      it('should return an empty array if username not exists', async () => {
+        const res = await request(server)
+          .get('/profile?search=' + 'oscar_santiago_123_123')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(200);
+
+        const resBody = res.body as ProfilePreviewResponseDto[];
+
+        expect(resBody.length).toBe(0);
+      });
+    });
+
+    describe('Fail cases', () => {
+      it('should fail if "search" parameter is empty', async () => {
+        await request(server)
+          .get('/profile?search=')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(400);
+      });
+
+      it('400 if username in query parameter is invalid', async () => {
+        await request(server)
+          .get('/profile?search=invalid:username')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(400);
+      });
+
+      it('401 without token', async () => {
+        await request(server)
+          .get('/profile?search=user')
+          .set('Authorization', `Bearer invalidToken`)
+          .expect(401);
+      });
+
+      it('401 with expired token', async () => {
+        await request(server)
+          .get('/profile?search=user')
+          .set('Authorization', `Bearer ${expiredToken}]`)
+          .expect(401);
       });
     });
   });

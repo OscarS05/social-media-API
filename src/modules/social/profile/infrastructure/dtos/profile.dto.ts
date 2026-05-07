@@ -2,48 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsString, IsUUID, Length, Matches, MaxLength } from 'class-validator';
 
 import { Privacy } from '../../domain/enums/privacy.enum';
-import { ProfileBasic } from '../../domain/types/profile';
-import { PartialType } from '@nestjs/mapped-types';
+import { ProfileBasic, ProfilePreview } from '../../domain/types/profile';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
 
-export class CreateProfileDto {
-  @ApiProperty({
-    example: 'john_doe',
-    description:
-      'Username between 3 and 20 characters. Only letters, numbers, dots and underscores are allowed.',
-  })
-  @IsString()
-  @Length(3, 20)
-  @Matches(/^[a-zA-Z0-9._]+$/, {
-    message: 'Username can only contain letters, numbers, dots and underscores',
-  })
-  @Matches(/^(?![._])(?!.*[._]$).*$/, {
-    message: 'Username cannot start or end with dot or underscore',
-  })
-  @Matches(/^(?!.*\.\.)(?!.*__).*$/, {
-    message: 'Username cannot contain consecutive dots or underscores',
-  })
-  username!: string;
-
-  @ApiPropertyOptional({
-    example: 'Software developer and coffee lover',
-    description: 'Profile biography. Maximum 280 characters.',
-  })
-  @IsString()
-  @MaxLength(280)
-  bio!: string | null;
-
-  @ApiProperty({
-    enum: Privacy,
-    example: Privacy.PUBLIC,
-    description: 'Profile privacy type',
-  })
-  @IsEnum(Privacy)
-  typePrivacy!: Privacy;
-}
-
-export class UpdateProfileDto extends PartialType(CreateProfileDto) {}
-
-export class ProfileResponseDto {
+export class ProfileDto {
   @ApiProperty({
     example: 'a1496256-ab44-4448-b160-6515368d7585',
     description: 'The ID of the user that belongs to the profile',
@@ -65,7 +27,7 @@ export class ProfileResponseDto {
     description: 'Profile privacy type',
   })
   @IsEnum(Privacy)
-  typePrivacy!: string;
+  typePrivacy!: Privacy;
 
   @ApiPropertyOptional({
     example: 'Software developer and coffee lover',
@@ -87,9 +49,32 @@ export class ProfileResponseDto {
   })
   @IsString()
   coverPhotoUrl!: string | null;
-  // createdAt!: Date;
-  // updatedAt!: Date;
+}
 
+export class CreateProfileDto extends OmitType(ProfileDto, [
+  'avatarUrl',
+  'coverPhotoUrl',
+  'userId',
+]) {
+  @Length(3, 20)
+  @Matches(/^[a-zA-Z0-9._]+$/, {
+    message: 'Username can only contain letters, numbers, dots and underscores',
+  })
+  @Matches(/^(?![._])(?!.*[._]$).*$/, {
+    message: 'Username cannot start or end with dot or underscore',
+  })
+  @Matches(/^(?!.*\.\.)(?!.*__).*$/, {
+    message: 'Username cannot contain consecutive dots or underscores',
+  })
+  declare username: string;
+
+  @MaxLength(280)
+  declare bio: string | null;
+}
+
+export class UpdateProfileDto extends PartialType(CreateProfileDto) {}
+
+export class ProfileResponseDto extends ProfileDto {
   static fromDomain(data: ProfileBasic): ProfileResponseDto {
     return {
       userId: data.userId,
@@ -100,4 +85,24 @@ export class ProfileResponseDto {
       coverPhotoUrl: data.coverPhotoUrl ?? null,
     };
   }
+}
+
+export class ProfilePreviewResponseDto extends OmitType(ProfileDto, [
+  'coverPhotoUrl',
+  'userId',
+  'bio',
+  'typePrivacy',
+]) {
+  static fromDomain(data: ProfilePreview): ProfilePreviewResponseDto {
+    return {
+      username: data.username,
+      avatarUrl: data.avatarUrl ?? null,
+    };
+  }
+}
+
+export class FindProfilesQueryParam {
+  @Length(1, 30)
+  @IsString()
+  search!: string | null;
 }
