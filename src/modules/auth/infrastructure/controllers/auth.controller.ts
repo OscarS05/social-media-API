@@ -15,7 +15,7 @@ import { AuthGuard } from '@nestjs/passport';
 import type { Request, Response } from 'express';
 
 import { RegisterUserUseCase } from '../../application/use-cases/users/register-with-local.usecase';
-import { LoginDto, TokenDto, RegisterDto } from '../dtos/auth.dto';
+import { LoginDto, RegisterDto } from '../dtos/auth.dto';
 import { ApiBody, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
 import { User } from '../persistence/db/entites/user.orm-entity';
 import { mapDomainErrorToHttp } from '../mappers/error.mapper';
@@ -23,7 +23,7 @@ import { LoginWithOAuthUseCase } from '../../application/use-cases/users/login-w
 import { RefreshToken } from '../../../../shared/services/decorators/refreshToken.decorator';
 import { UserAgent } from '../../../../shared/services/decorators/userAgent.decorators';
 import { IpAddress } from '../../../../shared/services/decorators/ipAddress.decorator';
-import { UserResponseDto } from '../dtos/user.dto';
+import { UserLoginReponse, UserResponseDto } from '../dtos/user.dto';
 import type { UserAgentParsed } from '../../domain/services/userAgent.service';
 import { LoginUseCase } from '../../application/use-cases/users/login-local.usecase';
 import type { LoginResponse, PayloadAccessToken } from '../../domain/types/session';
@@ -88,7 +88,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Basic information about the logged user',
-    type: UserResponseDto,
+    type: UserLoginReponse,
   })
   @HttpCode(200)
   @Public()
@@ -106,7 +106,8 @@ export class AuthController {
       );
 
       setCookie(res, 'refreshToken', tokens.refreshToken);
-      return { user, accessToken: tokens.accessToken };
+      setCookie(res, 'accessToken', tokens.accessToken);
+      return { user };
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }
@@ -133,7 +134,7 @@ export class AuthController {
   @ApiResponse({
     description: 'User was created or logged',
     status: 200,
-    type: UserResponseDto,
+    type: UserLoginReponse,
   })
   @Get('google/callback')
   @Public()
@@ -151,7 +152,8 @@ export class AuthController {
         { userAgent, ipAddress },
       );
       setCookie(res, 'refreshToken', tokens.refreshToken);
-      return { user, accessToken: tokens.accessToken };
+      setCookie(res, 'accessToken', tokens.accessToken);
+      return { user };
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }
@@ -160,14 +162,13 @@ export class AuthController {
   @ApiOperation({
     summary: 'Refresh session',
     description:
-      'Refresh the session using access/refresh tokens, user agent and ip address. If the tokens providing were valids, it update the session in DB with new token and new version, then, it returns the new tokens',
+      'Refresh the session using access/refresh tokens and user agent. If the tokens providing were valids, it update the session in DB with new token and new version, then, it sets the new tokens in the cookies',
   })
   @ApiResponse({
-    description: 'Return new tokens',
-    status: 200,
-    type: TokenDto,
+    description: 'Sets new tokens in the cookies',
+    status: 204,
   })
-  @HttpCode(200)
+  @HttpCode(204)
   @Put('refresh')
   async refreshTokens(
     @RefreshToken() refreshToken: string,
@@ -175,7 +176,7 @@ export class AuthController {
     @UserAgent() userAgent: UserAgentParsed,
     @IpAddress() ipAddress: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<TokenDto> {
+  ): Promise<void> {
     try {
       const tokens = await this.refreshSessionUseCase.execute(
         { userAgent, ipAddress },
@@ -183,7 +184,7 @@ export class AuthController {
       );
 
       setCookie(res, 'refreshToken', tokens.refreshToken);
-      return { accessToken: tokens.accessToken };
+      setCookie(res, 'accessToken', tokens.accessToken);
     } catch (error) {
       throw mapDomainErrorToHttp(error as Error);
     }

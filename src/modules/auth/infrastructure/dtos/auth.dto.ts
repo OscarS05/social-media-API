@@ -21,10 +21,3 @@ export class RegisterDto {
 }
 
 export class LoginDto extends OmitType(RegisterDto, ['name']) {}
-
-export class TokenDto {
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty({ description: 'access token' })
-  accessToken!: string;
-}

@@ -1,6 +1,8 @@
 import { Response } from 'express';
 
-export const setCookie = (res: Response, name: string, token: string): void => {
+type NAME_COOKIE = 'refreshToken' | 'accessToken';
+
+export const setCookie = (res: Response, name: NAME_COOKIE, token: string): void => {
   res.cookie(name, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

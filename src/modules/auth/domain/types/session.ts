@@ -36,7 +36,7 @@ export type UpdateSession = {
 };
 
 export type LoginData = { user: UserBasic; tokens: Tokens };
-export type LoginResponse = { user: UserBasic; accessToken: string };
+export type LoginResponse = { user: UserBasic };
 
 export type SessionData = {
   accessToken: string;

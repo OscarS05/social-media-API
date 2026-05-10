@@ -24,8 +24,9 @@ import {
 } from '../../../src/modules/auth/domain/types/session';
 import { Session as SessionORM } from '../../../src/modules/auth/infrastructure/persistence/db/entites/sessions.orm-entity';
 import { Roles } from '../../../src/modules/auth/domain/enums/roles.enum';
-import { TokenDto } from '../../../src/modules/auth/infrastructure/dtos/auth.dto';
 import { SessionResponseDto } from '../../../src/modules/auth/infrastructure/dtos/session.dto';
+import { SeedersTag } from '../../../src/shared/database/seeders/config/types';
+import { getTokensFromCookies } from '../../helpers/token.helper';
 
 describe('Auth e2e - /auth', () => {
   let app: INestApplication;
@@ -51,7 +52,7 @@ describe('Auth e2e - /auth', () => {
     dataSource = app.get(DataSource);
     await dataSource.dropDatabase();
     await dataSource.runMigrations();
-    await new MainSeeder().runTestSeeders(dataSource, ['users', 'sessions']);
+    await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.USERS, SeedersTag.SESSIONS]);
 
     userRepo = dataSource.getRepository(UserORM);
     sessionRepo = dataSource.getRepository(SessionORM);
@@ -114,21 +115,19 @@ describe('Auth e2e - /auth', () => {
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password })
         .expect(200);
 
-      expect(res.body).toHaveProperty('accessToken');
       const body = res.body as LoginResponse;
-      const decoded: PayloadAccessToken = jwtService.decode(body.accessToken);
-      expect(decoded).toHaveProperty('sub');
-      expect(decoded).toHaveProperty('role');
-      expect(decoded.sub).toBe(SEEDED_MEMBER.id);
-      expect(decoded.role).toBe(SEEDED_MEMBER.role);
-      expect(res.headers['set-cookie'][0]).toMatch(/refreshToken=/);
+      const [accessToken, refreshToken] = getTokensFromCookies(res);
 
-      const refreshToken = res.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      expect(accessToken).toBeTruthy();
+      expect(refreshToken).toBeTruthy();
+
+      const decoded: PayloadAccessToken = jwtService.decode(accessToken);
+      expect(decoded?.sub).toBe(SEEDED_MEMBER.id);
+      expect(decoded?.role).toBe(SEEDED_MEMBER.role);
+
       const decodedRefresh: PayloadRefreshToken = jwtService.decode(refreshToken);
-      expect(decodedRefresh).toHaveProperty('sub');
-      expect(decodedRefresh).toHaveProperty('version');
-      expect(decodedRefresh.sub).toBe(SEEDED_MEMBER.id);
-      expect(decodedRefresh.version).toBe(1);
+      expect(decodedRefresh?.sub).toBe(SEEDED_MEMBER.id);
+      expect(decodedRefresh?.version).toBe(1);
 
       expect(body.user).toHaveProperty('email');
       expect(body.user).toHaveProperty('name');
@@ -191,13 +190,17 @@ describe('Auth e2e - /auth', () => {
 
       expect(body.user.email).toBe(EMAIL_OAUTH_GOOGLE);
       expect(body.user.role).toBe(Roles.MEMBER);
-      expect(body.accessToken).toBeTruthy();
 
-      const refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      const [accessToken, refreshToken] = getTokensFromCookies(response);
+
+      expect(accessToken).toBeTruthy();
+      expect(refreshToken).toBeTruthy();
+
       const decodedRefresh: PayloadRefreshToken = jwtService.decode(refreshToken);
       expect(decodedRefresh).toHaveProperty('sub');
       expect(decodedRefresh).toHaveProperty('version');
       expect(decodedRefresh.version).toBe(1);
+
       userId = decodedRefresh.sub;
       const sessions = await sessionRepo.find({
         where: { userId },
@@ -221,11 +224,15 @@ describe('Auth e2e - /auth', () => {
       // This id should be the same as in the last test becuase it is only a login, not another registration
       expect(body.user.id).toBe(userId);
       expect(body.user.email).toBe(EMAIL_OAUTH_GOOGLE);
-      expect(body.accessToken).toBeTruthy();
 
-      const refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      const [accessToken, refreshToken] = getTokensFromCookies(response);
+
+      expect(accessToken).toBeTruthy();
+      expect(refreshToken).toBeTruthy();
+
       const decodedRefresh: PayloadRefreshToken = jwtService.decode(refreshToken);
       expect(decodedRefresh.version).toBe(1);
+
       const sessions = await sessionRepo.find({
         where: { userId },
       });
@@ -251,8 +258,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
 
-      accessToken = (loginRes.body as TokenDto).accessToken;
-      refreshToken = loginRes.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      [accessToken, refreshToken] = getTokensFromCookies(loginRes);
     });
 
     it('401 with invalid refresh token', async () => {
@@ -294,26 +300,22 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
 
-      const accessToken = (loginRes.body as TokenDto).accessToken;
-      const refreshToken = loginRes.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      const [accessTokenLogin, refreshTokenLogin] = getTokensFromCookies(loginRes);
 
       // REFRESH SESSION
       const res = await request(server)
         .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .set('Cookie', `refreshToken=${refreshToken}`)
-        .expect(200);
+        .set('Authorization', `Bearer ${accessTokenLogin}`)
+        .set('Cookie', `refreshToken=${refreshTokenLogin}`)
+        .expect(204);
 
-      expect(res.body).toHaveProperty('accessToken');
-      const body = res.body as TokenDto;
-      const decoded: PayloadAccessToken = jwtService.decode(body.accessToken);
+      const [accessToken, refreshToken] = getTokensFromCookies(res);
+      const decoded: PayloadAccessToken = jwtService.decode(accessToken);
       expect(decoded?.sub).toBe(SEEDED_MEMBER.id);
       expect(decoded?.role).toBe(SEEDED_MEMBER.role);
 
-      const decodedRefresh: PayloadRefreshToken = jwtService.decode(
-        res.headers['set-cookie'][0].split(';')[0].split('=')[1],
-      );
+      const decodedRefresh: PayloadRefreshToken = jwtService.decode(refreshToken);
       expect(decodedRefresh).toHaveProperty('sub');
       expect(decodedRefresh?.version).toBe(2); // 2nd session
     });
@@ -325,19 +327,17 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
 
-      const accessTokenFirstSession = (firstSession.body as TokenDto).accessToken;
-      const refreshTokenFirstSession = firstSession.headers['set-cookie'][0]
-        .split(';')[0]
-        .split('=')[1];
+      const [accessTokenFirstSession, refreshTokenFirstSession] =
+        getTokensFromCookies(firstSession);
 
       const seccondSession = await request(server)
         .put('/auth/refresh')
         .set('user-agent', RAW_USER_AGENT)
         .set('Authorization', `Bearer ${accessTokenFirstSession}`)
         .set('Cookie', `refreshToken=${refreshTokenFirstSession}`)
-        .expect(200);
+        .expect(204);
 
-      const accessTokenSecondSession = (seccondSession.body as TokenDto).accessToken;
+      const [accessTokenSecondSession] = getTokensFromCookies(seccondSession);
 
       await request(server)
         .put('/auth/refresh')
@@ -355,8 +355,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
 
-      const accessToken = (responseLogin.body as TokenDto).accessToken;
-      const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      const [accessToken, refreshToken] = getTokensFromCookies(responseLogin);
 
       await request(server)
         .delete('/auth/sessions/current')
@@ -375,8 +374,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
 
-      const accessToken = (responseLogin.body as TokenDto).accessToken;
-      const refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
+      const [accessToken, refreshToken] = getTokensFromCookies(responseLogin);
 
       await request(server)
         .delete('/auth/sessions/current')
@@ -399,7 +397,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_MEMBER.email, password: SEEDED_MEMBER.password });
 
-      const accessToken = (responseLogin.body as TokenDto).accessToken;
+      const [accessToken] = getTokensFromCookies(responseLogin);
 
       await request(server)
         .delete('/auth/sessions/current')
@@ -418,7 +416,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
 
-      accessToken = (responseLogin.body as TokenDto).accessToken;
+      [accessToken] = getTokensFromCookies(responseLogin);
     });
 
     it('200 with a list of sessions', async () => {
@@ -455,7 +453,7 @@ describe('Auth e2e - /auth', () => {
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
 
-      accessToken = (responseLogin.body as TokenDto).accessToken;
+      [accessToken] = getTokensFromCookies(responseLogin);
     });
 
     it('200 with a list of sessions', async () => {
@@ -495,8 +493,8 @@ describe('Auth e2e - /auth', () => {
         .post('/auth/login')
         .set('user-agent', RAW_USER_AGENT)
         .send({ email: SEEDED_ADMIN.email, password: SEEDED_ADMIN.password });
-      accessToken = (responseLogin.body as TokenDto).accessToken;
-      refreshToken = responseLogin.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+      [accessToken, refreshToken] = getTokensFromCookies(responseLogin);
 
       await request(server)
         .post('/auth/login')

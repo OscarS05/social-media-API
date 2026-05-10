@@ -13,3 +13,7 @@ export class UserResponseDto {
   @ApiProperty({ example: 'admin@test.com' })
   email!: string;
 }
+
+export class UserLoginReponse {
+  user!: UserResponseDto;
+}
