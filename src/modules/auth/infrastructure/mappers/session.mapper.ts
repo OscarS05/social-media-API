@@ -31,4 +31,14 @@ export class SessionMapper {
     orm.updatedAt = domainEntity.updatedAt;
     return orm;
   }
+
+  static toUpdate(data: SessionEntity): SessionORM {
+    const orm = new SessionORM();
+    orm.tokenHashed = data.tokenHashed;
+    orm.version = data.version;
+    orm.revoked = data.revoked;
+    orm.expiresAt = data.expiresAt;
+    orm.updatedAt = data.updatedAt;
+    return orm;
+  }
 }

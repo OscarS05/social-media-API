@@ -1,12 +1,12 @@
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { SessionEntity } from '../../../../domain/entities/session.entity';
 import { SessionRepository } from '../../../../domain/repositories/session.repository';
 import { Session as SessionEntityORM } from '../entites/sessions.orm-entity';
 import { SessionMapper } from '../../../mappers/session.mapper';
-import { Repository } from 'typeorm';
-import { UpdateSession } from '../../../../domain/types/session';
 import { transactionStorage } from '../../../../../../shared/services/transaction/transaction-context';
+import { UpdateSession } from '../../../../domain/types/session';
 
 export class SessionRepositoryORM extends SessionRepository {
   constructor(
@@ -28,8 +28,8 @@ export class SessionRepositoryORM extends SessionRepository {
     return SessionMapper.toDomain(newSession);
   }
 
-  async update(sessionId: string, changes: UpdateSession): Promise<void> {
-    await this.repo.update({ id: sessionId, revoked: false }, changes);
+  async update(sessionId: string, session: SessionEntity): Promise<void> {
+    await this.repo.update({ id: sessionId, revoked: false }, SessionMapper.toUpdate(session));
   }
 
   async updateByUserId(userId: string, changes: UpdateSession): Promise<void> {

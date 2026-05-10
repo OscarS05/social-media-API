@@ -52,7 +52,6 @@ describe('UserRepository (integration)', () => {
     it('should fail if email is duplicated', async () => {
       const id = '96a64924-8f16-4ac6-b0fe-d1f736d9af41';
       const profile = buildUserEntity({ id: id, email: 'random@email.com' });
-      // TODO: Coloca dentro del .toThrow algo para que valide si el mensaje de error contiene la palabta unique, para verificar que falla por que ya hay un usuario con ese mismo email
       await expect(userRepo.createUser(profile)).rejects.toThrow(/Duplicate entry/i);
     });
   });

@@ -32,6 +32,7 @@ export type UpdateSession = {
   revoked?: boolean;
   version?: number;
   expiresAt?: Date;
+  updatedAt?: Date;
 };
 
 export type LoginData = { user: UserBasic; tokens: Tokens };

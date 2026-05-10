@@ -15,7 +15,7 @@ export const buildSessionEntity = (overrides?: Partial<Session>): SessionEntity 
       cpu: { architecture: 'amd' },
     },
     ipAddress: '192.168.1.1',
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     ...overrides,
   });
 };
