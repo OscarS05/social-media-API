@@ -5,11 +5,11 @@ import {
   ProfileAccessDeniedError,
 } from '../../domain/errors/profile.errors';
 import { ProfileAccessContext, ProfileView } from '../../domain/types/profile';
-import { PostData } from '../../domain/types/posts';
+import { PostPreview } from '../../domain/types/posts';
 import { PostRepository } from '../../domain/repositories/post.respository';
 
 @Injectable()
-export class GetProfileByUserIdUseCase {
+export class GetProfileDataByUserIdUseCase {
   constructor(
     private readonly profileRepo: ProfileRepository,
     private readonly postRepo: PostRepository,
@@ -26,15 +26,15 @@ export class GetProfileByUserIdUseCase {
     const profileData = await this.profileRepo.getProfileBaseView(ownerId);
     if (!profileData) throw new DomainNotFoundError();
 
-    let postWithMedia: PostData[] = [];
+    let postsPreview: PostPreview[] = [];
     if (this.canViewPosts(profileAccessContext)) {
-      postWithMedia = await this.postRepo.getPostsWithMedia(ownerId, { limit: 15 });
+      postsPreview = await this.postRepo.getPostsPreview(ownerId, { limit: 15 });
     }
 
     return {
       profile: profileData.profile,
       relations: profileData.relations,
-      posts: postWithMedia,
+      posts: postsPreview,
     };
   }
 

@@ -25,7 +25,7 @@ import { ImageValidationPipe } from '../../../../../shared/services/pipes/imageV
 import type { PayloadAccessToken } from '../../../../auth/domain/types/session';
 import { CurrentUser } from '../../../../../shared/services/decorators/currentUser.decorator';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.usecase';
-import { GetProfilesByUsernameUseCase } from '../../application/use-cases/get-profiles-by-username.usecase';
+import { GetProfilesPreviewUseCase } from '../../application/use-cases/getProfilesPreview.usecase';
 
 type ImageUploaded = {
   avatar?: Express.Multer.File[];
@@ -38,7 +38,7 @@ export class ProfileController {
   constructor(
     private readonly createProfileUseCase: CreateProfileUseCase,
     private readonly updateProfileUseCase: UpdateProfileUseCase,
-    private readonly getProfilesByUsernameUseCase: GetProfilesByUsernameUseCase,
+    private readonly getProfilesPreviewUseCase: GetProfilesPreviewUseCase,
   ) {}
 
   @ApiOperation({
@@ -143,7 +143,7 @@ export class ProfileController {
   @Get()
   async findProfiles(@Query('search') search: string): Promise<ProfilePreviewResponseDto[]> {
     try {
-      const profiles = await this.getProfilesByUsernameUseCase.execute(search);
+      const profiles = await this.getProfilesPreviewUseCase.execute(search);
       return profiles.map((p) => ProfilePreviewResponseDto.fromDomain(p));
     } catch (error) {
       throw ProfileErrorMapper(error as Error);

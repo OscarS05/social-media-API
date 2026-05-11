@@ -7,7 +7,7 @@ import { Blocks as BlocksORM } from './infrastructure/persistence/entities/block
 import { CreateProfileUseCase } from './application/use-cases/create-profile.usecase';
 import { CreateProfileWithOAuthUseCase } from './application/use-cases/create-profile-after-oauth.usecase';
 import { UpdateProfileUseCase } from './application/use-cases/update-profile.usecase';
-import { GetProfilesByUsernameUseCase } from './application/use-cases/get-profiles-by-username.usecase';
+import { GetProfilesPreviewUseCase } from './application/use-cases/getProfilesPreview.usecase';
 import { ProfileRepository } from './domain/repositories/profile.repository';
 import { ProfileRepositoryTypeORM } from './infrastructure/persistence/repositories/profiles.repository';
 import { UsernameGeneratorService } from './application/services/username-generator.service';
@@ -29,7 +29,7 @@ import { ImageLocalService } from '../../../shared/infrastructure/services/image
     CreateProfileUseCase,
     UpdateProfileUseCase,
     // GetProfileByUserIdUseCase,
-    GetProfilesByUsernameUseCase,
+    GetProfilesPreviewUseCase,
   ],
 })
 export class ProfileModule {}

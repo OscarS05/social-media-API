@@ -1,5 +1,5 @@
 import { Privacy } from '../enums/privacy.enum';
-import { PostData } from './posts';
+import { PostPreview } from './posts';
 
 export type Profile = {
   userId: string;
@@ -35,7 +35,7 @@ export type ProfileView = {
     followers: number;
     following: number;
   };
-  posts: PostData[];
+  posts: PostPreview[];
 };
 
 export type ProfileData = Omit<ProfileView, 'posts'>;

@@ -22,6 +22,8 @@ export type PostData = {
   media: MediaPosts[];
 };
 
+export type PostPreview = Pick<Post, 'id'> & Pick<MediaPosts, 'url' | 'type'>;
+
 export type Pagination = {
   limit?: number;
   cursor?: string;

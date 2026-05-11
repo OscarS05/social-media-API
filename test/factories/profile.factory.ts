@@ -6,7 +6,7 @@ import {
   ProfileData,
   ProfileView,
 } from '../../src/modules/social/profile/domain/types/profile';
-import { POST } from './posts.factory';
+import { POST_PREVIEW } from './posts.factory';
 import { MEMBER_ID } from './user.factory';
 
 export const buildProfileEntity = (overrides?: Partial<Profile>): ProfileEntity => {
@@ -63,7 +63,7 @@ export const ALL_PROFILE_DATA: ProfileView = {
     followers: 150,
     following: 300,
   },
-  posts: [POST, POST],
+  posts: [POST_PREVIEW, POST_PREVIEW],
 };
 
 export const LIMITED_PROFILE_DATA: ProfileView = {

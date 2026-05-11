@@ -4,7 +4,7 @@ import { ProfilePreview } from '../../domain/types/profile';
 import { UsernameVO } from '../../domain/value-objects/username.vo';
 
 @Injectable()
-export class GetProfilesByUsernameUseCase {
+export class GetProfilesPreviewUseCase {
   constructor(private readonly profileRepo: ProfileRepository) {}
 
   public async execute(username: string): Promise<ProfilePreview[]> {

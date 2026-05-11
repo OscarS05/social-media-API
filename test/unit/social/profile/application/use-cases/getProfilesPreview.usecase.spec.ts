@@ -1,22 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProfileRepository } from '../../../../../../src/modules/social/profile/domain/repositories/profile.repository';
 import { MockProfileRepository } from '../../infrastructure/repositories/profile.repository-mock';
-import { GetProfilesByUsernameUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/get-profiles-by-username.usecase';
+import { GetProfilesPreviewUseCase } from '../../../../../../src/modules/social/profile/application/use-cases/getProfilesPreview.usecase';
 import { AVATAR_URL, buildProfileEntity } from '../../../../../factories/profile.factory';
 import { InvalidUsernameError } from '../../../../../../src/modules/social/profile/domain/errors/profile.errors';
 
-describe('GetProfilesByUsernameUseCase', () => {
-  let usecase: GetProfilesByUsernameUseCase;
+describe('GetProfilesPreviewUseCase', () => {
+  let usecase: GetProfilesPreviewUseCase;
   const profileRepo = new MockProfileRepository();
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         { provide: ProfileRepository, useValue: profileRepo },
-        GetProfilesByUsernameUseCase,
+        GetProfilesPreviewUseCase,
       ],
     }).compile();
-    usecase = module.get<GetProfilesByUsernameUseCase>(GetProfilesByUsernameUseCase);
+    usecase = module.get<GetProfilesPreviewUseCase>(GetProfilesPreviewUseCase);
   });
 
   beforeEach(() => {

@@ -3,6 +3,7 @@ import {
   MediaPosts,
   Post,
   PostData,
+  PostPreview,
 } from '../../src/modules/social/profile/domain/types/posts';
 
 export const buildPostEntity = (overrides?: Partial<Post>): Post => {
@@ -31,4 +32,10 @@ export const buildMediaPostsEntity = (overrides?: Partial<MediaPosts>): MediaPos
 export const POST: PostData = {
   post: buildPostEntity(),
   media: [buildMediaPostsEntity(), buildMediaPostsEntity()],
+};
+
+export const POST_PREVIEW: PostPreview = {
+  id: buildPostEntity().id,
+  url: buildMediaPostsEntity().url,
+  type: buildMediaPostsEntity().type,
 };
