@@ -7,7 +7,7 @@ import { AuthProvider } from '../../../../domain/enums/providers.enum';
 
 export const userFactory = setSeederFactory(UserORM, () => {
   const user = new UserORM();
-  const provider = faker.helpers.arrayElement(Object.values(AuthProvider) as AuthProvider[]);
+  const provider = faker.helpers.arrayElement(Object.values(AuthProvider));
 
   user.id = faker.string.uuid();
   user.name = faker.person.fullName();

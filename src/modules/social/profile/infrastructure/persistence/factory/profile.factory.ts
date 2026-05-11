@@ -16,7 +16,7 @@ export const profileFactoryData = (userId?: string, isAdmin?: boolean): Profiles
   profile.bio = isAdmin ? profileMock.bio : faker.lorem.sentence().slice(0, 255);
   profile.typePrivacy = isAdmin
     ? profileMock.typePrivacy
-    : faker.helpers.arrayElement(Object.values(Privacy) as Privacy[]);
+    : faker.helpers.arrayElement(Object.values(Privacy));
   profile.avatarUrl = isAdmin ? profileMock.avatarUrl : faker.image.avatar();
   profile.coverPhotoUrl = isAdmin ? profileMock.coverPhotoUrl : faker.image.url();
   profile.createdAt = faker.date.past({ years: 1 });
