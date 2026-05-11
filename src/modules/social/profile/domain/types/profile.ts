@@ -40,10 +40,7 @@ export type ProfileView = {
 
 export type ProfileData = Omit<ProfileView, 'posts'>;
 
-export type ProfilePreview = Omit<
-  ProfileBasic,
-  'createdAt' | 'updatedAt' | 'deletedAt' | 'bio' | 'coverPhotoUrl' | 'typePrivacy'
->;
+export type ProfilePreview = Pick<Profile, 'userId' | 'username' | 'avatarUrl'>;
 
 export type ImageData = {
   buffer: Buffer;

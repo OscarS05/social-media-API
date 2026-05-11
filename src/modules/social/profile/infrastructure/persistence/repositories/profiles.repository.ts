@@ -15,6 +15,10 @@ import {
 import { ProfileViewMapper } from '../../mappers/profileView.mapper';
 import { ProfileAccessContextMapper } from '../../mappers/profileAccessContext.mapper';
 import { DomainNotFoundError } from '../../../domain/errors/profile.errors';
+import {
+  PaginationRequest,
+  PaginationResponse,
+} from '../../../../../../shared/domain/types/pagination.type';
 
 export type ProfileAccessContextRaw = {
   userId: string;
@@ -57,8 +61,11 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
     await this.repo.softDelete(userId);
   }
 
-  async findAllProfilesByUsername(username: string): Promise<ProfilePreview[]> {
-    const profiles = await this.repo.find({
+  async findAllProfilesByUsername(
+    username: string,
+    options: PaginationRequest,
+  ): Promise<PaginationResponse<ProfilePreview>> {
+    const [profiles, count] = await this.repo.findAndCount({
       select: {
         userId: true,
         username: true,
@@ -67,13 +74,18 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
       where: {
         username: Like(`%${username}%`),
       },
+      skip: options.offset,
+      take: options.limit,
     });
 
-    return profiles.map((p) => ({
-      userId: p.userId,
-      username: p.username,
-      avatarUrl: p.avatarUrl,
-    }));
+    return {
+      data: profiles.map((p) => ({
+        userId: p.userId,
+        username: p.username,
+        avatarUrl: p.avatarUrl,
+      })),
+      total: count,
+    };
   }
 
   async findByUserId(userId: string): Promise<ProfileEntity | null> {

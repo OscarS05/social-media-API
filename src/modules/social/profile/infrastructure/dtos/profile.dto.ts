@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PickType } from '@nestjs/swagger';
 import { IsEnum, IsString, IsUUID, Length, Matches, MaxLength } from 'class-validator';
 
 import { Privacy } from '../../domain/enums/privacy.enum';
@@ -87,14 +87,14 @@ export class ProfileResponseDto extends ProfileDto {
   }
 }
 
-export class ProfilePreviewResponseDto extends OmitType(ProfileDto, [
-  'coverPhotoUrl',
+export class ProfilePreviewResponseDto extends PickType(ProfileDto, [
   'userId',
-  'bio',
-  'typePrivacy',
+  'username',
+  'avatarUrl',
 ]) {
   static fromDomain(data: ProfilePreview): ProfilePreviewResponseDto {
     return {
+      userId: data.userId,
       username: data.username,
       avatarUrl: data.avatarUrl ?? null,
     };

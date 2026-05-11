@@ -26,6 +26,10 @@ import type { PayloadAccessToken } from '../../../../auth/domain/types/session';
 import { CurrentUser } from '../../../../../shared/services/decorators/currentUser.decorator';
 import { UpdateProfileUseCase } from '../../application/use-cases/update-profile.usecase';
 import { GetProfilesPreviewUseCase } from '../../application/use-cases/getProfilesPreview.usecase';
+import {
+  PaginatedResponseDto,
+  PaginationDto,
+} from '../../../../../shared/infrastructure/dtos/pagination.dto';
 
 type ImageUploaded = {
   avatar?: Express.Multer.File[];
@@ -138,13 +142,25 @@ export class ProfileController {
   @ApiResponse({
     status: 200,
     description: 'Gets profile previews',
-    type: ProfilePreviewResponseDto,
+    type: PaginatedResponseDto<ProfilePreviewResponseDto>,
   })
   @Get()
-  async findProfiles(@Query('search') search: string): Promise<ProfilePreviewResponseDto[]> {
+  async findProfiles(
+    @Query() query: PaginationDto,
+  ): Promise<PaginatedResponseDto<ProfilePreviewResponseDto>> {
     try {
-      const profiles = await this.getProfilesPreviewUseCase.execute(search);
-      return profiles.map((p) => ProfilePreviewResponseDto.fromDomain(p));
+      const result = await this.getProfilesPreviewUseCase.execute({
+        username: query.search,
+        page: query.page,
+        limit: query.limit,
+      });
+      return {
+        data: result.data.map((p) => ProfilePreviewResponseDto.fromDomain(p)),
+        limit: result.limit,
+        page: result.page,
+        total: result.total,
+        hasNextPage: result.hasNextPage,
+      };
     } catch (error) {
       throw ProfileErrorMapper(error as Error);
     }
