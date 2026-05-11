@@ -18,6 +18,7 @@ import {
 } from '../../../../src/modules/social/profile/infrastructure/dtos/profile.dto';
 import { ImageManagerService } from '../../../../src/shared/infrastructure/services/image-manager.service';
 import { ImageLocalService } from '../../../../src/shared/infrastructure/services/image-local.service';
+import { PaginatedResponseDto } from '../../../../src/shared/infrastructure/dtos/pagination.dto';
 
 describe('Profile e2e - social/profile', () => {
   let app: INestApplication;
@@ -58,11 +59,6 @@ describe('Profile e2e - social/profile', () => {
 
     profileRepo = dataSource.getRepository(ProfileORM);
   });
-
-  // afterEach(async () => {
-  //   await profileRepo.deleteAll();
-  //   await new MainSeeder().runTestSeeders(dataSource, [SeedersTag.PROFILE]);
-  // });
 
   afterAll(async () => {
     await dataSource.dropDatabase();
@@ -419,39 +415,58 @@ describe('Profile e2e - social/profile', () => {
     describe('Successful gests', () => {
       it('should find all profile previews', async () => {
         const res = await request(server)
-          .get('/profile?search=' + 'user')
+          .get('/profile?search=user&limit=15&page=1')
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(200);
 
-        const resBody = res.body as ProfilePreviewResponseDto[];
+        const resBody = res.body as PaginatedResponseDto<ProfilePreviewResponseDto>;
 
-        expect(resBody.length).toBe(2);
-        expect(resBody[0].avatarUrl).toBeDefined();
-        expect(resBody[0].username).toBeTruthy();
+        expect(resBody.data.length).toBe(2);
+        expect(resBody.data[0].avatarUrl).toBeDefined();
+        expect(resBody.data[0].username).toBeTruthy();
+        expect(resBody.limit).toBe(15);
+        expect(resBody.page).toBe(1);
+        expect(resBody.total).toBe(2);
+        expect(resBody.hasNextPage).toBeFalsy();
       });
 
       it('should find one profile preview', async () => {
         const res = await request(server)
-          .get('/profile?search=' + USERNAME)
+          .get('/profile?search=' + USERNAME + '&limit=15&page=1')
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(200);
 
-        const resBody = res.body as ProfilePreviewResponseDto[];
+        const resBody = res.body as PaginatedResponseDto<ProfilePreviewResponseDto>;
 
-        expect(resBody.length).toBe(1);
-        expect(resBody[0].avatarUrl).toBeDefined();
-        expect(resBody[0].username).toBeTruthy();
+        expect(resBody.data.length).toBe(1);
+        expect(resBody.data[0].avatarUrl).toBeDefined();
+        expect(resBody.data[0].username).toBeTruthy();
+        expect(resBody.total).toBe(1);
+        expect(resBody.limit).toBe(15);
+        expect(resBody.page).toBe(1);
+        expect(resBody.hasNextPage).toBeFalsy();
       });
 
       it('should return an empty array if username not exists', async () => {
         const res = await request(server)
-          .get('/profile?search=' + 'oscar_santiago_123_123')
+          .get('/profile?search=oscar_santiago_987&limit=15&page=1')
           .set('Authorization', `Bearer ${accessToken}`)
           .expect(200);
 
-        const resBody = res.body as ProfilePreviewResponseDto[];
+        const resBody = res.body as PaginatedResponseDto<ProfilePreviewResponseDto>;
 
-        expect(resBody.length).toBe(0);
+        expect(resBody.data.length).toBe(0);
+        expect(resBody.total).toBe(0);
+        expect(resBody.limit).toBe(15);
+        expect(resBody.page).toBe(1);
+        expect(resBody.hasNextPage).toBeFalsy();
+      });
+
+      it('should not fail if pagination parameters was not provided', async () => {
+        await request(server)
+          .get('/profile?search=username_123')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(200);
       });
     });
 

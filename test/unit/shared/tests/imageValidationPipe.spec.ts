@@ -1,7 +1,7 @@
 import {
   BadRequestError,
   ImageValidationPipe,
-} from '../../../src/shared/services/pipes/imageValidation.pipe';
+} from '../../../../src/shared/services/pipes/imageValidation.pipe';
 
 describe('ImageValidationPipe', () => {
   let pipe: ImageValidationPipe;

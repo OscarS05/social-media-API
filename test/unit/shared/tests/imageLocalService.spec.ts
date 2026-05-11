@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { ImageLocalService } from '../../../src/shared/infrastructure/services/image-local.service';
+import { ImageLocalService } from '../../../../src/shared/infrastructure/services/image-local.service';
 
 jest.mock('fs', () => ({
   promises: {

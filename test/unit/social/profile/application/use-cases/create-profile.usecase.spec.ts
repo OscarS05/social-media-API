@@ -19,7 +19,7 @@ import {
 } from '../../../../../factories/profile.factory';
 import { ProfileBasic } from '../../../../../../src/modules/social/profile/domain/types/profile';
 import { ImageManagerService } from '../../../../../../src/modules/social/profile/domain/services/image-manager.service';
-import { MockImageManagerService } from '../../../../shared/imageManagerService';
+import { MockImageManagerService } from '../../../../shared/mocks/imageManagerService';
 
 describe('CreateProfileUseCase', () => {
   let usecase: CreateProfileUseCase;

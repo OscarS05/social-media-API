@@ -1,10 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 
-import { ImageManagerService } from '../../../src/shared/infrastructure/services/image-manager.service';
-import { MockImageStorage } from '../social/profile/infrastructure/services/image.service-mock';
-import { ImageStoragePort } from '../../../src/shared/domain/services/image.service';
-import { AVATAR_URL, avatarData, COVER_URL, coverData } from '../../factories/profile.factory';
+import { ImageManagerService } from '../../../../src/shared/infrastructure/services/image-manager.service';
+import { MockImageStorage } from '../../social/profile/infrastructure/services/image.service-mock';
+import { ImageStoragePort } from '../../../../src/shared/domain/services/image.service';
+import {
+  AVATAR_URL,
+  avatarData,
+  COVER_URL,
+  coverData,
+} from '../../../factories/profile.factory';
 
 describe('ImageManagerService', () => {
   let service: ImageManagerService;

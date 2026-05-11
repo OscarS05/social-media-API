@@ -145,9 +145,13 @@ describe('UserRepository (integration)', () => {
         username: p.username,
         avatarUrl: p.avatarUrl,
       }));
-      const result = await profileRepo.findAllProfilesByUsername(query);
+      const result = await profileRepo.findAllProfilesByUsername(query, {
+        limit: 15,
+        offset: 0,
+      });
 
-      expect(result).toMatchObject(mapped);
+      expect(result.data).toMatchObject(mapped);
+      expect(result.total).toBe(2);
     });
   });
 

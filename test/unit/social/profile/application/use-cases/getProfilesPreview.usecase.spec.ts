@@ -8,6 +8,10 @@ import { InvalidUsernameError } from '../../../../../../src/modules/social/profi
 describe('GetProfilesPreviewUseCase', () => {
   let usecase: GetProfilesPreviewUseCase;
   const profileRepo = new MockProfileRepository();
+  const pagination = {
+    page: 1,
+    limit: 15,
+  };
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,36 +27,57 @@ describe('GetProfilesPreviewUseCase', () => {
     jest.clearAllMocks();
   });
 
-  // === SUCCESS ===
+  // TODO: Update my test suite because the use case already received an object like the tests in 'successful cases', but also, instead of return a profile preview, return an object with data and pagination info
+  describe('Successful cases', () => {
+    it('should get a list of profile previews if there are coincidences', async () => {
+      const profileData = buildProfileEntity({ avatarUrl: AVATAR_URL });
+      const profilePreview = [profileData, profileData, profileData];
 
-  it('should get a list of profile previews if there are coincidences', async () => {
-    const profileData = buildProfileEntity({ avatarUrl: AVATAR_URL });
-    const profilePreview = [profileData, profileData, profileData];
+      profileRepo.findAllProfilesByUsername.mockResolvedValue({
+        data: profilePreview,
+        total: profilePreview.length,
+      });
 
-    profileRepo.findAllProfilesByUsername.mockResolvedValue(profilePreview);
+      const response = await usecase.execute({ username: 'username123', ...pagination });
 
-    const response = await usecase.execute('username123');
+      expect(response).toStrictEqual({
+        data: profilePreview,
+        ...pagination,
+        total: profilePreview.length,
+        hasNextPage: false,
+      });
+    });
 
-    expect(response).toStrictEqual(profilePreview);
+    it('should get an empty list if there are not coincidences', async () => {
+      profileRepo.findAllProfilesByUsername.mockResolvedValue({
+        data: [],
+        total: 0,
+      });
+
+      const response = await usecase.execute({ username: 'username123', ...pagination });
+
+      expect(response).toStrictEqual({
+        data: [],
+        ...pagination,
+        total: 0,
+        hasNextPage: false,
+      });
+    });
   });
 
-  it('should get an empty list if there are not coincidences', async () => {
-    profileRepo.findAllProfilesByUsername.mockResolvedValue([]);
+  describe('Fail cases', () => {
+    it('should throw an error if the database failed', async () => {
+      profileRepo.findAllProfilesByUsername.mockRejectedValue(new Error('Database down'));
 
-    const response = await usecase.execute('username123');
+      await expect(
+        usecase.execute({ username: 'valid_username_123', ...pagination }),
+      ).rejects.toThrow('Database down');
+    });
 
-    expect(response).toStrictEqual([]);
-  });
-
-  // === FAILS ===
-
-  it('should throw an error if the database failed', async () => {
-    profileRepo.findAllProfilesByUsername.mockRejectedValue(new Error('Database down'));
-
-    await expect(usecase.execute('valid_username_123')).rejects.toThrow('Database down');
-  });
-
-  it('should throw an error if the username is invalid', async () => {
-    await expect(usecase.execute('invalid__username__')).rejects.toThrow(InvalidUsernameError);
+    it('should throw an error if the username is invalid', async () => {
+      await expect(
+        usecase.execute({ username: 'invalid__username__', ...pagination }),
+      ).rejects.toThrow(InvalidUsernameError);
+    });
   });
 });
