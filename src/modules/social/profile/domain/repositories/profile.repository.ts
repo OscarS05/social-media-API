@@ -15,10 +15,7 @@ export abstract class ProfileRepository {
 
   abstract findByUserName(username: string): Promise<ProfileEntity | null>;
 
-  abstract findUsernames(
-    username: string,
-    options: PaginationRequest,
-  ): Promise<PaginationResponse<string>>;
+  abstract findUsernames(username: string, options: PaginationRequest): Promise<string[]>;
 
   abstract create(data: ProfileEntity): Promise<ProfileEntity>;
 

@@ -187,7 +187,7 @@ describe('UserRepository (integration)', () => {
   describe('.findUsernames()', () => {
     it('should find usernames successfully', async () => {
       const query = 'user';
-      const result = await profileRepo.findUsernames(query);
+      const result = await profileRepo.findUsernames(query, { limit: 15, offset: 0 });
 
       expect(result.length).toBe(2); // Total profiles created in seeders
       expect(result.includes(USERNAME)).toBeTruthy();
@@ -195,7 +195,10 @@ describe('UserRepository (integration)', () => {
     });
 
     it('should not find the profile', async () => {
-      const result = await profileRepo.findUsernames('username_not_exist');
+      const result = await profileRepo.findUsernames('username_not_exist', {
+        limit: 15,
+        offset: 0,
+      });
 
       expect(result.length).toBe(0);
     });

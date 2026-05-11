@@ -98,10 +98,12 @@ export class ProfileRepositoryTypeORM extends ProfileRepository {
     return profile ? ProfileMapper.toDomain(profile) : null;
   }
 
-  async findUsernames(username: string): Promise<string[]> {
+  async findUsernames(username: string, pagination: PaginationRequest): Promise<string[]> {
     const profiles = await this.repo.find({
       select: { username: true },
       where: { username: Like(`%${username}%`) },
+      skip: pagination.offset,
+      take: pagination.limit,
     });
 
     return profiles.map((p) => p.username);

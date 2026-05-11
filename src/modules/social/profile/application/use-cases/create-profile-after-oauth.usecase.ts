@@ -20,7 +20,7 @@ export class CreateProfileWithOAuthUseCase {
     for (let attempt = 0; attempt < 5; attempt++) {
       try {
         const base = this.usernameGeneratorService.normalizeName(data.name);
-        const usernames = await this.profileRepo.findUsernames(base);
+        const usernames = await this.profileRepo.findUsernames(base, { limit: 15, offset: 0 });
         const username = this.usernameGeneratorService.generate(data.name, usernames);
         const profile = await this.profileRepo.create(
           ProfileEntity.create({

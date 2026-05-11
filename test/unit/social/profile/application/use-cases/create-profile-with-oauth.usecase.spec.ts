@@ -52,7 +52,10 @@ describe('CreateProfileWithOAuthUseCase', () => {
     const result = await usecase.execute(oauthData);
 
     expect(profileRepository.findByUserId).toHaveBeenCalledWith(profileData.userId);
-    expect(profileRepository.findUsernames).toHaveBeenCalledWith(profileData.username);
+    expect(profileRepository.findUsernames).toHaveBeenCalledWith(profileData.username, {
+      limit: 15,
+      offset: 0,
+    });
     expect(profileRepository.create).toHaveBeenCalledTimes(1);
     expect(result).toStrictEqual(profileBasic);
   });
